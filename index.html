@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GPX Workshop">
+<meta name="theme-color" content="#1a1f1c">
+<title>GPX Workshop</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+/* Layout: app shell. Header on top, track library on the left, map in the middle with a tool rail,
+   elevation profile along the bottom. Tool panels float over the map's top-right corner. */
+:root {
+  --bg: #eef0ec; --panel: #ffffff; --ink: #1a1f1c; --muted: #5d665f; --line: #d3d8d1;
+  --accent: #a400e0; --accent-ink: #ffffff; --ok: #1d7a45; --warn: #b3261e; --hover: #f1f3ef;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111412; --panel: #1a1e1b; --ink: #e8ebe7; --muted: #9aa39c; --line: #2f3631;
+    --accent: #c86bff; --accent-ink: #14091a; --ok: #4cc283; --warn: #ff7a70; --hover: #232824; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.4; overflow: hidden; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 10px; font-weight: 600; white-space: nowrap; }
+button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+button .ic { flex: none; }
+button:hover:not(:disabled) { background: var(--hover); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+button.pri { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+button.pri:hover:not(:disabled) { background: var(--ink); opacity: .88; }
+button.danger { color: var(--warn); }
+button.on, button.on:hover:not(:disabled) { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+input[type=text], input[type=search], input[type=number], input[type=datetime-local], select, textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; min-width: 0; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input[type=checkbox], input[type=radio] { accent-color: var(--accent); width: 16px; height: 16px; flex: none; }
+label { display: block; }
+
+#app { display: grid; height: 100%; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "top top" "side map" "side prof"; }
+
+/* Header */
+#top { grid-area: top; display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; }
+#top h1 { font-family: var(--display); font-size: 1.45rem; font-weight: 700; margin: 0 6px 0 2px; white-space: nowrap; letter-spacing: .01em; }
+#top h1 span { color: var(--accent); }
+#top .grp { display: flex; gap: 4px; }
+#top .sp { flex: 1 1 auto; }
+#search { display: flex; gap: 4px; flex: 0 1 300px; min-width: 150px; }
+
+/* Library */
+#side { grid-area: side; width: 310px; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+#side.closed { display: none; }
+#side .hd { padding: 8px 10px; display: grid; gap: 6px; border-bottom: 1px solid var(--line); }
+#side .hd .row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+#side .hd .row button { padding: 4px 8px; font-size: .85rem; }
+#side .hd .cnt { font-size: .8rem; color: var(--muted); margin-left: auto; }
+#list { flex: 1 1 auto; overflow-y: auto; min-height: 0; }
+.folder { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 8px 10px 3px; position: sticky; top: 0; background: var(--panel); z-index: 1; }
+.frow { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); cursor: pointer; }
+.frow:hover { background: var(--hover); }
+.frow.active { box-shadow: inset 3px 0 0 var(--accent); background: var(--hover); }
+.frow.hiddenfile .nm, .frow.hiddenfile .sub { opacity: .5; }
+.frow .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); }
+.frow .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frow .sub { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.frow .eye { padding: 2px 7px; font-size: .75rem; font-weight: 600; }
+.empty { padding: 22px 14px; color: var(--muted); display: grid; gap: 10px; }
+.empty b { color: var(--ink); font-family: var(--display); font-size: 1.2rem; }
+#side .ft { border-top: 1px solid var(--line); padding: 8px 10px; display: grid; gap: 6px; font-size: .8rem; color: var(--muted); }
+#side .ft .row { display: flex; gap: 4px; }
+#btnTrash { justify-content: flex-start; }
+.trashhd { padding: 12px 10px; display: grid; gap: 6px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+.trashhd b { color: var(--ink); font-family: var(--display); font-size: 1.2rem; }
+.trashhd .row, .trow .row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.trashhd button, .trow button { padding: 3px 9px; font-size: .82rem; }
+.frow.trow { grid-template-columns: 12px minmax(0, 1fr); cursor: default; align-items: start; }
+.frow.trow .dot { margin-top: 5px; }
+.frow.trow .sub { white-space: normal; }
+#side .ft button { font-size: .82rem; padding: 4px 8px; flex: 1; }
+
+/* Map */
+#mapwrap { grid-area: map; position: relative; min-height: 0; min-width: 0; }
+#map { position: absolute; inset: 0; z-index: 0; background: #cfd4cc; }
+#rail { position: absolute; left: 8px; top: 8px; bottom: 8px; z-index: 800; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; pointer-events: none; scrollbar-width: none; }
+#rail button { pointer-events: auto; justify-content: flex-start; gap: 8px; padding: 6px 12px 6px 8px; font-size: .86rem; border-radius: 9px; border-color: transparent; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+#rail button .ic { width: 20px; height: 20px; color: var(--accent); }
+#rail button.on .ic { color: inherit; }
+#top button .ic { color: var(--accent); }
+#top button.on .ic, #top button:disabled .ic { color: inherit; }
+#btnGo span { display: none; }
+#rail .sep { height: 5px; flex: none; }
+.float { position: absolute; z-index: 900; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.28); max-height: calc(100% - 16px); overflow-y: auto; }
+#panel { right: 8px; top: 8px; width: 300px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 10px; }
+#syncp { right: 8px; top: 8px; width: 340px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; z-index: 950; }
+.float p.bad { color: var(--warn); }
+.float p.bad:empty { display: none; }
+ol.steps { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; font-size: .88rem; color: var(--muted); }
+ol.steps b { color: var(--ink); }
+#btnSync { justify-content: flex-start; }
+.float details { border-top: 1px solid var(--line); padding-top: 8px; }
+.float summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+.float details .inner { display: grid; gap: 8px; margin-top: 8px; }
+#btnSync.warn { border-color: var(--warn); color: var(--warn); }
+#layers { right: 8px; top: 8px; width: 280px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; z-index: 950; }
+.float h2 { margin: 0; font-family: var(--display); font-size: 1.25rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.float h2 button { padding: 1px 8px; font-size: .85rem; }
+.float h2 .ttl { display: inline-flex; align-items: center; gap: 8px; }
+.float h2 .ttl .ic { width: 22px; height: 22px; color: var(--accent); }
+.float h3 { margin: 6px 0 0; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.float p { margin: 0; color: var(--muted); font-size: .88rem; }
+.float .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.float .row > button { flex: 1 1 auto; }
+.fld { display: grid; gap: 3px; }
+.fld > span { font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.chk { display: flex; gap: 8px; align-items: center; font-size: .92rem; }
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatches button { width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 2px solid var(--line); }
+.swatches button.on, .swatches button.on:hover:not(:disabled) { border-color: var(--ink); box-shadow: 0 0 0 2px var(--panel) inset; }
+.big { font-family: var(--display); font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+#toast { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 1000; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 24px); font-size: .92rem; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+#toast button { background: transparent; color: inherit; border-color: currentColor; padding: 2px 9px; }
+#status { position: absolute; right: 56px; bottom: 22px; z-index: 700; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font-family: var(--mono); font-size: .72rem; color: var(--muted); pointer-events: none; }
+#status:empty { display: none; }
+#busy { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 1000; background: var(--accent); color: var(--accent-ink); padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: .85rem; }
+#ctx { position: absolute; z-index: 1100; padding: 4px; display: grid; gap: 2px; min-width: 190px; }
+#ctx button { border: 0; justify-content: flex-start; font-weight: 400; }
+#drop { position: absolute; inset: 0; z-index: 1200; background: color-mix(in srgb, var(--accent) 22%, transparent); border: 4px dashed var(--accent); display: grid; place-items: center; font-family: var(--display); font-size: 2rem; font-weight: 700; color: var(--ink); pointer-events: none; }
+
+/* Profile */
+#prof { grid-area: prof; background: var(--panel); border-top: 1px solid var(--line); min-width: 0; }
+#prof.closed #chartwrap { display: none; }
+#stats { display: flex; gap: 16px; padding: 5px 10px; overflow-x: auto; align-items: baseline; font-variant-numeric: tabular-nums; }
+#stats .st { white-space: nowrap; }
+#stats .st span { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 5px; }
+#stats .st b { font-family: var(--display); font-size: 1.15rem; font-weight: 600; }
+#stats .ttl { font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#stats button { margin-left: auto; padding: 1px 8px; font-size: .78rem; }
+#chartwrap { position: relative; height: 130px; }
+#chart { width: 100%; height: 100%; display: block; touch-action: none; }
+#chartmsg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+
+/* Leaflet bits */
+.leaflet-container { font-family: var(--body); }
+.leaflet-control-attribution { font-size: 10px; }
+.leaflet-overlay-blend { mix-blend-mode: multiply; }
+.anc { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid #1a1f1c; box-shadow: 0 0 0 1px #fff, 0 1px 4px rgba(0,0,0,.5); }
+.anc.start { border-color: #1d7a45; } .anc.end { border-color: #b3261e; }
+.wpt { transform: translate(-50%, -100%); display: inline-flex; flex-direction: column; align-items: center; white-space: nowrap; }
+.wpt i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px var(--body); box-shadow: 0 1px 4px rgba(0,0,0,.5); max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.wpt::after { content: ""; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 2px #000; }
+.kmk { transform: translate(-50%, -50%); background: #fff; color: #1a1f1c; border: 1.5px solid #1a1f1c; border-radius: 99px; padding: 0 5px; font: 600 10px/14px var(--body); white-space: nowrap; display: inline-block; }
+.kmk.range { background: #ffd400; border-color: #1a1f1c; font-size: 11px; line-height: 16px; }
+.arw { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #fff; filter: drop-shadow(0 0 1.5px #000); transform-origin: 50% 50%; }
+.selbox { position: absolute; z-index: 850; border: 2px dashed var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; }
+
+@media (max-width: 900px) {
+  #btnUndo span, #btnRedo span, #btnLocate span { display: none; }
+  #app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "map" "prof"; }
+  #side { position: fixed; z-index: 1300; left: 0; top: 46px; bottom: 0; width: min(320px, 88vw); box-shadow: 4px 0 20px rgba(0,0,0,.3); }
+  #top h1 { display: none; }
+  #chartwrap { height: 96px; }
+  #panel, #layers { width: min(300px, calc(100% - 16px)); }
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <button id="sideToggle" title="Show or hide the track library">Library</button>
+    <h1>GPX <span>Workshop</span></h1>
+    <div class="grp">
+      <button id="btnNew" title="Start a new empty route">New</button>
+      <button id="btnImport" title="Import GPX files or a backup zip">Import</button>
+      <button id="btnExport" title="Export the selected tracks">Export</button>
+    </div>
+    <div class="grp">
+      <button id="btnUndo" title="Undo (Ctrl+Z)" disabled>Undo</button>
+      <button id="btnRedo" title="Redo (Ctrl+Y)" disabled>Redo</button>
+    </div>
+    <span class="sp"></span>
+    <form id="search" role="search">
+      <input id="q" type="search" placeholder="Place, or lat, lon" aria-label="Search for a place or coordinates" autocomplete="off">
+      <button type="submit" id="btnGo" title="Search">Go</button>
+    </form>
+    <button id="btnLocate" title="Show my location">Locate</button>
+    <button id="btnLayers" title="Base maps and overlays">Maps</button>
+    <input id="fileIn" type="file" multiple accept=".gpx,.zip,application/gpx+xml,application/zip,text/xml,application/xml" hidden>
+  </header>
+
+  <aside id="side" aria-label="Track library">
+    <div class="hd">
+      <input id="filter" type="search" placeholder="Filter tracks" aria-label="Filter tracks by name or folder" autocomplete="off">
+      <div class="row">
+        <label class="chk" title="Select all"><input id="selAll" type="checkbox" aria-label="Select all tracks"></label>
+        <button id="bZoom" disabled>Zoom to</button>
+        <button id="bVis" disabled>Show/Hide</button>
+        <button id="bDup" disabled>Duplicate</button>
+        <button id="bDel" class="danger" disabled>Delete</button>
+        <span class="cnt" id="selCount"></span>
+      </div>
+    </div>
+    <div id="list"></div>
+    <div class="ft">
+      <span id="storeNote">Tracks are saved in this browser on this device.</span>
+      <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
+      <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
+      <div class="row">
+        <button id="btnBackup" title="Download every track as one zip">Back up all</button>
+        <button id="btnShowAll">Show all</button>
+        <button id="btnHideAll">Hide all</button>
+      </div>
+    </div>
+  </aside>
+
+  <main id="mapwrap">
+    <div id="map"></div>
+    <nav id="rail" aria-label="Tools"></nav>
+    <section id="panel" class="float" hidden aria-live="polite"></section>
+    <section id="layers" class="float" hidden></section>
+    <section id="syncp" class="float" hidden></section>
+    <div id="ctx" class="float" hidden></div>
+    <div id="busy" hidden></div>
+    <div id="toast" hidden role="status"></div>
+    <div id="status"></div>
+    <div id="drop" hidden>Drop GPX files to import</div>
+  </main>
+
+  <footer id="prof">
+    <div id="stats"></div>
+    <div id="chartwrap">
+      <canvas id="chart" aria-label="Elevation profile"></canvas>
+      <div id="chartmsg" hidden></div>
+    </div>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+'use strict';
+// ============================================================================
+// GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
+// A point is [lat, lon, ele|null, timeMs|null].
+// A file is { id, name, folder, color, width, opacity, visible, segs:[{name, pts, anc?}], wpts:[...], modified }.
+// ============================================================================
+const $ = id => document.getElementById(id);
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in (attrs || {})) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (k === 'style') e.style.cssText = v;
+    else if (k in e && k !== 'list') e[k] = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const PALETTE = ['#ff2d55', '#ff9500', '#ffd400', '#34c759', '#00c7be', '#0a84ff', '#a400e0', '#ff40ff', '#ffffff', '#1a1f1c'];
+
+const DEFAULTS = { routing: true, profile: 'trekking', base: 'sat', overlays: {}, contourOpacity: 0.7, custom: [], view: { lat: -34.05, lng: 23.37, z: 11 },
+  arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
+function loadSettings() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('gpxw-settings') || '{}')); } catch { return Object.assign({}, DEFAULTS); } }
+function saveSettings() { try { localStorage.setItem('gpxw-settings', JSON.stringify(S.set)); } catch { /* storage unavailable */ } }
+
+const S = { files: [], trash: [], showTrash: false, sel: new Set(), active: null, seg: 0, tool: null, undo: [], redo: [], set: loadSettings(), rt: new Map() };
+const fileById = id => S.files.find(f => f.id === id);
+const activeFile = () => fileById(S.active);
+const selFiles = () => S.files.filter(f => S.sel.has(f.id));
+const rtOf = id => { let r = S.rt.get(id); if (!r) { r = {}; S.rt.set(id, r); } return r; };
+const mkSeg = (name, pts) => ({ name: name || '', pts });
+function mkFile(name, segs, wpts) {
+  return { id: uid(), name: name || 'New route', folder: '', color: PALETTE[S.files.length % 8], width: 4, opacity: 0.95, visible: true, segs: segs || [], wpts: wpts || [], modified: Date.now() };
+}
+const cloneFile = f => (f ? JSON.parse(JSON.stringify(f)) : null);
+
+// ---------- Geometry ----------
+const RAD = Math.PI / 180, RE = 6371008.8;
+function dist(a, b) {
+  const p1 = a[0] * RAD, p2 = b[0] * RAD, dp = p2 - p1, dl = (b[1] - a[1]) * RAD;
+  const x = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
+  return 2 * RE * Math.asin(Math.min(1, Math.sqrt(x)));
+}
+function bearing(a, b) {
+  const p1 = a[0] * RAD, p2 = b[0] * RAD, dl = (b[1] - a[1]) * RAD;
+  return (Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl)) / RAD + 360) % 360;
+}
+function ptsLen(pts) { let s = 0; for (let i = 1; i < pts.length; i++) s += dist(pts[i - 1], pts[i]); return s; }
+// Local flat projection (metres) around a reference latitude; good for small-area maths.
+function projector(lat0) { const kx = 111320 * Math.cos(lat0 * RAD), ky = 110574; return p => [p[1] * kx, p[0] * ky]; }
+function segDistXY(p, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy;
+  let t = l2 ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l2 : 0; t = clamp(t, 0, 1);
+  return Math.hypot(a[0] + t * dx - p[0], a[1] + t * dy - p[1]);
+}
+// Douglas–Peucker; returns the indices to keep.
+function rdp(pts, tol) {
+  const n = pts.length; if (n <= 2) return pts.map((_, i) => i);
+  const P = projector(pts[0][0]), xy = pts.map(P), keep = new Uint8Array(n); keep[0] = keep[n - 1] = 1;
+  const stack = [[0, n - 1]];
+  while (stack.length) {
+    const [s, e] = stack.pop(); let md = 0, mi = -1;
+    for (let i = s + 1; i < e; i++) { const d = segDistXY(xy[i], xy[s], xy[e]); if (d > md) { md = d; mi = i; } }
+    if (mi >= 0 && md > tol) { keep[mi] = 1; stack.push([s, mi], [mi, e]); }
+  }
+  const idx = []; for (let i = 0; i < n; i++) if (keep[i]) idx.push(i); return idx;
+}
+function nearestIdx(pts, lat, lon) {
+  let bi = -1, bd = Infinity; const k = Math.cos(lat * RAD);
+  for (let i = 0; i < pts.length; i++) { const dy = pts[i][0] - lat, dx = (pts[i][1] - lon) * k, d = dx * dx + dy * dy; if (d < bd) { bd = d; bi = i; } }
+  return { i: bi, d: Math.sqrt(bd) * 110574 };
+}
+function reversedPts(pts) {
+  const t0 = pts.length ? pts[0][3] : null, t1 = pts.length ? pts[pts.length - 1][3] : null;
+  return pts.slice().reverse().map(p => [p[0], p[1], p[2], (p[3] != null && t0 != null && t1 != null) ? t0 + (t1 - p[3]) : null]);
+}
+
+// ---------- Stats (cached per file revision) ----------
+function stats(f) {
+  const rt = rtOf(f.id); if (rt.stats) return rt.stats;
+  let n = 0; for (const s of f.segs) n += s.pts.length;
+  const d = new Float64Array(n), ele = new Float32Array(n), segOf = new Int32Array(n), idxOf = new Int32Array(n);
+  let k = 0, total = 0, asc = 0, desc = 0, min = Infinity, max = -Infinity, hasEle = false, t0 = null, t1 = null, moving = 0, ref = null;
+  f.segs.forEach((s, si) => {
+    ref = null;
+    for (let i = 0; i < s.pts.length; i++, k++) {
+      const p = s.pts[i];
+      if (i > 0) {
+        const dd = dist(s.pts[i - 1], p); total += dd;
+        const ta = s.pts[i - 1][3], tb = p[3];
+        if (ta != null && tb != null && tb > ta) { const dt = (tb - ta) / 1000; if (dt < 300 && dd / dt > 0.3) moving += dt; }
+      }
+      d[k] = total; segOf[k] = si; idxOf[k] = i;
+      if (p[2] != null) {
+        hasEle = true; ele[k] = p[2]; if (p[2] < min) min = p[2]; if (p[2] > max) max = p[2];
+        if (ref == null) ref = p[2];
+        else if (p[2] - ref > 3) { asc += p[2] - ref; ref = p[2]; }
+        else if (ref - p[2] > 3) { desc += ref - p[2]; ref = p[2]; }
+      } else ele[k] = NaN;
+      if (p[3] != null) { if (t0 == null) t0 = p[3]; t1 = p[3]; }
+    }
+  });
+  rt.stats = { n, d, ele, segOf, idxOf, total, asc, desc, min, max, hasEle, t0, t1, moving };
+  return rt.stats;
+}
+const fmtDist = m => m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(m < 100000 ? 1 : 0) + ' km';
+const fmtDur = s => { s = Math.round(s); const hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60); return hh ? `${hh}h ${String(mm).padStart(2, '0')}m` : `${mm}m`; };
+
+// ---------- GPX read / write ----------
+function parseGpx(text, fileName) {
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error(fileName + " isn't a valid GPX file.");
+  const kid = (el, n) => { for (const c of el.children) if (c.localName === n) return c; return null; };
+  const txt = (el, n) => { const c = el && kid(el, n); return c ? c.textContent.trim() : ''; };
+  const pt = el => {
+    const la = parseFloat(el.getAttribute('lat')), lo = parseFloat(el.getAttribute('lon')); if (!isFinite(la) || !isFinite(lo)) return null;
+    const e = parseFloat(txt(el, 'ele')), t = Date.parse(txt(el, 'time'));
+    return [la, lo, isFinite(e) ? e : null, isFinite(t) ? t : null];
+  };
+  const base = fileName.replace(/\.gpx$/i, ''), segs = [];
+  for (const trk of doc.getElementsByTagName('trk')) {
+    const nm = txt(trk, 'name');
+    for (const seg of trk.getElementsByTagName('trkseg')) {
+      const pts = [...seg.getElementsByTagName('trkpt')].map(pt).filter(Boolean);
+      if (pts.length) segs.push(mkSeg(nm, pts));
+    }
+  }
+  for (const rte of doc.getElementsByTagName('rte')) {
+    const pts = [...rte.getElementsByTagName('rtept')].map(pt).filter(Boolean);
+    if (pts.length) segs.push(mkSeg(txt(rte, 'name'), pts));
+  }
+  const wpts = [...doc.getElementsByTagName('wpt')].map(w => {
+    const p = pt(w); return p ? { lat: p[0], lon: p[1], ele: p[2], name: txt(w, 'name'), desc: txt(w, 'desc') || txt(w, 'cmt'), sym: txt(w, 'sym') || 'Flag, Blue' } : null;
+  }).filter(Boolean);
+  if (!segs.length && !wpts.length) throw new Error(fileName + ' has no tracks, routes or waypoints.');
+  const meta = doc.getElementsByTagName('metadata')[0];
+  const name = (segs.length === 1 && segs[0].name) || txt(meta, 'name') || base;
+  return mkFile(name, segs, wpts);
+}
+const xmlEsc = s => String(s).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c]));
+const num = (v, dp) => String(+v.toFixed(dp));
+function toGpx(f) {
+  const out = ['<?xml version="1.0" encoding="UTF-8"?>',
+    '<gpx version="1.1" creator="GPX Workshop" xmlns="http://www.topografix.com/GPX/1/1">',
+    `<metadata><name>${xmlEsc(f.name)}</name></metadata>`];
+  for (const w of f.wpts) {
+    out.push(`<wpt lat="${num(w.lat, 7)}" lon="${num(w.lon, 7)}">${w.ele != null ? `<ele>${num(w.ele, 1)}</ele>` : ''}<name>${xmlEsc(w.name || '')}</name>${w.desc ? `<desc>${xmlEsc(w.desc)}</desc>` : ''}<sym>${xmlEsc(w.sym || 'Flag, Blue')}</sym></wpt>`);
+  }
+  for (const s of f.segs) {
+    if (!s.pts.length) continue;
+    out.push(`<trk><name>${xmlEsc(s.name || f.name)}</name><trkseg>`);
+    for (const p of s.pts) out.push(`<trkpt lat="${num(p[0], 7)}" lon="${num(p[1], 7)}">${p[2] != null ? `<ele>${num(p[2], 1)}</ele>` : ''}${p[3] != null ? `<time>${new Date(p[3]).toISOString()}</time>` : ''}</trkpt>`);
+    out.push('</trkseg></trk>');
+  }
+  out.push('</gpx>', ''); return out.join('\n');
+}
+const safeName = s => (s || 'track').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80) || 'track';
+
+// ---------- Zip (write: stored; read: stored + deflate) ----------
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xffffffff; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
+function zipFiles(entries) {       // entries: [{name, text}]
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0; const used = new Set();
+  for (const e of entries) {
+    let nm = e.name; for (let k = 2; used.has(nm.toLowerCase()); k++) nm = e.name.replace(/(\.\w+)?$/, ` (${k})$1`); used.add(nm.toLowerCase());
+    const data = enc.encode(e.text), nb = enc.encode(nm), crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, nb.length, true);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, nb.length, true); ch.setUint32(42, off, true);
+    parts.push(lh, nb, data); central.push(ch, nb); off += 30 + nb.length + data.length;
+  }
+  const cdSize = central.reduce((s, x) => s + x.byteLength, 0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...central, end], { type: 'application/zip' });
+}
+async function unzip(buf) {        // returns [{name, text}] for .gpx entries
+  const dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder(); let e = buf.byteLength - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error("This zip file can't be read.");
+  const count = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const out = [];
+  for (let i = 0; i < count; i++) {
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), lho = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen)); p += 46 + nlen + xlen + clen;
+    if (!/\.gpx$/i.test(name) || name.startsWith('__MACOSX')) continue;
+    const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true), raw = u8.subarray(start, start + csize);
+    let bytes = raw;
+    if (method === 8) bytes = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+    else if (method !== 0) continue;
+    out.push({ name: name.split('/').pop(), text: dec.decode(bytes) });
+  }
+  return out;
+}
+function download(blob, name) {
+  const a = h('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+}
+
+// ---------- Storage (IndexedDB) ----------
+const DB = {
+  db: null,
+  open() {
+    return new Promise(res => {
+      try {
+        const r = indexedDB.open('gpx-workshop', 2);
+        r.onupgradeneeded = () => { for (const st of ['files', 'trash']) if (!r.result.objectStoreNames.contains(st)) r.result.createObjectStore(st, { keyPath: 'id' }); };
+        r.onsuccess = () => { DB.db = r.result; res(true); };
+        r.onerror = () => res(false);
+      } catch { res(false); }
+    });
+  },
+  all(store) { return new Promise(res => { if (!DB.db) return res([]); const r = DB.db.transaction(store || 'files').objectStore(store || 'files').getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); }); },
+  put(f, store) { if (!DB.db) return; try { DB.db.transaction(store || 'files', 'readwrite').objectStore(store || 'files').put(f); } catch (e) { console.warn(e); } },
+  del(id, store) { if (!DB.db) return; try { DB.db.transaction(store || 'files', 'readwrite').objectStore(store || 'files').delete(id); } catch (e) { console.warn(e); } }
+};
+
+// ---------- Recently deleted ----------
+// Any track that leaves the library (deleted, or used up by Join or Extract) is kept here for 30 days.
+const TRASH_DAYS = 90;
+const Trash = {
+  add(f) {
+    if (!f || (!f.wpts.length && !f.segs.some(sg => sg.pts.length))) return;
+    const rec = { id: f.id, file: f, deletedAt: Date.now() };
+    S.trash = S.trash.filter(t => t.id !== f.id); S.trash.push(rec); DB.put(rec, 'trash'); Sync.poke();
+  },
+  remove(id) { if (!S.trash.some(t => t.id === id)) return; S.trash = S.trash.filter(t => t.id !== id); DB.del(id, 'trash'); Sync.poke(); },
+  restore(ids) {
+    const recs = S.trash.filter(t => ids.includes(t.id)); if (!recs.length) return;
+    for (const r of recs) this.remove(r.id);
+    op(`Restore ${recs.length} track${recs.length > 1 ? 's' : ''}`, [], () => { for (const r of recs) { if (fileById(r.file.id)) r.file.id = uid(); r.file.visible = true; S.files.push(r.file); } }, { trashOnUndo: true });
+    select(recs.map(r => r.file.id), { active: recs[0].file.id }); zoomTo(recs.map(r => r.file));
+  },
+  purge() { const cut = Date.now() - TRASH_DAYS * 864e5; for (const t of S.trash.filter(x => x.deletedAt < cut)) this.remove(t.id); }
+};
+
+// ---------- Undoable operations ----------
+// op(label, ids, fn): ids = files that fn may change or delete. Files created inside fn are detected automatically.
+function op(label, ids, fn, opts) {
+  const existed = new Set(S.files.map(f => f.id)), before = new Map(ids.map(id => [id, cloneFile(fileById(id))]));
+  const r = fn();
+  for (const [id, snap] of before) if (snap && !fileById(id)) Trash.add(snap);
+  for (const f of S.files) if (!existed.has(f.id)) before.set(f.id, null);
+  S.undo.push({ label, before, trashOnUndo: !!(opts && opts.trashOnUndo) }); if (S.undo.length > 60) S.undo.shift(); S.redo.length = 0;
+  touched([...before.keys()]); return r;
+}
+// keepRemoved: send files that disappear to Recently deleted (true when re-doing a removal, false when undoing a creation).
+function applySnap(map, keepRemoved) {
+  const inverse = new Map();
+  for (const [id, snap] of map) {
+    inverse.set(id, cloneFile(fileById(id)));
+    const i = S.files.findIndex(f => f.id === id);
+    if (snap === null) { if (i >= 0) { if (keepRemoved) Trash.add(inverse.get(id)); S.files.splice(i, 1); } }
+    else { Trash.remove(id); if (i >= 0) S.files[i] = snap; else S.files.push(snap); }
+  }
+  touched([...map.keys()], true); return inverse;
+}
+function undo() { const u = S.undo.pop(); if (!u) return; S.redo.push({ label: u.label, trashOnUndo: u.trashOnUndo, before: applySnap(u.before, u.trashOnUndo) }); updateButtons(); toast('Undid: ' + u.label); }
+function redo() { const u = S.redo.pop(); if (!u) return; S.undo.push({ label: u.label, trashOnUndo: u.trashOnUndo, before: applySnap(u.before, !u.trashOnUndo) }); updateButtons(); toast('Redid: ' + u.label); }
+
+// ---------- Icons (24x24, stroked) ----------
+const ICONS = {
+  library: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  import: '<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>',
+  export: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  undo: '<path d="M8 6l-5 5 5 5M3 11h11a6 6 0 0 1 6 6v1"/>',
+  redo: '<path d="M16 6l5 5-5 5M21 11H10a6 6 0 0 0-6 6v1"/>',
+  locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  maps: '<path d="M12 3l9 5-9 5-9-5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
+  cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.7-8.95A6 6 0 0 1 18 10.6a4 4 0 0 1-.5 7.9z"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>',
+  draw: '<path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/>',
+  trim: '<path d="M7 2v15h15M2 7h15v15"/>',
+  split: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/>',
+  join: '<path d="M9 15l6-6M11 6.5l1-1a4.2 4.2 0 0 1 6 6l-1 1M13 17.5l-1 1a4.2 4.2 0 0 1-6-6l1-1"/>',
+  reverse: '<path d="M4 8h15l-4-4M20 16H5l4 4"/>',
+  extract: '<rect x="3" y="4" width="8" height="6" rx="1"/><rect x="13" y="14" width="8" height="6" rx="1"/><path d="M15 4h4a2 2 0 0 1 2 2v3M9 20H5a2 2 0 0 1-2-2v-3"/>',
+  wpt: '<path d="M12 21.5s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10.5" r="2.2"/>',
+  reduce: '<path d="M4 18l6-10 5 6 5-9" stroke-dasharray="2.5 3"/><circle cx="4" cy="18" r="1.8" fill="currentColor"/><circle cx="10" cy="8" r="1.8" fill="currentColor"/><circle cx="20" cy="5" r="1.8" fill="currentColor"/>',
+  clean: '<path d="M9 20h11M5.6 14.4l8-8a1.4 1.4 0 0 1 2 0l3 3a1.4 1.4 0 0 1 0 2L11 19H8.5l-2.9-2.6a1.4 1.4 0 0 1 0-2zM10 10l5 5"/>',
+  time: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  ele: '<path d="M2.5 19l6.5-11 4 6.5 2.5-3.5L21.5 19zM9 8l1.8 3"/>',
+  stages: '<path d="M5 21V4M5 5h13l-3 3.5 3 3.5H5"/>',
+  style: '<path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/>'
+};
+function icon(name) {
+  const t = document.createElement('template');
+  t.innerHTML = `<svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+  return t.content.firstChild;
+}
+// A button that asks for a second click before doing something that can't be undone.
+function confirmBtn(label, fn, cls) {
+  let armed = 0; const b = h('button', { class: cls || 'danger', text: label, onclick: e => { e.stopPropagation(); if (armed) { clearTimeout(armed); fn(); } else { b.textContent = 'Click again to confirm'; armed = setTimeout(() => { armed = 0; b.textContent = label; }, 3500); } } });
+  return b;
+}
+
+// ============================================================================
+// Map, base layers, track rendering, library list, elevation profile, messages
+// ============================================================================
+const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+const OTM = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+const BASES = [
+  { id: 'sat', name: 'Satellite', url: ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}', max: 19, attr: 'Imagery &copy; Esri, Maxar, Earthstar Geographics' },
+  { id: 'ngi', name: 'Aerial photos, South Africa (NGI, 25–50 cm)', url: 'https://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg', max: 20, attr: 'Aerial imagery &copy; CD:NGI South Africa' },
+  { id: 'otm', name: 'Topo with contours (OpenTopoMap)', url: OTM, max: 17, attr: 'Map data &copy; OpenStreetMap contributors, SRTM | Style &copy; OpenTopoMap (CC-BY-SA)' },
+  { id: 'esritopo', name: 'Topo (Esri)', url: ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max: 19, attr: '&copy; Esri and contributors' },
+  { id: 'cyclosm', name: 'Tracks and contours (CyclOSM)', url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', max: 20, attr: '&copy; OpenStreetMap contributors | Style: CyclOSM' },
+  { id: 'osm', name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', max: 19, attr: '&copy; OpenStreetMap contributors' },
+  { id: 'voyager', name: 'Clean road map (Carto)', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', max: 20, sub: 'abcd', attr: '&copy; OpenStreetMap contributors &copy; CARTO' },
+  { id: 'dark', name: 'Dark map (Carto)', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', max: 20, sub: 'abcd', attr: '&copy; OpenStreetMap contributors &copy; CARTO' }
+];
+const OVERLAYS = [
+  { id: 'contours', name: 'Contours on top (blend with satellite)', urls: [OTM], max: 17, blend: true, attr: 'Contours: OpenTopoMap (CC-BY-SA)' },
+  { id: 'hill', name: 'Hillshade', urls: [ESRI + 'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'], max: 16, blend: true, opacity: 0.6, attr: 'Hillshade &copy; Esri' },
+  { id: 'labels', name: 'Roads and place names', urls: [ESRI + 'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', ESRI + 'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'], max: 19, attr: 'Labels &copy; Esri' },
+  { id: 'mtb', name: 'MTB trails (Waymarked Trails)', urls: ['https://tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png'], max: 18, attr: 'Trails &copy; waymarkedtrails.org' },
+  { id: 'hike', name: 'Hiking trails (Waymarked Trails)', urls: ['https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png'], max: 18, attr: 'Trails &copy; waymarkedtrails.org' }
+];
+
+let map, baseLayer = null, hoverDot = null;
+const overlayLayers = {}; let decor, anchorsLayer, previewLayer;
+
+function initMap() {
+  const v = S.set.view;
+  map = L.map('map', { zoomControl: false, preferCanvas: true, renderer: L.canvas({ padding: 0.3, tolerance: 10 }), maxZoom: 21, zoomSnap: 0.5, center: [v.lat, v.lng], zoom: v.z });
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+  map.createPane('blend').style.zIndex = 250; map.getPane('blend').classList.add('leaflet-overlay-blend');
+  map.createPane('over').style.zIndex = 260;
+  decor = L.layerGroup().addTo(map); previewLayer = L.layerGroup().addTo(map); anchorsLayer = L.layerGroup().addTo(map);
+  setBase(S.set.base);
+  for (const o of OVERLAYS) if (S.set.overlays[o.id]) setOverlay(o.id, true);
+  map.on('moveend', () => { const c = map.getCenter(); S.set.view = { lat: c.lat, lng: c.lng, z: map.getZoom() }; saveSettings(); renderDecor(); Tools.onMove(); });
+  map.on('mousemove', e => { $('status').textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}  z${map.getZoom()}`; });
+  map.on('click', e => { hideCtx(); Tools.onMapClick(e); });
+  map.on('contextmenu', e => showCtx(e));
+}
+function allBases() { return BASES.concat(S.set.custom.map(c => ({ id: c.id, name: c.name, url: c.url, max: 19, attr: 'Custom layer', custom: true }))); }
+function setBase(id) {
+  const b = allBases().find(x => x.id === id) || BASES[0];
+  if (baseLayer) baseLayer.remove();
+  baseLayer = L.tileLayer(b.url, { maxNativeZoom: b.max, maxZoom: 21, subdomains: b.sub || 'abc', attribution: b.attr, detectRetina: false }).addTo(map);
+  baseLayer.bringToBack(); S.set.base = b.id; saveSettings();
+}
+function setOverlay(id, on) {
+  const o = OVERLAYS.find(x => x.id === id); if (!o) return;
+  if (overlayLayers[id]) { overlayLayers[id].remove(); delete overlayLayers[id]; }
+  if (on) {
+    const op = o.id === 'contours' ? S.set.contourOpacity : (o.opacity || 1);
+    overlayLayers[id] = L.layerGroup(o.urls.map(u => L.tileLayer(u, { pane: o.blend ? 'blend' : 'over', maxNativeZoom: o.max, maxZoom: 21, opacity: op, attribution: o.attr }))).addTo(map);
+  }
+  S.set.overlays[id] = !!on; saveSettings();
+}
+
+// ---------- Track rendering ----------
+function renderFile(f) {
+  const rt = rtOf(f.id); if (rt.group) rt.group.remove();
+  rt.group = L.layerGroup(); rt.lines = [];
+  if (!f.visible) return;
+  const sel = S.sel.has(f.id);
+  f.segs.forEach((s, si) => {
+    if (!s.pts.length) return;
+    const ll = s.pts.map(p => [p[0], p[1]]);
+    if (sel) L.polyline(ll, { color: '#ffffff', weight: f.width + 5, opacity: 0.85, interactive: false }).addTo(rt.group);
+    const line = L.polyline(ll, { color: f.color, weight: f.width + (sel ? 1 : 0), opacity: f.opacity, bubblingMouseEvents: false }).addTo(rt.group);
+    line.on('click', e => { hideCtx(); Tools.onLineClick(f, si, e); });
+    line.on('mousemove', e => { if (f.id === S.active) hoverFromMap(f, si, e.latlng); });
+    rt.lines.push(line);
+  });
+  f.wpts.forEach((w, wi) => {
+    const m = L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt"><i>${xmlEsc(w.name || 'Waypoint')}</i></span>` }), draggable: S.tool === 'wpt' && sel, bubblingMouseEvents: false }).addTo(rt.group);
+    m.on('click', () => Tools.onWptClick(f, wi));
+    m.on('dragend', () => { const p = m.getLatLng(); op('Move waypoint', [f.id], () => { f.wpts[wi].lat = p.lat; f.wpts[wi].lon = p.lng; }); });
+  });
+  rt.group.addTo(map);
+}
+function renderAll() { for (const f of S.files) renderFile(f); }
+function fileBounds(files) {
+  const b = L.latLngBounds([]);
+  for (const f of files) { for (const s of f.segs) for (const p of s.pts) b.extend([p[0], p[1]]); for (const w of f.wpts) b.extend([w.lat, w.lon]); }
+  return b;
+}
+function zoomTo(files) { const b = fileBounds(files); if (b.isValid()) map.fitBounds(b.pad(0.08), { maxZoom: 17 }); }
+
+// Distance marks, range marks and direction arrows for the active track.
+function niceStep(target) { const steps = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500]; return steps.find(s => s >= target) || 1000; }
+function renderDecor() {
+  if (!decor) return; decor.clearLayers(); const f = activeFile(); if (!f || !f.visible) return;
+  const st = stats(f); if (st.n < 2) return;
+  const c = map.getCenter(), mpp = 40075016 * Math.cos(c.lat * RAD) / (256 * 2 ** map.getZoom());
+  const at = dm => { // point at distance dm along the track: binary search
+    let lo = 0, hi = st.n - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (st.d[m] < dm) lo = m + 1; else hi = m; }
+    return lo;
+  };
+  const P = k => f.segs[st.segOf[k]].pts[st.idxOf[k]];
+  const bounds = map.getBounds().pad(0.2);
+  if (S.set.kmMarks) {
+    const stepKm = Math.max(niceStep(mpp * 110 / 1000), st.total / 1000 / 400);
+    for (let km = stepKm; km * 1000 < st.total; km += stepKm) {
+      const p = P(at(km * 1000)); if (!bounds.contains([p[0], p[1]])) continue;
+      L.marker([p[0], p[1]], { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="kmk">${+km.toFixed(1)}</span>` }) }).addTo(decor);
+    }
+  }
+  if (S.set.range > 0) {
+    for (let km = S.set.range, n = 1; km * 1000 < st.total; km += S.set.range, n++) {
+      const p = P(at(km * 1000));
+      L.marker([p[0], p[1]], { interactive: false, zIndexOffset: 500, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="kmk range">Range ${n}: ${km} km</span>` }) }).addTo(decor);
+    }
+  }
+  if (S.set.arrows) {
+    const step = Math.max(mpp * 140, st.total / 300);
+    for (let dm = step / 2; dm < st.total; dm += step) {
+      const k = at(dm); if (k < 1 || st.segOf[k] !== st.segOf[k - 1]) continue;
+      const a = P(k - 1), b = P(k); if (!bounds.contains([b[0], b[1]])) continue;
+      L.marker([b[0], b[1]], { interactive: false, icon: L.divIcon({ className: '', iconSize: [12, 11], iconAnchor: [6, 5], html: `<div class="arw" style="transform:rotate(${bearing(a, b).toFixed(0)}deg)"></div>` }) }).addTo(decor);
+    }
+  }
+}
+
+// ---------- Selection ----------
+function select(ids, opts) {
+  opts = opts || {}; const before = new Set(S.sel);
+  if (!opts.add) S.sel.clear();
+  for (const id of ids) { if (opts.toggle && S.sel.has(id)) S.sel.delete(id); else S.sel.add(id); }
+  if (opts.active !== undefined) { if (S.active !== opts.active) S.seg = 0; S.active = opts.active; }
+  if (!S.sel.has(S.active)) { S.active = [...S.sel][0] || null; S.seg = 0; }
+  for (const f of S.files) if (before.has(f.id) !== S.sel.has(f.id)) renderFile(f);
+  refreshUI();
+}
+
+// A file changed (or was removed): re-render, save, refresh the UI.
+// keepMod: don't mark the files as edited (used for show/hide and undo). 'vis' also skips the cloud sync nudge.
+function touched(ids, keepMod) {
+  for (const id of ids) {
+    const f = fileById(id), rt = rtOf(id); rt.stats = null;
+    if (f) { if (!keepMod) f.modified = Math.max(Date.now(), (f.modified || 0) + 1); renderFile(f); DB.put(f); }
+    else { if (rt.group) rt.group.remove(); S.rt.delete(id); DB.del(id); S.sel.delete(id); if (S.active === id) { S.active = null; S.seg = 0; } }
+  }
+  if (!activeFile()) { S.active = [...S.sel][0] || null; S.seg = 0; }
+  const f = activeFile(); if (f && S.seg >= f.segs.length) S.seg = Math.max(0, f.segs.length - 1);
+  refreshUI(); if (keepMod !== 'vis') Sync.poke();
+}
+function refreshUI() { renderList(); renderProfile(); renderDecor(); updateButtons(); Tools.refresh(); }
+function updateButtons() {
+  const n = S.sel.size;
+  $('btnUndo').disabled = !S.undo.length; $('btnRedo').disabled = !S.redo.length;
+  $('btnUndo').title = S.undo.length ? 'Undo: ' + S.undo[S.undo.length - 1].label + ' (Ctrl+Z)' : 'Nothing to undo';
+  $('btnExport').disabled = !n;
+  for (const id of ['bZoom', 'bVis', 'bDup', 'bDel']) $(id).disabled = !n;
+  $('selCount').textContent = n ? `${n} selected` : `${S.files.length} track${S.files.length === 1 ? '' : 's'}`;
+  $('selAll').checked = n > 0 && n === S.files.length; $('selAll').indeterminate = n > 0 && n < S.files.length;
+  $('btnBackup').disabled = !S.files.length;
+  $('btnTrash').lastChild.textContent = S.showTrash ? 'Back to library' : `Recently deleted (${S.trash.length})`;
+  $('btnTrash').classList.toggle('on', S.showTrash);
+}
+
+// ---------- Library list ----------
+function renderList() {
+  const list = $('list'), q = $('filter').value.trim().toLowerCase(); list.textContent = '';
+  if (S.showTrash) { renderTrash(list, q); return; }
+  if (!S.files.length) {
+    list.append(h('div', { class: 'empty' }, h('b', { text: 'No tracks yet' }),
+      h('span', { text: 'Import GPX files with the Import button (or drag them onto the map), or press New and use the Draw tool to plot a route.' }),
+      h('span', { text: 'Everything you add is saved here automatically.' })));
+    return;
+  }
+  const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q));
+  const folders = [...new Set(shown.map(f => f.folder || ''))].sort((a, b) => a.localeCompare(b));
+  for (const fo of folders) {
+    if (folders.length > 1 || fo) list.append(h('div', { class: 'folder', text: fo || 'Unfiled' }));
+    for (const f of shown.filter(x => (x.folder || '') === fo).sort((a, b) => a.name.localeCompare(b.name))) {
+      const st = stats(f);
+      const row = h('div', { class: 'frow' + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), title: 'Click to select. Double-click to zoom to it.' },
+        h('input', { type: 'checkbox', checked: S.sel.has(f.id), 'aria-label': 'Select ' + f.name, onclick: e => { e.stopPropagation(); select([f.id], { add: true, toggle: true }); } }),
+        h('span', { class: 'dot', style: 'background:' + f.color }),
+        h('div', {}, h('div', { class: 'nm', text: f.name }),
+          h('div', { class: 'sub', text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts` + (f.segs.length > 1 ? ` · ${f.segs.length} segments` : '') + (f.wpts.length ? ` · ${f.wpts.length} wpt` : '') })),
+        h('button', { class: 'eye', text: f.visible ? 'Hide' : 'Show', onclick: e => { e.stopPropagation(); f.visible = !f.visible; touched([f.id], 'vis'); } }));
+      row.addEventListener('click', e => { if (e.shiftKey || e.ctrlKey || e.metaKey) select([f.id], { add: true, toggle: true }); else select([f.id], { active: f.id }); });
+      row.addEventListener('dblclick', () => zoomTo([f]));
+      list.append(row);
+    }
+  }
+}
+
+function renderTrash(list, q) {
+  const items = S.trash.filter(t => !q || t.file.name.toLowerCase().includes(q)).sort((a, b) => b.deletedAt - a.deletedAt);
+  list.append(h('div', { class: 'trashhd' }, h('b', { text: 'Recently deleted' }),
+    h('span', { text: `Tracks stay here for ${TRASH_DAYS} days, then they are removed for good.` }),
+    S.trash.length ? h('div', { class: 'row' },
+      h('button', { text: 'Restore all', onclick: () => { Trash.restore(S.trash.map(t => t.id)); S.showTrash = false; refreshUI(); } }),
+      confirmBtn('Empty', () => { for (const t of S.trash.slice()) Trash.remove(t.id); refreshUI(); })) : null));
+  if (!items.length) { list.append(h('div', { class: 'empty' }, S.trash.length ? 'No deleted tracks match the filter.' : 'Nothing here. Tracks you delete will show up in this list.')); return; }
+  for (const t of items) {
+    const f = t.file, st = stats(f), days = Math.floor((Date.now() - t.deletedAt) / 864e5), left = Math.max(1, TRASH_DAYS - days);
+    S.rt.delete(f.id);   // stats cache only; the file is not on the map
+    list.append(h('div', { class: 'frow trow' },
+      h('span', { class: 'dot', style: 'background:' + f.color }),
+      h('div', {}, h('div', { class: 'nm', text: f.name }),
+        h('div', { class: 'sub', text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts · deleted ${days === 0 ? 'today' : days === 1 ? 'yesterday' : days + ' days ago'} · ${left} day${left > 1 ? 's' : ''} left` }),
+        h('div', { class: 'row' }, h('button', { text: 'Restore', onclick: () => { Trash.restore([t.id]); if (!S.trash.length) S.showTrash = false; refreshUI(); } }),
+          confirmBtn('Delete forever', () => { Trash.remove(t.id); refreshUI(); })))));
+  }
+}
+
+// ---------- Elevation profile ----------
+let profHover = -1;
+function renderProfile() {
+  const f = activeFile(), box = $('stats'); box.textContent = '';
+  const cv = $('chart'), msg = $('chartmsg');
+  const toggle = h('button', { text: S.set.profOpen ? 'Hide profile' : 'Show profile', onclick: () => { S.set.profOpen = !S.set.profOpen; saveSettings(); $('prof').classList.toggle('closed', !S.set.profOpen); renderProfile(); map.invalidateSize(); } });
+  $('prof').classList.toggle('closed', !S.set.profOpen);
+  if (!f) { box.append(h('span', { class: 'st', text: 'Select a track to see its distance, climb and elevation profile.' }), toggle); drawChart(null); msg.hidden = true; return; }
+  const st = stats(f), item = (k, v) => h('span', { class: 'st' }, h('span', { text: k }), h('b', { text: v }));
+  box.append(h('span', { class: 'ttl', text: f.name }), item('Distance', fmtDist(st.total)));
+  if (st.hasEle) box.append(item('Climb', Math.round(st.asc) + ' m'), item('Descent', Math.round(st.desc) + ' m'), item('High', Math.round(st.max) + ' m'), item('Low', Math.round(st.min) + ' m'));
+  if (st.t0 != null && st.t1 > st.t0) {
+    box.append(item('Time', fmtDur((st.t1 - st.t0) / 1000)));
+    if (st.moving > 0) box.append(item('Moving avg', (st.total / st.moving * 3.6).toFixed(1) + ' km/h'));
+  }
+  box.append(item('Points', st.n.toLocaleString()), toggle);
+  if (!S.set.profOpen) return;
+  if (!st.hasEle) {
+    msg.hidden = false; msg.textContent = '';
+    msg.append(st.n > 1 ? 'This track has no elevation data.' : 'Add points to see a profile.', st.n > 1 ? h('button', { text: 'Get elevation', onclick: () => Tools.open('ele') }) : '');
+    drawChart(null); return;
+  }
+  msg.hidden = true; drawChart(st);
+}
+function drawChart(st) {
+  const cv = $('chart'), r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  if (!r.width) return;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  const g = cv.getContext('2d'); g.scale(dpr, dpr); g.clearRect(0, 0, r.width, r.height);
+  cv._st = st; if (!st) return;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const L0 = 46, R0 = 8, T0 = 8, B0 = 18, W = r.width - L0 - R0, H = r.height - T0 - B0;
+  let lo = st.min, hi = st.max; if (hi - lo < 20) { const m = (hi + lo) / 2; lo = m - 10; hi = m + 10; } const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const X = d => L0 + d / (st.total || 1) * W, Y = e => T0 + (1 - (e - lo) / (hi - lo)) * H;
+  cv._geom = { L0, W, X, Y };
+  g.font = '11px ' + css('--body'); g.fillStyle = css('--muted'); g.strokeStyle = css('--line'); g.lineWidth = 1;
+  const eStep = niceStep((hi - lo) / 4 / 10) * 10; g.textAlign = 'right'; g.textBaseline = 'middle';
+  for (let e = Math.ceil(lo / eStep) * eStep; e < hi; e += eStep) { g.beginPath(); g.moveTo(L0, Y(e)); g.lineTo(L0 + W, Y(e)); g.stroke(); g.fillText(Math.round(e) + ' m', L0 - 5, Y(e)); }
+  const dStep = niceStep(st.total / 1000 / 8); g.textAlign = 'center'; g.textBaseline = 'top';
+  for (let km = 0; km * 1000 <= st.total; km += dStep) g.fillText(+km.toFixed(1) + (km === 0 ? ' km' : ''), X(km * 1000), T0 + H + 4);
+  // area: one sample per pixel column (max of the column keeps peaks)
+  const step = Math.max(1, Math.floor(st.n / (W * 2)));
+  g.beginPath(); let started = false, lastX = L0;
+  for (let k = 0; k < st.n; k += step) { const e = st.ele[k]; if (isNaN(e)) continue; const x = X(st.d[k]), y = Y(e); if (!started) { g.moveTo(x, T0 + H); g.lineTo(x, y); started = true; } else g.lineTo(x, y); lastX = x; }
+  if (started) {
+    g.lineTo(lastX, T0 + H); g.closePath();
+    const f = activeFile(); g.fillStyle = (f ? f.color : css('--accent')) + '55'; g.fill();
+    g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.lineJoin = 'round'; g.stroke();
+  }
+  if (profHover >= 0 && profHover < st.n) {
+    const x = X(st.d[profHover]), e = st.ele[profHover];
+    g.strokeStyle = css('--accent'); g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, T0); g.lineTo(x, T0 + H); g.stroke();
+    let slope = ''; const a = Math.max(0, profHover - 3), b = Math.min(st.n - 1, profHover + 3);
+    if (st.d[b] - st.d[a] > 5 && !isNaN(st.ele[a]) && !isNaN(st.ele[b])) slope = `  ${((st.ele[b] - st.ele[a]) / (st.d[b] - st.d[a]) * 100).toFixed(0)}%`;
+    const label = `${fmtDist(st.d[profHover])}  ${isNaN(e) ? '' : Math.round(e) + ' m'}${slope}`;
+    g.font = '600 12px ' + css('--body'); const tw = g.measureText(label).width + 10, tx = clamp(x - tw / 2, L0, L0 + W - tw);
+    g.fillStyle = css('--ink'); g.fillRect(tx, T0, tw, 18); g.fillStyle = css('--panel'); g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(label, tx + 5, T0 + 9);
+  }
+}
+function setHover(k, fromMap) {
+  const f = activeFile(); profHover = k;
+  if (!f || k < 0) { if (hoverDot) { hoverDot.remove(); hoverDot = null; } drawChart($('chart')._st); return; }
+  const st = stats(f), p = f.segs[st.segOf[k]].pts[st.idxOf[k]];
+  if (!hoverDot) hoverDot = L.circleMarker([p[0], p[1]], { radius: 7, color: '#fff', weight: 3, fillColor: '#1a1f1c', fillOpacity: 1, interactive: false }).addTo(map);
+  else hoverDot.setLatLng([p[0], p[1]]);
+  if ($('chart')._st) drawChart(st);
+}
+function hoverFromMap(f, si, ll) {
+  const st = stats(f), n = nearestIdx(f.segs[si].pts, ll.lat, ll.lng); if (n.i < 0) return;
+  let k = 0; for (let s = 0; s < si; s++) k += f.segs[s].pts.length; setHover(k + n.i, true);
+}
+function initChart() {
+  const cv = $('chart');
+  const pick = e => {
+    const st = cv._st, gm = cv._geom; if (!st || !gm) return -1;
+    const r = cv.getBoundingClientRect(), dm = clamp((e.clientX - r.left - gm.L0) / gm.W, 0, 1) * st.total;
+    let lo = 0, hi = st.n - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (st.d[m] < dm) lo = m + 1; else hi = m; } return lo;
+  };
+  cv.addEventListener('pointermove', e => { const k = pick(e); if (k >= 0) setHover(k); });
+  cv.addEventListener('pointerleave', () => setHover(-1));
+  cv.addEventListener('click', e => { const k = pick(e), f = activeFile(); if (k < 0 || !f) return; const st = stats(f), p = f.segs[st.segOf[k]].pts[st.idxOf[k]]; map.panTo([p[0], p[1]]); });
+  new ResizeObserver(() => { if (S.set.profOpen) drawChart(cv._st); }).observe($('chartwrap'));
+}
+
+// ---------- Messages ----------
+let toastTimer = 0;
+function toast(msg, action) {
+  const t = $('toast'); t.textContent = ''; t.append(msg);
+  if (action) t.append(h('button', { text: action.label, onclick: () => { t.hidden = true; action.fn(); } }));
+  t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, action ? 8000 : 4000);
+}
+function busy(msg) { const b = $('busy'); b.hidden = !msg; b.textContent = msg || ''; }
+
+// ---------- Right-click / long-press menu ----------
+function hideCtx() { $('ctx').hidden = true; }
+function showCtx(e) {
+  const c = $('ctx'), ll = e.latlng, coord = `${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}`; c.textContent = '';
+  const item = (label, fn) => c.append(h('button', { text: label, onclick: () => { hideCtx(); fn(); } }));
+  item('Add waypoint here', () => Tools.addWaypointAt(ll));
+  item('Start a new route here', () => { newRoute(); Tools.open('draw'); Tools.onMapClick({ latlng: ll }); });
+  item('Copy coordinates: ' + coord, () => { (navigator.clipboard ? navigator.clipboard.writeText(coord) : Promise.reject()).then(() => toast('Coordinates copied'), () => toast(coord)); });
+  c.append(h('a', { href: `https://www.google.com/maps?q=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}`, target: '_blank', rel: 'noopener', style: 'padding:6px 10px;color:inherit;text-decoration:none', text: 'Open in Google Maps', onclick: hideCtx }));
+  const p = e.containerPoint, w = $('mapwrap').getBoundingClientRect();
+  c.style.left = clamp(p.x, 4, w.width - 200) + 'px'; c.style.top = clamp(p.y, 4, w.height - 170) + 'px'; c.hidden = false;
+}
+
+// ---------- File actions ----------
+function newRoute() {
+  let f; op('New route', [], () => { f = mkFile('New route ' + (S.files.length + 1), [mkSeg('', [])]); S.files.push(f); });
+  select([f.id], { active: f.id }); return f;
+}
+async function importFiles(fileList) {
+  const added = [], errors = []; busy('Importing…');
+  for (const file of fileList) {
+    try {
+      if (/\.zip$/i.test(file.name)) { for (const e of await unzip(await file.arrayBuffer())) { try { added.push(parseGpx(e.text, e.name)); } catch (err) { errors.push(err.message); } } }
+      else added.push(parseGpx(await file.text(), file.name));
+    } catch (err) { errors.push(err.message || String(err)); }
+  }
+  busy('');
+  if (added.length) {
+    op(`Import ${added.length} file${added.length > 1 ? 's' : ''}`, [], () => { added.forEach((f, i) => { f.color = PALETTE[(S.files.length + i) % 8]; }); S.files.push(...added); });
+    select(added.map(f => f.id), { active: added[0].id }); zoomTo(added);
+  }
+  toast((added.length ? `Imported ${added.length} track file${added.length > 1 ? 's' : ''}. ` : '') + errors.join(' ') || 'Nothing to import.');
+}
+function exportFiles(files) {
+  if (!files.length) return;
+  if (files.length === 1) download(new Blob([toGpx(files[0])], { type: 'application/gpx+xml' }), safeName(files[0].name) + '.gpx');
+  else download(zipFiles(files.map(f => ({ name: (f.folder ? safeName(f.folder) + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-export-${new Date().toISOString().slice(0, 10)}.zip`);
+  toast(files.length === 1 ? 'Exported ' + files[0].name + '.gpx' : `Exported ${files.length} tracks as a zip.`);
+}
+function deleteFiles(files) {
+  if (!files.length) return; const ids = files.map(f => f.id), n = ids.length;
+  op(`Delete ${n} track${n > 1 ? 's' : ''}`, ids, () => { S.files = S.files.filter(f => !ids.includes(f.id)); });
+  toast(`Deleted ${n} track${n > 1 ? 's' : ''}. You can get ${n > 1 ? 'them' : 'it'} back from Recently deleted.`, { label: 'Undo', fn: undo });
+}
+function duplicateFiles(files) {
+  const made = []; op('Duplicate', [], () => { for (const f of files) { const c = cloneFile(f); c.id = uid(); c.name = f.name + ' copy'; S.files.push(c); made.push(c); } });
+  select(made.map(f => f.id), { active: made[0] && made[0].id });
+}
+async function search(q) {
+  q = q.trim(); if (!q) return;
+  const m = q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
+  if (m && Math.abs(+m[1]) <= 90 && Math.abs(+m[2]) <= 180) { map.setView([+m[1], +m[2]], Math.max(map.getZoom(), 14)); return; }
+  try {
+    busy('Searching…');
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q)); const j = await r.json();
+    if (!j.length) { toast(`No place found for "${q}".`); return; }
+    const b = j[0].boundingbox; map.fitBounds([[+b[0], +b[2]], [+b[1], +b[3]]], { maxZoom: 15 });
+  } catch { toast('Search needs an internet connection. Try again, or enter coordinates as lat, lon.'); } finally { busy(''); }
+}
+
+// ---------- Maps panel ----------
+function renderLayersPanel() {
+  const p = $('layers'); p.textContent = '';
+  p.append(h('h2', {}, 'Maps', h('button', { text: 'Close', onclick: () => { p.hidden = true; } })), h('h3', { text: 'Base map' }));
+  for (const b of allBases()) {
+    p.append(h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'base', checked: S.set.base === b.id, onchange: () => setBase(b.id) }), h('span', { style: 'flex:1', text: b.name }),
+      b.custom ? h('button', { text: 'Remove', style: 'padding:0 6px;font-size:.75rem', onclick: () => { S.set.custom = S.set.custom.filter(c => c.id !== b.id); if (S.set.base === b.id) setBase('sat'); saveSettings(); renderLayersPanel(); } }) : null));
+  }
+  p.append(h('h3', { text: 'Overlays' }));
+  for (const o of OVERLAYS) p.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: !!S.set.overlays[o.id], onchange: e => setOverlay(o.id, e.target.checked) }), o.name));
+  p.append(h('label', { class: 'fld' }, h('span', { text: 'Contour strength' }), h('input', { type: 'range', min: 0.2, max: 1, step: 0.05, value: S.set.contourOpacity, oninput: e => { S.set.contourOpacity = +e.target.value; saveSettings(); if (overlayLayers.contours) overlayLayers.contours.eachLayer(l => l.setOpacity(S.set.contourOpacity)); } })));
+  p.append(h('h3', { text: 'On the active track' }),
+    h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.arrows, onchange: e => { S.set.arrows = e.target.checked; saveSettings(); renderDecor(); } }), 'Direction arrows'),
+    h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.kmMarks, onchange: e => { S.set.kmMarks = e.target.checked; saveSettings(); renderDecor(); } }), 'Distance marks (km)'),
+    h('label', { class: 'fld' }, h('span', { text: 'Fuel range marks every (km, 0 = off)' }), h('input', { type: 'number', min: 0, step: 10, value: S.set.range, oninput: e => { S.set.range = Math.max(0, +e.target.value || 0); saveSettings(); renderDecor(); } })));
+  const nm = h('input', { type: 'text', placeholder: 'Name' }), url = h('input', { type: 'text', placeholder: 'https://…/{z}/{x}/{y}.png' });
+  p.append(h('h3', { text: 'Add your own map layer' }), nm, url,
+    h('button', { text: 'Add layer', onclick: () => { const u = url.value.trim(); if (!/^https:\/\/.*\{z\}.*\{x\}.*\{y\}/.test(u)) { toast('The address must start with https:// and contain {z}, {x} and {y}.'); return; } const c = { id: 'c' + uid().slice(0, 8), name: nm.value.trim() || 'Custom map', url: u }; S.set.custom.push(c); setBase(c.id); renderLayersPanel(); } }));
+}
+
+// ============================================================================
+// Editing tools
+// ============================================================================
+const PROFILES = [
+  { id: 'trekking', name: 'Gravel roads and tracks' },
+  { id: 'car-fast', name: 'Tar roads (fastest)' },
+  { id: 'moped', name: 'Back roads (avoid highways)' },
+  { id: 'hiking-mountain', name: 'Trails and footpaths', fallback: 'trekking' },
+  { id: 'shortest', name: 'Shortest, any road or path' }
+];
+const SYMBOLS = ['Flag, Blue', 'Flag, Red', 'Gas Station', 'Restaurant', 'Lodging', 'Campground', 'Drinking Water', 'Danger Area', 'Scenic Area', 'Summit', 'Bridge', 'Crossing', 'Parking Area', 'Car Repair', 'Medical Facility', 'Information'];
+
+// ---------- Shared geometry edits ----------
+function flatCount(f) { let n = 0; for (const s of f.segs) n += s.pts.length; return n; }
+function trimFile(f, i0, i1) {
+  let k = 0; const segs = [];
+  for (const s of f.segs) { const a = Math.max(i0 - k, 0), b = Math.min(i1 - k, s.pts.length - 1); if (b >= a) segs.push(mkSeg(s.name, s.pts.slice(a, b + 1))); k += s.pts.length; }
+  f.segs = segs;
+}
+function orderSegs(segs) {
+  if (segs.length < 2) return segs;
+  const left = segs.slice().sort((a, b) => Math.min(a.pts[0][1], a.pts[a.pts.length - 1][1]) - Math.min(b.pts[0][1], b.pts[b.pts.length - 1][1]));
+  let cur = left.shift(); if (cur.pts[cur.pts.length - 1][1] < cur.pts[0][1]) cur = mkSeg(cur.name, reversedPts(cur.pts));
+  const out = [cur];
+  while (left.length) {
+    const end = out[out.length - 1].pts; const e = end[end.length - 1]; let bi = 0, bd = Infinity, rev = false;
+    left.forEach((s, i) => { const ds = dist(e, s.pts[0]), de = dist(e, s.pts[s.pts.length - 1]); if (ds < bd) { bd = ds; bi = i; rev = false; } if (de < bd) { bd = de; bi = i; rev = true; } });
+    const s = left.splice(bi, 1)[0]; out.push(rev ? mkSeg(s.name, reversedPts(s.pts)) : s);
+  }
+  return out;
+}
+function concatPts(list) {
+  const out = [];
+  for (const pts of list) for (let i = 0; i < pts.length; i++) { const p = pts[i], q = out[out.length - 1]; if (i === 0 && q && q[0] === p[0] && q[1] === p[1]) continue; out.push(p); }
+  return out;
+}
+function splitByKeep(seg, keepFn, breakGap) {   // returns new segs after removing points where keepFn is false
+  const out = []; let cur = [];
+  for (const p of seg.pts) { if (keepFn(p)) cur.push(p); else if (breakGap && cur.length) { out.push(cur); cur = []; } }
+  if (cur.length) out.push(cur);
+  return out.filter(c => c.length > 1 || !breakGap).map(c => mkSeg(seg.name, c));
+}
+
+// ---------- Routing ----------
+async function route(a, b) {
+  const straight = [[b[0], b[1], null, null]];
+  if (!S.set.routing) return straight;
+  const prof = PROFILES.find(p => p.id === S.set.profile) || PROFILES[0];
+  for (const id of [prof.id, prof.fallback].filter(Boolean)) {
+    try {
+      busy('Finding the route…');
+      const r = await fetch(`https://brouter.de/brouter?lonlats=${a[1]},${a[0]}|${b[1]},${b[0]}&profile=${id}&alternativeidx=0&format=geojson`);
+      if (!r.ok) continue;
+      const c = (await r.json()).features[0].geometry.coordinates, out = c.slice(1).map(q => [q[1], q[0], q.length > 2 ? q[2] : null, null]);
+      if (out.length) return out;
+    } catch { /* fall through to the straight line */ } finally { busy(''); }
+  }
+  toast('No road or track found between those points, so this part is a straight line.');
+  return straight;
+}
+let editQ = Promise.resolve();
+const enqueue = fn => { editQ = editQ.then(fn).catch(e => { console.error(e); busy(''); toast("That edit didn't work. Nothing was changed."); }); return editQ; };
+
+// ---------- Anchors (the draggable points of the Draw tool) ----------
+function autoAnchors(pts) {
+  if (pts.length <= 2) return pts.map((_, i) => i);
+  let tol = 30, idx; do { idx = rdp(pts, tol); tol *= 1.8; } while (idx.length > 160); return idx;
+}
+function ensureAnchors(seg) {
+  const a = seg.anc, n = seg.pts.length; let ok = Array.isArray(a) && a.length >= Math.min(n, 1) && (n === 0 || (a[0] === 0 && a[a.length - 1] === n - 1));
+  if (ok) for (let i = 1; i < a.length; i++) if (a[i] <= a[i - 1]) { ok = false; break; }
+  if (!ok) seg.anc = autoAnchors(seg.pts);
+  return seg.anc;
+}
+function renderAnchors() {
+  anchorsLayer.clearLayers(); if (S.tool !== 'draw') return;
+  const f = activeFile(); if (!f || !f.visible) return; const seg = f.segs[S.seg]; if (!seg || !seg.pts.length) return;
+  const anc = ensureAnchors(seg), b = map.getBounds().pad(0.15); let shown = 0;
+  anc.forEach((pi, k) => {
+    const p = seg.pts[pi]; if (!p || shown > 300 || !b.contains([p[0], p[1]])) return; shown++;
+    const cls = k === 0 ? ' start' : k === anc.length - 1 ? ' end' : '';
+    const m = L.marker([p[0], p[1]], { draggable: true, zIndexOffset: 1000, bubblingMouseEvents: false, icon: L.divIcon({ className: '', iconSize: [16, 16], iconAnchor: [8, 8], html: `<div class="anc${cls}"></div>` }) });
+    m.on('dragend', () => { const ll = m.getLatLng(); enqueue(() => moveAnchor(f.id, S.seg, k, ll)); });
+    m.on('click', () => anchorMenu(f, k, m));
+    m.addTo(anchorsLayer);
+  });
+}
+function drawTarget() { const f = activeFile(); if (!f) return null; if (!f.segs.length) f.segs.push(mkSeg('', [])); if (S.seg >= f.segs.length) S.seg = f.segs.length - 1; return { f, seg: f.segs[S.seg] }; }
+async function appendPoint(ll) {
+  const t = drawTarget(); if (!t) return; const { f } = t, si = S.seg, P = [ll.lat, ll.lng, null, null];
+  const n0 = f.segs[si].pts.length, add = n0 ? await route(f.segs[si].pts[n0 - 1], P) : [P];
+  const g = fileById(f.id); if (!g || !g.segs[si] || g.segs[si].pts.length !== n0) return;
+  op('Add point', [f.id], () => { const s = g.segs[si]; ensureAnchors(s); s.pts = s.pts.concat(add); s.anc.push(s.pts.length - 1); if (n0 === 0) s.anc = [0]; });
+}
+async function moveAnchor(fid, si, k, ll) {
+  const f = fileById(fid), seg = f && f.segs[si]; if (!seg) return; const a = ensureAnchors(seg).slice(), n0 = seg.pts.length;
+  const prev = k > 0 ? a[k - 1] : null, next = k < a.length - 1 ? a[k + 1] : null, P = [ll.lat, ll.lng, null, null];
+  const left = prev !== null ? await route(seg.pts[prev], P) : [P];
+  const at = left[left.length - 1], right = next !== null ? await route(at, seg.pts[next]) : [];
+  const g = fileById(fid); if (!g || !g.segs[si] || g.segs[si].pts.length !== n0) return;
+  op('Move point', [fid], () => {
+    const s = g.segs[si], startCut = prev !== null ? prev + 1 : 0, endCut = next !== null ? next : n0 - 1, mid = left.concat(right);
+    s.pts = s.pts.slice(0, startCut).concat(mid, s.pts.slice(endCut + 1));
+    const delta = mid.length - (endCut - startCut + 1), newK = startCut + left.length - 1;
+    s.anc = a.slice(0, k).concat([newK], a.slice(k + 1).map(x => x + delta));
+  });
+}
+async function deleteAnchor(fid, si, k) {
+  const f = fileById(fid), seg = f && f.segs[si]; if (!seg) return; const a = ensureAnchors(seg).slice(), n0 = seg.pts.length;
+  if (a.length <= 1) { op('Delete point', [fid], () => { seg.pts = []; seg.anc = []; }); return; }
+  let mid = null; if (k > 0 && k < a.length - 1) mid = await route(seg.pts[a[k - 1]], seg.pts[a[k + 1]]);
+  const g = fileById(fid); if (!g || !g.segs[si] || g.segs[si].pts.length !== n0) return;
+  op('Delete point', [fid], () => {
+    const s = g.segs[si];
+    if (k === 0) { const cut = a[1]; s.pts = s.pts.slice(cut); s.anc = a.slice(1).map(x => x - cut); }
+    else if (k === a.length - 1) { s.pts = s.pts.slice(0, a[k - 1] + 1); s.anc = a.slice(0, k); }
+    else { const sc = a[k - 1] + 1, ec = a[k + 1]; s.pts = s.pts.slice(0, sc).concat(mid, s.pts.slice(ec + 1)); const delta = mid.length - (ec - sc + 1); s.anc = a.slice(0, k).concat(a.slice(k + 1).map(x => x + delta)); }
+  });
+}
+function anchorMenu(f, k, marker) {
+  const seg = f.segs[S.seg], pi = seg.anc[k], si = S.seg, box = h('div', { style: 'display:grid;gap:4px;min-width:170px' });
+  const item = (label, fn) => box.append(h('button', { text: label, onclick: () => { map.closePopup(); fn(); } }));
+  item('Delete this point', () => enqueue(() => deleteAnchor(f.id, si, k)));
+  if (pi > 0 && pi < seg.pts.length - 1) {
+    item('Split the track here', () => splitAt(f, si, pi, S.set.splitMode));
+    item('Delete everything before', () => op('Trim start', [f.id], () => { seg.pts = seg.pts.slice(pi); delete seg.anc; }));
+    item('Delete everything after', () => op('Trim end', [f.id], () => { seg.pts = seg.pts.slice(0, pi + 1); delete seg.anc; }));
+  }
+  L.popup({ offset: [0, -6], closeButton: false }).setLatLng(marker.getLatLng()).setContent(box).openOn(map);
+}
+function splitAt(f, si, i, mode) {
+  const s = f.segs[si]; if (!s || i <= 0 || i >= s.pts.length - 1) { toast('Pick a spot between the two ends of the track.'); return; }
+  op('Split', [f.id], () => {
+    const a = mkSeg(s.name, s.pts.slice(0, i + 1)), b = mkSeg(s.name, s.pts.slice(i));
+    if (mode === 'files') {
+      const nf = mkFile(f.name + ' (part 2)', [b].concat(f.segs.slice(si + 1))); nf.color = PALETTE[(PALETTE.indexOf(f.color) + 1) % 8]; nf.folder = f.folder; nf.width = f.width;
+      f.segs = f.segs.slice(0, si).concat([a]); S.files.push(nf);
+    } else f.segs.splice(si, 1, a, b);
+  });
+  toast(mode === 'files' ? 'Split into two tracks.' : 'Split into two segments.');
+}
+
+// ---------- Elevation from terrain data ----------
+async function fetchElevation(files) {
+  let done = 0, total = 0; const plans = [];
+  for (const f of files) for (const s of f.segs) {
+    const idx = []; let acc = Infinity;
+    for (let i = 0; i < s.pts.length; i++) { if (i > 0) acc += dist(s.pts[i - 1], s.pts[i]); if (acc >= 25 || i === s.pts.length - 1) { idx.push(i); acc = 0; } }
+    plans.push({ f, s, idx, ele: [] }); total += idx.length;
+  }
+  if (!total) return;
+  try {
+    for (const pl of plans) for (let i = 0; i < pl.idx.length; i += 100) {
+      const part = pl.idx.slice(i, i + 100).map(k => pl.s.pts[k]);
+      busy(`Getting elevation… ${Math.round(done / total * 100)}%`);
+      const r = await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${part.map(p => p[0].toFixed(5)).join(',')}&longitude=${part.map(p => p[1].toFixed(5)).join(',')}`);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const e = (await r.json()).elevation; if (!Array.isArray(e) || e.length !== part.length) throw new Error('bad reply');
+      pl.ele.push(...e); done += part.length; await new Promise(res => setTimeout(res, 120));
+    }
+  } catch (err) { busy(''); toast("Couldn't get elevation data (" + err.message + '). Check your connection and try again. Nothing was changed.'); return; }
+  busy('');
+  op('Get elevation', files.map(f => f.id), () => {
+    for (const pl of plans) {
+      const pts = pl.s.pts;
+      for (let j = 0; j < pl.idx.length; j++) {
+        const a = pl.idx[j], b = pl.idx[j + 1]; pts[a][2] = pl.ele[j]; if (b == null) break;
+        let span = 0; for (let i = a + 1; i <= b; i++) span += dist(pts[i - 1], pts[i]);
+        let run = 0; for (let i = a + 1; i < b; i++) { run += dist(pts[i - 1], pts[i]); pts[i][2] = pl.ele[j] + (pl.ele[j + 1] - pl.ele[j]) * (span ? run / span : 0); }
+      }
+    }
+  });
+  toast('Elevation added from terrain data (about 90 m grid).');
+}
+
+// ---------- Tool registry ----------
+const Tools = {
+  state: {},
+  list: [
+    { id: 'draw', label: 'Draw', title: 'Draw a route or reshape a track by dragging its points' },
+    { id: 'trim', label: 'Trim', title: 'Cut off the start or end' },
+    { id: 'split', label: 'Split', title: 'Split a track where you click' },
+    { id: 'join', label: 'Join', title: 'Merge tracks or segments into one' },
+    { id: 'reverse', label: 'Reverse', title: 'Reverse the direction', instant: true },
+    { id: 'extract', label: 'Extract', title: 'Turn each segment into its own track', instant: true },
+    { sep: true },
+    { id: 'wpt', label: 'Waypoints', title: 'Add and edit waypoints' },
+    { id: 'reduce', label: 'Reduce', title: 'Reduce the number of points' },
+    { id: 'clean', label: 'Clean', title: 'Delete points in an area, GPS spikes and duplicates' },
+    { id: 'time', label: 'Time', title: 'Set or remove timestamps' },
+    { id: 'ele', label: 'Elevation', title: 'Add, smooth or remove elevation' },
+    { id: 'stages', label: 'Stages', title: 'Split a long route into days or stages' },
+    { sep: true },
+    { id: 'style', label: 'Details', title: 'Name, folder, colour and line width' }
+  ],
+  init() {
+    const rail = $('rail');
+    for (const t of this.list) rail.append(t.sep ? h('div', { class: 'sep' }) : h('button', { id: 'tool-' + t.id, title: t.title, onclick: () => (t.instant ? this.instant(t.id) : this.open(t.id)) }, icon(t.id), h('span', { text: t.label })));
+  },
+  open(id) {
+    const was = S.tool; if (was === id) return this.close();
+    this.cleanup(); S.tool = id; this.state = {}; $('layers').hidden = true;
+    if (id === 'wpt' || was === 'wpt') selFiles().forEach(renderFile);
+    this.refresh();
+  },
+  close() { const was = S.tool; this.cleanup(); S.tool = null; this.state = {}; if (was === 'wpt') selFiles().forEach(renderFile); this.refresh(); },
+  cleanup() { previewLayer.clearLayers(); anchorsLayer.clearLayers(); map.closePopup(); if (this.state.boxOff) this.state.boxOff(); },
+  refresh() {
+    for (const t of this.list) if (t.id) { const b = $('tool-' + t.id); b.classList.toggle('on', S.tool === t.id); if (t.instant) b.disabled = !S.sel.size; }
+    const p = $('panel'); p.hidden = !S.tool; if (!S.tool) { anchorsLayer.clearLayers(); return; }
+    p.textContent = ''; const def = this.list.find(t => t.id === S.tool);
+    p.append(h('h2', {}, h('span', { class: 'ttl' }, icon(def.id), def.label), h('button', { text: 'Done', onclick: () => this.close() })));
+    this.panels[S.tool].call(this, p); if (S.tool === 'draw') renderAnchors();
+  },
+  onMove() { if (S.tool === 'draw') renderAnchors(); },
+  onMapClick(e) {
+    if (S.tool === 'draw') { if (!activeFile()) newRoute(); enqueue(() => appendPoint(e.latlng)); }
+    else if (S.tool === 'wpt') this.addWaypointAt(e.latlng);
+  },
+  onLineClick(f, si, e) {
+    if (S.tool === 'split') { splitAt(f, si, nearestIdx(f.segs[si].pts, e.latlng.lat, e.latlng.lng).i, S.set.splitMode); return; }
+    if (S.tool === 'wpt') { this.addWaypointAt(e.latlng); return; }
+    if (S.tool === 'draw' && f.id === S.active) {
+      if (si !== S.seg) { S.seg = si; this.refresh(); return; }
+      const seg = f.segs[si], a = ensureAnchors(seg), i = nearestIdx(seg.pts, e.latlng.lat, e.latlng.lng).i;
+      if (!a.includes(i)) { a.push(i); a.sort((x, y) => x - y); DB.put(f); renderAnchors(); }
+      return;
+    }
+    const multi = e.originalEvent && (e.originalEvent.shiftKey || e.originalEvent.ctrlKey || e.originalEvent.metaKey);
+    if (multi) select([f.id], { add: true, toggle: true }); else { select([f.id], { active: f.id }); S.seg = si; if (S.tool === 'draw') this.refresh(); }
+  },
+  onWptClick(f, wi) { if (!S.sel.has(f.id)) select([f.id], { active: f.id }); if (S.tool !== 'wpt') this.open('wpt'); this.state.edit = { fid: f.id, wi }; this.refresh(); },
+  addWaypointAt(ll) {
+    let f = activeFile(); if (!f) { op('New waypoint file', [], () => { f = mkFile('Waypoints', []); S.files.push(f); }); select([f.id], { active: f.id }); }
+    if (S.tool !== 'wpt') { this.cleanup(); S.tool = 'wpt'; this.state = {}; selFiles().forEach(renderFile); }
+    this.state.edit = { fid: f.id, wi: -1, lat: ll.lat, lon: ll.lng }; this.refresh();
+  },
+  instant(id) {
+    const files = selFiles(); if (!files.length) return;
+    if (id === 'reverse') { op('Reverse', files.map(f => f.id), () => { for (const f of files) f.segs = f.segs.slice().reverse().map(s => mkSeg(s.name, reversedPts(s.pts))); }); toast('Direction reversed.'); }
+    if (id === 'extract') {
+      const multi = files.filter(f => f.segs.length > 1); if (!multi.length) { toast('Extract needs a track with more than one segment.'); return; }
+      const made = []; op('Extract segments', multi.map(f => f.id), () => {
+        for (const f of multi) { f.segs.forEach((s, i) => { const nf = mkFile(`${s.name || f.name} (${i + 1})`, [mkSeg(s.name, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(S.files.length) % 8]; S.files.push(nf); made.push(nf); }); }
+        S.files = S.files.filter(f => !multi.includes(f));
+      });
+      select(made.map(f => f.id), { active: made[0].id }); toast(`Made ${made.length} separate tracks.`);
+    }
+  },
+  panels: {}
+};
+const needActive = (p, text) => { if (activeFile()) return false; p.append(h('p', { text: text || 'Select a track in the library or on the map first.' })); return true; };
+const fld = (label, input) => h('label', { class: 'fld' }, h('span', { text: label }), input);
+const chk = (label, checked, onchange) => h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked, onchange: e => onchange(e.target.checked) }), label);
+const radio = (name, label, checked, onchange) => h('label', { class: 'chk' }, h('input', { type: 'radio', name, checked, onchange }), label);
+
+Tools.panels.draw = function (p) {
+  const f = activeFile();
+  p.append(chk('Follow roads and tracks', S.set.routing, v => { S.set.routing = v; saveSettings(); this.refresh(); }));
+  if (S.set.routing) p.append(fld('Route along', h('select', { onchange: e => { S.set.profile = e.target.value; saveSettings(); } }, PROFILES.map(o => h('option', { value: o.id, selected: S.set.profile === o.id, text: o.name })))));
+  if (!f) { p.append(h('p', { text: 'Click the map to start a new route, or select a track to reshape it.' })); return; }
+  const seg = f.segs[S.seg], n = seg ? seg.pts.length : 0;
+  p.append(h('p', { text: n ? 'Click the map to extend the route. Drag a white dot to reshape it. Click the line to add a dot, or a dot for more options.' : 'Click the map to place the first point.' }));
+  if (f.segs.length > 1) p.append(h('p', { text: `Editing segment ${S.seg + 1} of ${f.segs.length}. Click another segment to edit it.` }));
+  const last = () => { const s = f.segs[S.seg]; return s && s.pts.length ? ensureAnchors(s).length - 1 : -1; };
+  p.append(h('div', { class: 'row' },
+    h('button', { text: 'Remove last point', disabled: !n, onclick: () => enqueue(() => deleteAnchor(f.id, S.seg, last())) }),
+    h('button', { text: 'Back to start', disabled: n < 2, title: 'Route from the end back to the start', onclick: () => { const s = f.segs[S.seg]; enqueue(() => appendPoint({ lat: s.pts[0][0], lng: s.pts[0][1] })); } })),
+    h('div', { class: 'row' },
+      h('button', { text: 'Out and back', disabled: n < 2, title: 'Return along the same line', onclick: () => op('Out and back', [f.id], () => { const s = f.segs[S.seg]; ensureAnchors(s); s.pts = s.pts.concat(s.pts.slice(0, -1).reverse().map(q => [q[0], q[1], q[2], null])); s.anc.push(s.pts.length - 1); }) }),
+      h('button', { text: 'New segment', disabled: !n, title: 'Start a separate line in the same track', onclick: () => { op('New segment', [f.id], () => { f.segs.push(mkSeg('', [])); }); S.seg = f.segs.length - 1; this.refresh(); } })));
+};
+
+Tools.panels.trim = function (p) {
+  if (needActive(p)) return; const f = activeFile(), st = stats(f), n = st.n, s = this.state;
+  if (n < 3) { p.append(h('p', { text: 'This track is too short to trim.' })); return; }
+  if (s.fid !== f.id) { s.fid = f.id; s.a = 0; s.b = n - 1; }
+  const info = h('div', { class: 'big' });
+  const show = () => {
+    previewLayer.clearLayers();
+    const keep = []; let k = 0; for (const sg of f.segs) { const a = Math.max(s.a - k, 0), b = Math.min(s.b - k, sg.pts.length - 1); if (b >= a) keep.push(sg.pts.slice(a, b + 1).map(q => [q[0], q[1]])); k += sg.pts.length; }
+    L.polyline(keep, { color: '#ffffff', weight: f.width + 8, opacity: 0.9, interactive: false }).addTo(previewLayer);
+    L.polyline(keep, { color: '#00c853', weight: f.width + 2, interactive: false }).addTo(previewLayer);
+    info.textContent = `Keeps ${fmtDist(st.d[s.b] - st.d[s.a])} of ${fmtDist(st.total)}`;
+  };
+  const ra = h('input', { type: 'range', min: 0, max: n - 1, value: s.a, oninput: e => { s.a = Math.min(+e.target.value, s.b - 1); e.target.value = s.a; show(); } });
+  const rb = h('input', { type: 'range', min: 0, max: n - 1, value: s.b, oninput: e => { s.b = Math.max(+e.target.value, s.a + 1); e.target.value = s.b; show(); } });
+  p.append(h('p', { text: 'Move the sliders. The green part is what you keep.' }), fld('Start', ra), fld('End', rb), info,
+    h('button', { class: 'pri', text: 'Trim', onclick: () => { const a = s.a, b = s.b; this.state = {}; op('Trim', [f.id], () => trimFile(f, a, b)); } }));
+  show();
+};
+
+Tools.panels.split = function (p) {
+  p.append(h('p', { text: 'Click a track on the map at the spot where you want to split it.' }),
+    radio('sm', 'Into two segments of the same track', S.set.splitMode === 'segments', () => { S.set.splitMode = 'segments'; saveSettings(); }),
+    radio('sm', 'Into two separate tracks', S.set.splitMode === 'files', () => { S.set.splitMode = 'files'; saveSettings(); }));
+};
+
+Tools.panels.join = function (p) {
+  const files = selFiles(), segCount = files.reduce((n, f) => n + f.segs.filter(s => s.pts.length).length, 0), s = this.state;
+  if (segCount < 2) { p.append(h('p', { text: 'Tick two or more tracks in the library (or pick one track with several segments), then join them here.' })); return; }
+  if (s.mode == null) { s.mode = 'line'; s.auto = false; }
+  p.append(h('p', { text: `${files.length} track${files.length > 1 ? 's' : ''} selected, ${segCount} segments. The result keeps the name of "${files[0].name}".` }),
+    radio('jm', 'One continuous line', s.mode === 'line', () => { s.mode = 'line'; }),
+    radio('jm', 'One track, separate segments', s.mode === 'segs', () => { s.mode = 'segs'; }),
+    chk('Re-order to keep the joins short', s.auto, v => { s.auto = v; }),
+    h('p', { text: 'Without re-ordering, tracks join in library order. Gaps between tracks become straight lines when joined into one line.' }),
+    h('button', { class: 'pri', text: 'Join', onclick: () => {
+      const mode = s.mode, auto = s.auto, target = files[0];
+      op('Join', files.map(f => f.id), () => {
+        let segs = []; for (const f of files) for (const sg of f.segs) if (sg.pts.length) segs.push(mkSeg(sg.name || f.name, sg.pts));
+        if (auto) segs = orderSegs(segs);
+        target.segs = mode === 'line' ? [mkSeg(target.name, concatPts(segs.map(x => x.pts)))] : segs;
+        target.wpts = [].concat(...files.map(f => f.wpts));
+        S.files = S.files.filter(f => f === target || !files.includes(f));
+      });
+      select([target.id], { active: target.id }); toast('Joined.');
+    } }));
+};
+
+Tools.panels.wpt = function (p) {
+  const s = this.state, e = s.edit, f = e ? fileById(e.fid) : activeFile();
+  if (e && f) {
+    const w = e.wi >= 0 ? f.wpts[e.wi] : { lat: e.lat, lon: e.lon, name: '', desc: '', sym: 'Flag, Blue' };
+    if (!w) { s.edit = null; return this.refresh(); }
+    const nm = h('input', { type: 'text', value: w.name, placeholder: 'e.g. Fuel stop' }), ds = h('textarea', { rows: 2, value: w.desc || '' });
+    const sy = h('select', {}, SYMBOLS.concat(SYMBOLS.includes(w.sym) ? [] : [w.sym]).map(x => h('option', { value: x, selected: x === w.sym, text: x })));
+    p.append(h('p', { text: `${w.lat.toFixed(5)}, ${w.lon.toFixed(5)}` }), fld('Name', nm), fld('Notes', ds), fld('Garmin symbol', sy),
+      h('div', { class: 'row' },
+        h('button', { class: 'pri', text: e.wi >= 0 ? 'Save' : 'Add waypoint', onclick: () => { const nw = { lat: w.lat, lon: w.lon, ele: w.ele == null ? null : w.ele, name: nm.value.trim() || 'Waypoint', desc: ds.value.trim(), sym: sy.value }; s.edit = null; op(e.wi >= 0 ? 'Edit waypoint' : 'Add waypoint', [f.id], () => { if (e.wi >= 0) f.wpts[e.wi] = nw; else f.wpts.push(nw); }); } }),
+        e.wi >= 0 ? h('button', { class: 'danger', text: 'Delete', onclick: () => { s.edit = null; op('Delete waypoint', [f.id], () => { f.wpts.splice(e.wi, 1); }); } }) : null,
+        h('button', { text: 'Cancel', onclick: () => { s.edit = null; this.refresh(); } })));
+    setTimeout(() => nm.focus(), 0); return;
+  }
+  p.append(h('p', { text: 'Click the map to add a waypoint. Click a waypoint to edit it, or drag it to move it.' }));
+  if (f && f.wpts.length) { p.append(h('h3', { text: 'In ' + f.name })); f.wpts.forEach((w, wi) => p.append(h('button', { style: 'justify-content:flex-start;font-weight:400', text: w.name || 'Waypoint', onclick: () => { s.edit = { fid: f.id, wi }; map.panTo([w.lat, w.lon]); this.refresh(); } }))); }
+};
+
+Tools.panels.reduce = function (p) {
+  const files = selFiles(), s = this.state; if (!files.length) { needActive(p); return; }
+  if (s.tol == null) s.tol = 5;
+  const info = h('div', { class: 'big' }), lab = h('span', {});
+  const show = () => {
+    let a = 0, b = 0; previewLayer.clearLayers();
+    for (const f of files) for (const sg of f.segs) { const idx = rdp(sg.pts, s.tol); a += sg.pts.length; b += idx.length; L.polyline(idx.map(i => [sg.pts[i][0], sg.pts[i][1]]), { color: '#00c853', weight: 2, dashArray: '6 5', interactive: false }).addTo(previewLayer); }
+    info.textContent = `${a.toLocaleString()} → ${b.toLocaleString()} points`; lab.textContent = `Keep the shape within ${s.tol < 10 ? s.tol.toFixed(1) : Math.round(s.tol)} m`;
+  };
+  let timer = 0;
+  p.append(h('p', { text: 'Removes points that add little to the shape. The dashed green line shows the result.' }),
+    h('label', { class: 'fld' }, lab, h('input', { type: 'range', min: 0, max: 100, value: Math.round(Math.log(s.tol / 0.5) / Math.log(400) * 100), oninput: e => { s.tol = 0.5 * 400 ** (+e.target.value / 100); clearTimeout(timer); timer = setTimeout(show, 120); } })), info,
+    h('button', { class: 'pri', text: 'Reduce points', onclick: () => { const tol = s.tol; op('Reduce points', files.map(f => f.id), () => { for (const f of files) f.segs = f.segs.map(sg => mkSeg(sg.name, rdp(sg.pts, tol).map(i => sg.pts[i]))); }); toast('Points reduced.'); } }));
+  show();
+};
+
+Tools.panels.clean = function (p) {
+  const s = this.state, files = selFiles();
+  if (s.mode == null) { s.mode = 'inside'; s.gap = true; s.wpts = false; s.scope = 'sel'; s.spike = 100; }
+  const startBox = () => {
+    const c = map.getContainer(), wrap = $('mapwrap'); let box = null, p0 = null;
+    map.dragging.disable(); c.style.cursor = 'crosshair'; toast('Drag a box over the area on the map.');
+    const pos = e => { const r = c.getBoundingClientRect(); return L.point(e.clientX - r.left, e.clientY - r.top); };
+    const down = e => { p0 = pos(e); box = h('div', { class: 'selbox' }); wrap.append(box); e.preventDefault(); e.stopPropagation(); };
+    const move = e => { if (!p0) return; const q = pos(e); box.style.left = Math.min(p0.x, q.x) + 'px'; box.style.top = Math.min(p0.y, q.y) + 'px'; box.style.width = Math.abs(q.x - p0.x) + 'px'; box.style.height = Math.abs(q.y - p0.y) + 'px'; };
+    const up = e => { if (!p0) return; const q = pos(e); off(); if (Math.abs(q.x - p0.x) > 6 && Math.abs(q.y - p0.y) > 6) { s.rect = L.latLngBounds(map.containerPointToLatLng(p0), map.containerPointToLatLng(q)); } this.refresh(); };
+    const off = () => { c.removeEventListener('pointerdown', down, true); window.removeEventListener('pointermove', move, true); window.removeEventListener('pointerup', up, true); if (box) box.remove(); map.dragging.enable(); c.style.cursor = ''; s.boxOff = null; };
+    c.addEventListener('pointerdown', down, true); window.addEventListener('pointermove', move, true); window.addEventListener('pointerup', up, true); s.boxOff = off;
+  };
+  previewLayer.clearLayers(); if (s.rect) L.rectangle(s.rect, { color: '#ff2d55', weight: 2, dashArray: '6 5', fillOpacity: 0.08, interactive: false }).addTo(previewLayer);
+  const targets = () => (s.scope === 'all' ? S.files.filter(f => f.visible) : selFiles());
+  p.append(h('h3', { text: 'Delete points in an area' }),
+    h('button', { text: s.rect ? 'Draw the box again' : 'Draw a box on the map', onclick: startBox }),
+    radio('cm', 'Delete points inside the box', s.mode === 'inside', () => { s.mode = 'inside'; }),
+    radio('cm', 'Delete points outside the box', s.mode === 'outside', () => { s.mode = 'outside'; }),
+    chk('Break the line where points are removed', s.gap, v => { s.gap = v; }),
+    chk('Also delete waypoints', s.wpts, v => { s.wpts = v; }),
+    radio('cs', 'Selected tracks', s.scope === 'sel', () => { s.scope = 'sel'; }),
+    radio('cs', 'All visible tracks', s.scope === 'all', () => { s.scope = 'all'; }),
+    h('button', { class: 'pri', text: 'Delete points', disabled: !s.rect, onclick: () => {
+      const t = targets(), r = s.rect, inside = s.mode === 'inside'; if (!t.length) { toast('Select a track first.'); return; }
+      let removed = 0; const keep = q => { const isIn = r.contains([q[0], q[1]]), k = inside ? !isIn : isIn; if (!k) removed++; return k; };
+      op('Clean area', t.map(f => f.id), () => { for (const f of t) { f.segs = [].concat(...f.segs.map(sg => splitByKeep(sg, keep, s.gap))); if (s.wpts) f.wpts = f.wpts.filter(w => keep([w.lat, w.lon])); } });
+      s.rect = null; this.refresh(); toast(`Removed ${removed.toLocaleString()} points.`);
+    } }),
+    h('h3', { text: 'GPS errors' }),
+    fld('A spike is a jump of more than (m)', h('input', { type: 'number', min: 10, step: 10, value: s.spike, oninput: e => { s.spike = Math.max(10, +e.target.value || 100); } })),
+    h('div', { class: 'row' },
+      h('button', { text: 'Remove spikes', disabled: !files.length, onclick: () => {
+        let removed = 0; const T = s.spike;
+        op('Remove GPS spikes', files.map(f => f.id), () => { for (const f of files) f.segs = f.segs.map(sg => { const q = sg.pts, out = []; for (let i = 0; i < q.length; i++) { if (i > 0 && i < q.length - 1) { const a = out[out.length - 1], d1 = dist(a, q[i]), d2 = dist(q[i], q[i + 1]); if (d1 > T && d2 > T && dist(a, q[i + 1]) < 0.5 * Math.max(d1, d2)) { removed++; continue; } } out.push(q[i]); } return mkSeg(sg.name, out); }); });
+        toast(removed ? `Removed ${removed} spike${removed > 1 ? 's' : ''}.` : 'No spikes found.');
+      } }),
+      h('button', { text: 'Remove duplicates', disabled: !files.length, onclick: () => {
+        let removed = 0;
+        op('Remove duplicate points', files.map(f => f.id), () => { for (const f of files) f.segs = f.segs.map(sg => mkSeg(sg.name, sg.pts.filter((q, i) => { const d = i > 0 && q[0] === sg.pts[i - 1][0] && q[1] === sg.pts[i - 1][1]; if (d) removed++; return !d; }))); });
+        toast(removed ? `Removed ${removed.toLocaleString()} duplicate points.` : 'No duplicate points found.');
+      } })));
+};
+
+Tools.panels.time = function (p) {
+  const files = selFiles(), s = this.state; if (!files.length) { needActive(p); return; }
+  const st = stats(files[0]), local = ms => { const d = new Date(ms - new Date(ms).getTimezoneOffset() * 60000); return d.toISOString().slice(0, 16); };
+  if (s.start == null) { s.start = local(st.t0 != null ? st.t0 : Date.now()); s.speed = st.moving > 0 ? Math.round(st.total / st.moving * 3.6) : 40; }
+  p.append(h('p', { text: 'Gives every point a time, as if ridden at a steady speed. Some apps and devices need timestamps.' }),
+    fld('Start', h('input', { type: 'datetime-local', value: s.start, oninput: e => { s.start = e.target.value; } })),
+    fld('Average speed (km/h)', h('input', { type: 'number', min: 1, max: 300, value: s.speed, oninput: e => { s.speed = clamp(+e.target.value || 40, 1, 300); } })),
+    h('div', { class: 'row' },
+      h('button', { class: 'pri', text: 'Set timestamps', onclick: () => {
+        const t0 = Date.parse(s.start), v = s.speed / 3.6; if (!isFinite(t0)) { toast('Enter a start date and time.'); return; }
+        op('Set timestamps', files.map(f => f.id), () => { for (const f of files) { let d = 0; for (const sg of f.segs) for (let i = 0; i < sg.pts.length; i++) { if (i > 0) d += dist(sg.pts[i - 1], sg.pts[i]); sg.pts[i][3] = Math.round(t0 + d / v * 1000); } } });
+        toast('Timestamps set.');
+      } }),
+      h('button', { text: 'Remove timestamps', onclick: () => { op('Remove timestamps', files.map(f => f.id), () => { for (const f of files) for (const sg of f.segs) for (const q of sg.pts) q[3] = null; }); toast('Timestamps removed.'); } })));
+};
+
+Tools.panels.ele = function (p) {
+  const files = selFiles(); if (!files.length) { needActive(p); return; }
+  p.append(h('p', { text: 'Fills in elevation for the selected tracks from a terrain model, replacing any existing values.' }),
+    h('button', { class: 'pri', text: 'Get elevation', onclick: () => enqueue(() => fetchElevation(files)) }),
+    h('div', { class: 'row' },
+      h('button', { text: 'Smooth', title: 'Even out noisy elevation', onclick: () => { op('Smooth elevation', files.map(f => f.id), () => { for (const f of files) for (const sg of f.segs) { const e = sg.pts.map(q => q[2]); for (let i = 0; i < e.length; i++) { if (e[i] == null) continue; let sum = 0, c = 0; for (let j = Math.max(0, i - 5); j <= Math.min(e.length - 1, i + 5); j++) if (e[j] != null) { sum += e[j]; c++; } sg.pts[i][2] = sum / c; } } }); toast('Elevation smoothed.'); } }),
+      h('button', { text: 'Remove', onclick: () => { op('Remove elevation', files.map(f => f.id), () => { for (const f of files) for (const sg of f.segs) for (const q of sg.pts) q[2] = null; }); toast('Elevation removed.'); } })));
+};
+
+Tools.panels.stages = function (p) {
+  if (needActive(p)) return; const f = activeFile(), st = stats(f), s = this.state;
+  if (s.mode == null) { s.mode = 'km'; s.km = Math.max(10, Math.round(st.total / 1000 / 3 / 10) * 10) || 50; s.parts = 3; s.out = 'files'; }
+  const count = () => (s.mode === 'km' ? Math.max(1, Math.ceil(st.total / (s.km * 1000))) : s.parts), info = h('div', { class: 'big' });
+  const show = () => { const n = count(); info.textContent = n < 2 ? 'Shorter than one stage' : (s.mode === 'km' ? `${n} stages of up to ${s.km} km` : `${n} stages of about ${fmtDist(st.total / n)}`); };
+  p.append(h('p', { text: `Splits "${f.name}" (${fmtDist(st.total)}) into stages, for example one per day or per fuel stop. The original track is kept.` }),
+    radio('gm', 'A new stage every…', s.mode === 'km', () => { s.mode = 'km'; show(); }), fld('Kilometres', h('input', { type: 'number', min: 1, value: s.km, oninput: e => { s.km = Math.max(1, +e.target.value || 50); show(); } })),
+    radio('gm', 'Equal parts', s.mode === 'parts', () => { s.mode = 'parts'; show(); }), fld('Number of parts', h('input', { type: 'number', min: 2, max: 50, value: s.parts, oninput: e => { s.parts = clamp(Math.round(+e.target.value) || 2, 2, 50); show(); } })),
+    info,
+    h('button', { class: 'pri', text: 'Make stages', disabled: st.n < 2, onclick: () => {
+      const n = count(), step = s.mode === 'km' ? s.km * 1000 : st.total / n; if (n < 2) { toast('The track is shorter than one stage.'); return; }
+      const flat = [].concat(...f.segs.map(sg => sg.pts)), parts = []; let cur = [flat[0]], next = step;
+      for (let k = 1; k < flat.length; k++) { cur.push(flat[k]); if (st.d[k] >= next && k < flat.length - 1 && parts.length < n - 1) { parts.push(cur); cur = [flat[k]]; next += step; } }
+      parts.push(cur); const made = [];
+      op('Make stages', [], () => { parts.forEach((pts, i) => { const nf = mkFile(`${f.name} – Stage ${i + 1}`, [mkSeg('', pts.map(q => q.slice()))]); nf.folder = f.folder || f.name; nf.color = PALETTE[i % 8]; S.files.push(nf); made.push(nf); }); });
+      select(made.map(x => x.id), { active: made[0].id }); toast(`Made ${made.length} stages in the folder "${made[0].folder}".`);
+    } }));
+  show();
+};
+
+Tools.panels.style = function (p) {
+  const files = selFiles(), f = activeFile(); if (!f) { needActive(p); return; }
+  const ids = files.map(x => x.id), set = (label, fn) => op(label, ids, () => files.forEach(fn));
+  const folders = [...new Set(S.files.map(x => x.folder).filter(Boolean))];
+  p.append(fld('Name', h('input', { type: 'text', value: f.name, onchange: e => { const v = e.target.value.trim(); if (v && v !== f.name) op('Rename', [f.id], () => { f.name = v; }); } })),
+    fld('Folder' + (files.length > 1 ? ` (all ${files.length} selected)` : ''), h('input', { type: 'text', value: f.folder || '', placeholder: 'e.g. Roof of Africa', list: 'folderList', onchange: e => { const v = e.target.value.trim(); set('Move to folder', x => { x.folder = v; }); } })),
+    h('datalist', { id: 'folderList' }, folders.map(x => h('option', { value: x }))),
+    h('label', { class: 'fld' }, h('span', { text: 'Colour' }), h('div', { class: 'swatches' }, PALETTE.map(c => h('button', { style: 'background:' + c, class: f.color === c ? 'on' : '', title: c, 'aria-label': 'Colour ' + c, onclick: () => set('Change colour', x => { x.color = c; }) })),
+      h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(f.color) ? f.color : '#ff2d55', style: 'width:34px;height:28px;padding:0', 'aria-label': 'Custom colour', onchange: e => set('Change colour', x => { x.color = e.target.value; }) }))),
+    fld('Line width', h('input', { type: 'range', min: 2, max: 10, step: 1, value: f.width, onchange: e => set('Change line width', x => { x.width = +e.target.value; }) })),
+    fld('Opacity', h('input', { type: 'range', min: 0.3, max: 1, step: 0.05, value: f.opacity, onchange: e => set('Change opacity', x => { x.opacity = +e.target.value; }) })));
+};
+
+// ============================================================================
+// Cloud sync: keeps the library and Recently deleted in a private GitHub repository.
+//   tracks/<id>.json   one file per track
+//   trash/<id>.json    one file per recently deleted track
+// The token and repository name are stored in this browser only.
+// For each track the app remembers the version it last synced, so it can tell
+// "changed here", "changed on another device" and "changed on both" apart.
+// ============================================================================
+const Sync = {
+  cfg: null, state: { files: {}, trash: {} }, busy: false, pending: false, internal: false, timer: 0, last: 0, err: '', msg: '', isPrivate: true, branch: 'main',
+
+  load() {
+    try { this.cfg = JSON.parse(localStorage.getItem('gpxw-sync') || 'null'); this.state = JSON.parse(localStorage.getItem('gpxw-syncstate') || 'null') || { files: {}, trash: {} }; this.last = +localStorage.getItem('gpxw-synclast') || 0; }
+    catch { this.cfg = null; this.state = { files: {}, trash: {} }; }
+  },
+  saveState() { try { localStorage.setItem('gpxw-syncstate', JSON.stringify(this.state)); } catch { /* ignore */ } },
+  on() { return !!(this.cfg && this.cfg.repo && this.cfg.token); },
+
+  async api(method, path, body, raw) {
+    const headers = { Authorization: 'Bearer ' + this.cfg.token, Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    if (body) headers['Content-Type'] = 'application/json';
+    const r = await fetch('https://api.github.com/repos/' + this.cfg.repo + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+    if (!r.ok) { const e = new Error('GitHub ' + r.status); e.status = r.status; throw e; }
+    return raw ? r.text() : (r.status === 204 ? null : r.json());
+  },
+  explain(e) {
+    if (e.status === 401) return 'GitHub rejected the token. Create a new token and connect again.';
+    if (e.status === 403) return "The token isn't allowed to do this. It needs the permission Contents: Read and write on this repository.";
+    if (e.status === 404) return "GitHub can't find that repository with this token. Check the name (owner/repository) and that the token covers it.";
+    if (e.status === 409 || e.status === 422) return 'GitHub was busy with another change. Sync will try again shortly.';
+    if (e.status) return 'GitHub returned an error (' + e.status + '). Sync will try again later.';
+    return 'No connection to GitHub. Sync will try again when you are online.';
+  },
+  b64(text) { const u = new TextEncoder().encode(text); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); },
+  ser(f) { const c = cloneFile(f); delete c.visible; return c; },
+  same(a, b) { const x = this.ser(a), y = this.ser(b); delete x.modified; delete y.modified; return JSON.stringify(x) === JSON.stringify(y); },
+  async put(path, obj, sha, message) { const r = await this.api('PUT', '/contents/' + path, Object.assign({ message, content: this.b64(JSON.stringify(obj)) }, sha ? { sha } : {})); return r.content.sha; },
+  del(path, sha, message) { return this.api('DELETE', '/contents/' + path, { message, sha }); },
+  async get(path) { return JSON.parse(await this.api('GET', '/contents/' + path + '?ref=' + encodeURIComponent(this.branch), null, true)); },
+  async listRemote() {
+    const info = await this.api('GET', ''); this.branch = info.default_branch || 'main'; this.isPrivate = !!info.private;
+    const out = { tracks: {}, trash: {} }; let t;
+    try { t = await this.api('GET', '/git/trees/' + encodeURIComponent(this.branch) + '?recursive=1'); }
+    catch (e) { if (e.status === 409 || e.status === 404) return out; throw e; }   // empty repository
+    for (const n of t.tree || []) { if (n.type !== 'blob') continue; const m = n.path.match(/^(tracks|trash)\/([\w-]+)\.json$/); if (m) out[m[1]][m[2]] = n.sha; }
+    return out;
+  },
+
+  // Put a downloaded track into the library without marking it as changed here.
+  adopt(g, visible) {
+    g.visible = visible; const i = S.files.findIndex(f => f.id === g.id);
+    if (i >= 0) S.files[i] = g; else S.files.push(g);
+    rtOf(g.id).stats = null; renderFile(g); DB.put(g);
+  },
+  // A track was deleted on another device: move the local copy to Recently deleted.
+  dropLocal(f) { Trash.add(cloneFile(f)); S.files = S.files.filter(x => x.id !== f.id); touched([f.id], 'vis'); },
+
+  poke() { if (!this.on() || this.internal) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(false), 15000); this.ui(); },
+
+  async run(manual) {
+    if (!this.on()) return;
+    if (this.busy) { this.pending = true; return; }
+    clearTimeout(this.timer); this.busy = true; this.err = ''; this.msg = 'Checking…'; this.ui();
+    const st = this.state, n = { up: 0, down: 0, gone: 0, conflict: 0 }, tp = id => 'tracks/' + id + '.json', xp = id => 'trash/' + id + '.json';
+    try {
+      const R = await this.listRemote(); this.internal = true;
+      // ---- tracks that exist on this device
+      for (const f of S.files.slice()) {
+        const r = R.tracks[f.id], s = st.files[f.id]; this.msg = 'Syncing ' + f.name + '…'; this.ui();
+        if (r) {
+          const lc = !s || s.mod !== f.modified, rc = !s || s.sha !== r;
+          if (!lc && !rc) continue;
+          if (lc && !rc) { st.files[f.id] = { sha: await this.put(tp(f.id), this.ser(f), r, 'Update ' + f.name), mod: f.modified }; n.up++; }
+          else {
+            const g = await this.get(tp(f.id));
+            if (!lc || this.same(g, f)) { if (lc) g.modified = f.modified; else n.down++; this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; }
+            else {   // changed here and on another device: keep both
+              const copy = cloneFile(f); copy.id = uid(); copy.name = f.name + ' (conflict copy)'; copy.modified = Date.now();
+              st.files[copy.id] = { sha: await this.put(tp(copy.id), this.ser(copy), null, 'Add ' + copy.name), mod: copy.modified };
+              this.adopt(copy, f.visible); this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; n.conflict++;
+            }
+          }
+        } else if (s && s.mod === f.modified) { delete st.files[f.id]; this.dropLocal(f); n.gone++; }       // deleted on another device
+        else {                                                                                                // new here, or edited here after a delete elsewhere
+          st.files[f.id] = { sha: await this.put(tp(f.id), this.ser(f), null, 'Add ' + f.name), mod: f.modified }; n.up++;
+        }
+        this.saveState();
+      }
+      // ---- tracks that are in the repository but not on this device
+      for (const id of Object.keys(R.tracks)) {
+        if (fileById(id)) continue; const s = st.files[id];
+        if (s && s.sha === R.tracks[id]) { await this.del(tp(id), R.tracks[id], 'Delete track'); delete st.files[id]; }   // deleted here
+        else { const g = await this.get(tp(id)); this.msg = 'Downloading ' + g.name + '…'; this.ui(); Trash.remove(id); this.adopt(g, true); st.files[id] = { sha: R.tracks[id], mod: g.modified }; n.down++; }
+        this.saveState();
+      }
+      for (const id of Object.keys(st.files)) if (!fileById(id) && !R.tracks[id]) delete st.files[id];
+      // ---- Recently deleted
+      for (const t of S.trash.slice()) {
+        const r = R.trash[t.id];
+        if (fileById(t.id)) { Trash.remove(t.id); continue; }
+        if (r) st.trash[t.id] = r;
+        else if (st.trash[t.id]) { Trash.remove(t.id); delete st.trash[t.id]; }                                            // removed for good elsewhere
+        else st.trash[t.id] = await this.put(xp(t.id), { id: t.id, deletedAt: t.deletedAt, file: this.ser(t.file) }, null, 'Delete ' + t.file.name);
+      }
+      for (const id of Object.keys(R.trash)) {
+        if (S.trash.some(t => t.id === id)) continue;
+        if (fileById(id) || st.trash[id]) { await this.del(xp(id), R.trash[id], 'Remove from deleted'); delete st.trash[id]; }  // restored, or removed for good here
+        else { const rec = await this.get(xp(id)); rec.file.visible = true; S.trash.push(rec); DB.put(rec, 'trash'); st.trash[id] = R.trash[id]; }
+      }
+      for (const id of Object.keys(st.trash)) if (!S.trash.some(t => t.id === id)) delete st.trash[id];
+      this.saveState(); this.last = Date.now(); try { localStorage.setItem('gpxw-synclast', this.last); } catch { /* ignore */ }
+      const parts = []; if (n.up) parts.push(n.up + ' uploaded'); if (n.down) parts.push(n.down + ' downloaded'); if (n.gone) parts.push(n.gone + ' moved to Recently deleted'); if (n.conflict) parts.push(n.conflict + ' conflict cop' + (n.conflict > 1 ? 'ies' : 'y') + ' kept');
+      this.msg = parts.length ? parts.join(', ') + '.' : 'Everything is up to date.';
+      if (manual || n.down || n.gone || n.conflict) toast('Cloud sync: ' + this.msg);
+    } catch (e) {
+      console.warn('sync', e); this.err = this.explain(e); this.msg = ''; if (manual) toast(this.err);
+      if (!e.status || e.status === 409 || e.status === 422) this.pending = true;
+    } finally {
+      this.internal = false; this.busy = false; this.saveState(); refreshUI(); this.ui();
+      if (this.pending) { this.pending = false; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(false), 20000); }
+    }
+  },
+
+  // ---- Password login: the repository name and token, encrypted with a password, in a public login.json next to the app.
+  loginFile: null,
+  bytesB64(u) { let t = ''; for (let i = 0; i < u.length; i++) t += String.fromCharCode(u[i]); return btoa(t); },
+  b64Bytes(t) { return Uint8Array.from(atob(t), c => c.charCodeAt(0)); },
+  async key(password, salt, iter) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  },
+  async makeLogin(password) {
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = 600000;
+    const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this.key(password, salt, iter), new TextEncoder().encode(JSON.stringify({ repo: this.cfg.repo, token: this.cfg.token })));
+    return { app: 'gpx-workshop-login', v: 1, kdf: 'PBKDF2-SHA256', iter, salt: this.bytesB64(salt), iv: this.bytesB64(iv), data: this.bytesB64(new Uint8Array(data)) };
+  },
+  async openLogin(password) {   // returns {repo, token}; throws if the password is wrong
+    const f = this.loginFile, plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: this.b64Bytes(f.iv) }, await this.key(password, this.b64Bytes(f.salt), f.iter), this.b64Bytes(f.data));
+    return JSON.parse(new TextDecoder().decode(plain));
+  },
+  async findLogin() {
+    try {
+      const r = await fetch('login.json', { cache: 'no-store' }); if (!r.ok) return;
+      const j = await r.json(); if (j && j.app === 'gpx-workshop-login' && j.salt && j.iv && j.data && j.iter >= 100000) this.loginFile = j;
+    } catch { /* no login file here */ }
+    this.ui();
+    if (this.loginFile && !this.on() && !S.files.length) { $('syncp').hidden = false; this.panel(); }
+  },
+  // Checks the repository and token, saves them in this browser and starts the first sync. Returns an error message, or ''.
+  async connect(repo, token) {
+    this.cfg = { repo, token };
+    try { await this.listRemote(); } catch (err) { this.cfg = null; return this.explain(err); }
+    try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ }
+    this.state = { files: {}, trash: {} }; this.err = ''; this.ui(); this.run(true); return '';
+  },
+
+  // ---- UI
+  ui() {
+    const b = $('btnSync'); if (!b) return;
+    const when = this.last ? new Date(this.last).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    b.lastChild.textContent = !this.on() ? (this.loginFile ? 'Sign in to sync your tracks' : 'Cloud sync: off') : this.busy ? 'Syncing…' : this.err ? 'Cloud sync: problem' : 'Cloud sync: on' + (when ? ' · ' + when : '');
+    b.classList.toggle('warn', !!this.err && this.on()); b.classList.toggle('on', !this.on() && !!this.loginFile);
+    $('storeNote').textContent = this.on() ? 'Tracks are saved in this browser and synced to your GitHub repository.' : 'Tracks are saved in this browser on this device.';
+    if (!$('syncp').hidden) this.panel();
+  },
+  panel() {
+    const p = $('syncp'), keep = p.querySelector('input:focus'); if (keep && !this._force) return;   // don't wipe a field while typing
+    this._force = false; p.textContent = '';
+    p.append(h('h2', {}, h('span', { class: 'ttl' }, icon('cloud'), this.on() || !this.loginFile ? 'Cloud sync' : 'Sign in'), h('button', { text: 'Close', onclick: () => { p.hidden = true; } })));
+    const redraw = () => { this._force = true; this.panel(); };
+
+    if (this.on()) {
+      p.append(...[h('p', {}, 'Connected to ', h('b', { text: this.cfg.repo }), '.'),
+        this.isPrivate ? null : h('p', { class: 'bad', text: 'This repository is public, so anyone can see your tracks. Make it private in its GitHub settings.' }),
+        h('p', { text: this.busy ? (this.msg || 'Syncing…') : this.err ? '' : (this.last ? 'Last synced ' + new Date(this.last).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) + '. ' : '') + (this.msg || '') }),
+        this.err ? h('p', { class: 'bad', text: this.err }) : null,
+        h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Sync now', disabled: this.busy, onclick: () => this.run(true) }),
+          confirmBtn('Sign out', () => { this.cfg = null; this.state = { files: {}, trash: {} }; this.err = ''; this.msg = ''; this.last = 0; clearTimeout(this.timer); try { localStorage.removeItem('gpxw-sync'); localStorage.removeItem('gpxw-syncstate'); localStorage.removeItem('gpxw-synclast'); } catch { /* ignore */ } this._force = true; this.ui(); toast('Signed out. Your tracks stay on this device and in the repository.'); }))].filter(Boolean));
+      // password login for other devices
+      const pw = h('input', { type: 'password', placeholder: 'At least 12 characters', autocomplete: 'new-password' }), pw2 = h('input', { type: 'password', placeholder: 'Type it again', autocomplete: 'new-password' }), out = h('p', { class: 'bad' });
+      p.append(h('h3', { text: 'Password login for your other devices' }),
+        h('p', { text: this.loginFile ? 'A login file is installed, so other devices can sign in with your password. Make a new one here if you change the password or the token.' : 'Choose a password, then other devices can sign in with it instead of the token.' }),
+        fld('Password', pw), fld('Repeat password', pw2), out,
+        h('button', { text: 'Create login file', onclick: async () => {
+          if (!window.crypto || !crypto.subtle) { out.textContent = 'This needs the app to be open at its https:// web address.'; return; }
+          if (pw.value.length < 12) { out.textContent = 'Use at least 12 characters. Four or five random words work well.'; return; }
+          if (pw.value !== pw2.value) { out.textContent = "The two passwords don't match."; return; }
+          out.textContent = 'Encrypting…';
+          try { download(new Blob([JSON.stringify(await this.makeLogin(pw.value), null, 1)], { type: 'application/json' }), 'login.json'); } catch (e) { console.warn(e); out.textContent = "Couldn't create the file in this browser."; return; }
+          pw.value = pw2.value = ''; out.className = ''; out.textContent = 'Saved login.json. Upload it to the app’s GitHub repository, in the same place as index.html. About a minute later, other devices will show a Sign in box.';
+        } }));
+      return;
+    }
+
+    // ---- not connected
+    const tokenForm = () => {
+      const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' }), out = h('p', { class: 'bad' });
+      return [h('ol', { class: 'steps' },
+        h('li', {}, 'On github.com, create a new ', h('b', { text: 'private' }), ' repository, for example "gpx-tracks".'),
+        h('li', {}, 'Go to Settings → Developer settings → Personal access tokens → ', h('b', { text: 'Fine-grained tokens' }), ' → Generate new token.'),
+        h('li', {}, 'Under Repository access choose ', h('b', { text: 'Only select repositories' }), ' and pick that repository.'),
+        h('li', {}, 'Under Repository permissions set ', h('b', { text: 'Contents: Read and write' }), ', then generate and copy the token.')),
+        fld('Repository (owner/name)', repo), fld('Token', tok), out,
+        h('button', { class: this.loginFile ? '' : 'pri', text: 'Connect and sync', onclick: async e => {
+          const r = repo.value.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, ''), t = tok.value.trim();
+          if (!/^[\w.-]+\/[\w.-]+$/.test(r) || !t) { out.textContent = 'Enter the repository as owner/name, and paste the token.'; return; }
+          e.target.disabled = true; out.textContent = 'Connecting…';
+          const err = await this.connect(r, t); if (err) { out.textContent = err; e.target.disabled = false; } else redraw();
+        } }),
+        h('p', { text: 'The token is stored only in this browser. It is limited to one repository, so it gives no access to anything else on your GitHub account.' })];
+    };
+    if (this.loginFile) {
+      const pw = h('input', { type: 'password', placeholder: 'Your GPX Workshop password', autocomplete: 'current-password' }), out = h('p', { class: 'bad' });
+      const go = async () => {
+        if (!window.crypto || !crypto.subtle) { out.textContent = 'Signing in needs the app to be open at its https:// web address.'; return; }
+        if (!pw.value) { out.textContent = 'Enter your password.'; return; }
+        btn.disabled = true; out.textContent = 'Signing in…'; let c;
+        try { c = await this.openLogin(pw.value); } catch { out.textContent = 'Wrong password.'; btn.disabled = false; pw.select(); return; }
+        const err = await this.connect(c.repo, c.token);
+        if (err) { out.textContent = /rejected the token/.test(err) ? 'The password is right, but the saved token no longer works. On a device that is still connected, create a new token and a new login file.' : err; btn.disabled = false; } else redraw();
+      };
+      const btn = h('button', { class: 'pri', text: 'Sign in', onclick: go });
+      pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+      p.append(h('p', { text: 'Sign in to load your tracks on this device and keep them in sync.' }), fld('Password', pw), out, btn,
+        h('details', {}, h('summary', { text: 'Connect with a token instead' }), h('div', { class: 'inner' }, tokenForm())));
+      setTimeout(() => pw.focus(), 0);
+    } else {
+      p.append(h('p', { text: 'Keeps your tracks in a private GitHub repository, so the same library appears on every device you connect and survives this browser being cleared.' }), ...tokenForm());
+    }
+  }
+};
+
+// ============================================================================
+// Start-up and event wiring
+// ============================================================================
+async function boot() {
+  initMap(); Tools.init(); initChart();
+  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud']]) {
+    const el = $(id), label = el.textContent; el.textContent = ''; el.append(icon(ic), h('span', { text: label }));
+  }
+  $('side').classList.toggle('closed', !S.set.sideOpen || window.innerWidth < 900);
+
+  const stored = await DB.open();
+  if (stored) { S.files = await DB.all('files'); S.files.sort((a, b) => a.name.localeCompare(b.name)); S.trash = await DB.all('trash'); Trash.purge(); }
+  else $('storeNote').textContent = "This browser is blocking storage, so tracks won't be kept after you close the page. Export anything you want to keep.";
+  if (stored && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  Sync.load(); renderAll(); refreshUI(); Sync.ui();
+  if (Sync.on()) Sync.run(false);
+  Sync.findLogin();
+  window.addEventListener('online', () => Sync.poke());
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Sync.on() && Date.now() - Sync.last > 5 * 60000) Sync.run(false); });
+  const vis = S.files.filter(f => f.visible); if (vis.length && !localStorage.getItem('gpxw-settings')) zoomTo(vis);
+
+  // Header
+  $('sideToggle').onclick = () => { const c = $('side').classList.toggle('closed'); S.set.sideOpen = !c; saveSettings(); map.invalidateSize(); };
+  $('btnNew').onclick = () => { newRoute(); if (S.tool !== 'draw') Tools.open('draw'); toast('New route. Click the map to place points.'); };
+  $('btnImport').onclick = () => $('fileIn').click();
+  $('fileIn').onchange = e => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) importFiles(fs); };
+  $('btnExport').onclick = () => exportFiles(selFiles());
+  $('btnUndo').onclick = undo; $('btnRedo').onclick = redo;
+  $('search').onsubmit = e => { e.preventDefault(); search($('q').value); };
+  $('btnLocate').onclick = () => { map.locate({ setView: true, maxZoom: 15 }); };
+  let meDot = null;
+  map.on('locationfound', e => { if (meDot) meDot.remove(); meDot = L.circleMarker(e.latlng, { radius: 8, color: '#fff', weight: 3, fillColor: '#0a84ff', fillOpacity: 1, interactive: false }).addTo(map); });
+  map.on('locationerror', () => toast("Couldn't get your location. Allow location access for this page and try again."));
+  $('btnLayers').onclick = () => { const p = $('layers'); p.hidden = !p.hidden; if (!p.hidden) renderLayersPanel(); };
+
+  // Library
+  $('filter').oninput = renderList;
+  $('selAll').onchange = e => select(e.target.checked ? S.files.map(f => f.id) : []);
+  $('bZoom').onclick = () => zoomTo(selFiles());
+  $('bVis').onclick = () => { const fs = selFiles(), show = fs.some(f => !f.visible); fs.forEach(f => { f.visible = show; }); touched(fs.map(f => f.id), 'vis'); };
+  $('bDup').onclick = () => duplicateFiles(selFiles());
+  $('bDel').onclick = () => deleteFiles(selFiles());
+  $('btnBackup').onclick = () => { download(zipFiles(S.files.map(f => ({ name: (f.folder ? safeName(f.folder) + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-workshop-backup-${new Date().toISOString().slice(0, 10)}.zip`); toast(`Backed up ${S.files.length} tracks. Import the zip to restore them.`); };
+  $('btnSync').onclick = () => { const p = $('syncp'); p.hidden = !p.hidden; $('layers').hidden = true; if (!p.hidden) { Sync._force = true; Sync.panel(); } };
+  $('btnTrash').onclick = () => { S.showTrash = !S.showTrash; refreshUI(); };
+  $('btnShowAll').onclick = () => { const fs = S.files.filter(f => !f.visible); fs.forEach(f => { f.visible = true; }); touched(fs.map(f => f.id), 'vis'); };
+  $('btnHideAll').onclick = () => { const fs = S.files.filter(f => f.visible); fs.forEach(f => { f.visible = false; }); touched(fs.map(f => f.id), 'vis'); };
+
+  // Drag and drop
+  let dragDepth = 0; const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+  window.addEventListener('dragenter', e => { if (hasFiles(e)) { dragDepth++; $('drop').hidden = false; e.preventDefault(); } });
+  window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+  window.addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $('drop').hidden = true; });
+  window.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth = 0; $('drop').hidden = true; const fs = [...e.dataTransfer.files].filter(f => /\.(gpx|zip)$/i.test(f.name)); if (fs.length) importFiles(fs); else toast('Drop .gpx files or a backup .zip.'); });
+
+  // Keyboard
+  window.addEventListener('keydown', e => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') { if (!typing) { e.preventDefault(); undo(); } }
+    else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!typing) { e.preventDefault(); redo(); } }
+    else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; if (S.tool) Tools.close(); }
+    else if ((e.key === 'Delete' || e.key === 'Backspace') && !typing && S.sel.size && !S.tool) { e.preventDefault(); deleteFiles(selFiles()); }
+  });
+  window.addEventListener('resize', () => map.invalidateSize());
+}
+if (window.L) boot().catch(e => { console.error(e); document.body.textContent = 'GPX Workshop failed to start: ' + e.message; });
+else document.getElementById('app').innerHTML = '<p style="padding:24px;max-width:60ch">GPX Workshop needs an internet connection the first time it opens, to load its map library and map tiles. Connect and reload the page.</p>';
+
+</script>
+</body>
+</html>
