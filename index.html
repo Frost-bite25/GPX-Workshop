@@ -177,6 +177,15 @@ ol.steps b { color: var(--ink); }
 #lock summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
 #lock details .inner { display: grid; gap: 8px; margin-top: 8px; }
 .keyrow { display: grid; gap: 4px; }
+.loginlist { display: grid; border: 1px solid var(--line); border-radius: 8px; }
+.loginrow { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-top: 1px solid var(--line); }
+.loginrow:first-child { border-top: 0; }
+.loginrow > span { flex: 1 1 auto; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; min-width: 0; }
+.loginrow > span .ic { color: var(--accent); width: 16px; height: 16px; }
+.loginrow small { color: var(--muted); }
+.loginrow button { padding: 2px 8px; font-size: .8rem; }
+.float .inner[hidden] { display: none; }
+.float .inner { display: grid; gap: 8px; }
 .keyhd { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: .85rem; }
 .keyhd span { color: var(--muted); flex: 1 1 auto; }
 .keyhd a { color: var(--accent); font-weight: 600; }
@@ -203,7 +212,7 @@ ol.steps b { color: var(--ink); }
 .selbox { position: absolute; z-index: 850; border: 2px dashed var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; }
 
 @media (max-width: 900px) {
-  #btnUndo span, #btnRedo span, #btnLocate span { display: none; }
+  #btnUndo span, #btnRedo span, #btnLocate span, #btnShare span, #btnExport span { display: none; }
   #app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "map" "prof"; }
   #side { position: fixed; z-index: 1300; left: 0; top: 46px; bottom: 0; width: min(320px, 88vw); box-shadow: 4px 0 20px rgba(0,0,0,.3); }
   #top h1 { display: none; }
@@ -217,11 +226,12 @@ ol.steps b { color: var(--ink); }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 3, built 12 Nov 2026">v3</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 5, built 12 Nov 2026">v5</small></h1>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
       <button id="btnImport" title="Import GPX files or a backup zip">Import</button>
-      <button id="btnExport" title="Export the selected tracks">Export</button>
+      <button id="btnExport" title="Export the selected tracks as GPX">Export</button>
+      <button id="btnShare" title="Save the selected tracks as a web page anyone can open">Share page</button>
     </div>
     <div class="grp">
       <button id="btnUndo" title="Undo (Ctrl+Z)" disabled>Undo</button>
@@ -257,7 +267,7 @@ ol.steps b { color: var(--ink); }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 3 · 12 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 5 · 12 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -300,7 +310,7 @@ ol.steps b { color: var(--ink); }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '3';
+const APP_VERSION = '5';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -583,6 +593,7 @@ const ICONS = {
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
   lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
+  share: '<path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/>',
   cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.7-8.95A6 6 0 0 1 18 10.6a4 4 0 0 1-.5 7.9z"/>',
   trash: '<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>',
   draw: '<path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/>',
@@ -796,7 +807,7 @@ function updateButtons() {
   const n = S.sel.size;
   $('btnUndo').disabled = !S.undo.length; $('btnRedo').disabled = !S.redo.length;
   $('btnUndo').title = S.undo.length ? 'Undo: ' + S.undo[S.undo.length - 1].label + ' (Ctrl+Z)' : 'Nothing to undo';
-  $('btnExport').disabled = !n;
+  $('btnExport').disabled = !n; $('btnShare').disabled = !n;
   for (const id of ['bZoom', 'bVis', 'bDup', 'bDel']) $(id).disabled = !n;
   $('selCount').textContent = n ? `${n} selected` : `${S.files.length} track${S.files.length === 1 ? '' : 's'}`;
   $('selAll').checked = n > 0 && n === S.files.length; $('selAll').indeterminate = n > 0 && n < S.files.length;
@@ -1718,22 +1729,43 @@ const Sync = {
     const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
     return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   },
-  async makeLogin(password) {
+  // One login = a person's repository and token, encrypted with their password. login.json can hold several.
+  async makeLogin(label, password, repo, token) {
     const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = 600000;
-    const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this.key(password, salt, iter), new TextEncoder().encode(JSON.stringify({ repo: this.cfg.repo, token: this.cfg.token })));
-    return { app: 'gpx-workshop-login', v: 1, kdf: 'PBKDF2-SHA256', iter, salt: this.bytesB64(salt), iv: this.bytesB64(iv), data: this.bytesB64(new Uint8Array(data)) };
+    const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this.key(password, salt, iter), new TextEncoder().encode(JSON.stringify({ repo, token })));
+    return { label, iter, salt: this.bytesB64(salt), iv: this.bytesB64(iv), data: this.bytesB64(new Uint8Array(data)) };
   },
-  async openLogin(password) {   // returns {repo, token}; throws if the password is wrong
-    const f = this.loginFile, plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: this.b64Bytes(f.iv) }, await this.key(password, this.b64Bytes(f.salt), f.iter), this.b64Bytes(f.data));
-    return JSON.parse(new TextDecoder().decode(plain));
+  logins() { const f = this.loginFile; return !f ? [] : Array.isArray(f.logins) ? f.logins : [Object.assign({ label: 'Main login' }, f)]; },
+  loginJson(list) { return JSON.stringify({ app: 'gpx-workshop-login', v: 2, kdf: 'PBKDF2-SHA256', logins: list }, null, 1); },
+  async openLogin(password) {   // tries every login; returns {repo, token, label}; throws if no login matches the password
+    for (const e of this.logins()) {
+      try {
+        const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: this.b64Bytes(e.iv) }, await this.key(password, this.b64Bytes(e.salt), e.iter), this.b64Bytes(e.data));
+        return Object.assign(JSON.parse(new TextDecoder().decode(plain)), { label: e.label });
+      } catch { /* not this one */ }
+    }
+    throw new Error('wrong password');
   },
   async findLogin() {
     try {
       const r = await fetch('login.json', { cache: 'no-store' });
-      if (r.ok) { const j = await r.json(); if (j && j.app === 'gpx-workshop-login' && j.salt && j.iv && j.data && j.iter >= 100000) this.loginFile = j; }
+      if (r.ok) {
+        const j = await r.json(), ok = e => e && e.salt && e.iv && e.data && e.iter >= 100000;
+        if (j && j.app === 'gpx-workshop-login' && (Array.isArray(j.logins) ? j.logins.length && j.logins.every(ok) : ok(j))) this.loginFile = j;
+      }
     } catch { /* no login file here */ }
     this.ui();
     if (!this.on()) { if (this.loginFile) Lock.show(); else Lock.hide(); }
+  },
+  async checkRepo(repo, token) {   // returns '' if the token can read and write that private repository, or a message
+    try {
+      const r = await fetch('https://api.github.com/repos/' + repo, { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+      if (!r.ok) { const e = new Error(); e.status = r.status; throw e; }
+      const j = await r.json();
+      if (j.permissions && !j.permissions.push) return 'This token can only read that repository. It needs Contents: Read and write.';
+      if (!j.private) return 'That repository is public, so anyone could see the tracks. Make it private first.';
+      return '';
+    } catch (e) { return this.explain(e); }
   },
   // Checks the repository and token, saves them in this browser and starts the first sync. Returns an error message, or ''.
   async connect(repo, token) {
@@ -1768,7 +1800,7 @@ const Sync = {
       if (!pw.value) { out.textContent = 'Enter your password.'; return; }
       btn.disabled = true; out.textContent = 'Signing in…'; let c;
       try { c = await this.openLogin(pw.value); } catch { out.textContent = 'Wrong password.'; btn.disabled = false; pw.select(); return; }
-      const err = await this.connect(c.repo, c.token);
+      const err = await this.connect(c.repo, c.token); if (!err) { this.cfg.label = c.label; try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ } }
       if (err) { out.textContent = /rejected the token/.test(err) ? 'The password is right, but the saved token no longer works. On a device that is still connected, create a new token and a new login file.' : err; btn.disabled = false; } else onDone();
     };
     const btn = h('button', { class: 'pri', text: 'Sign in', onclick: go });
@@ -1793,24 +1825,55 @@ const Sync = {
     const redraw = () => { this._force = true; this.panel(); };
 
     if (this.on()) {
-      p.append(...[h('p', {}, 'Connected to ', h('b', { text: this.cfg.repo }), '.'),
+      p.append(...[h('p', {}, this.cfg.label ? 'Signed in as ' : '', this.cfg.label ? h('b', { text: this.cfg.label }) : '', this.cfg.label ? ', using ' : 'Connected to ', h('b', { text: this.cfg.repo }), '.'),
         this.isPrivate ? null : h('p', { class: 'bad', text: 'This repository is public, so anyone can see your tracks. Make it private in its GitHub settings.' }),
         h('p', { text: this.busy ? (this.msg || 'Syncing…') : this.err ? '' : (this.last ? 'Last synced ' + new Date(this.last).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) + '. ' : '') + (this.msg || '') }),
         this.err ? h('p', { class: 'bad', text: this.err }) : null,
         h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Sync now', disabled: this.busy, onclick: () => this.run(true) }),
           confirmBtn('Sign out', () => { this.cfg = null; this.state = { files: {}, trash: {} }; this.err = ''; this.msg = ''; this.last = 0; clearTimeout(this.timer); try { localStorage.removeItem('gpxw-sync'); localStorage.removeItem('gpxw-syncstate'); localStorage.removeItem('gpxw-synclast'); } catch { /* ignore */ } this._force = true; this.ui(); if (this.loginFile) { $('syncp').hidden = true; Lock.show(); } else toast('Signed out. Your tracks stay on this device and in the repository.'); }))].filter(Boolean));
-      // password login for other devices
+      // ---- logins for this site (you and anyone you share the app with)
+      const list = this.logins().slice(), mine = this.cfg.label || '';
+      p.append(h('h3', { text: 'Logins for this site' }),
+        h('p', { text: list.length ? 'Each login opens its own private tracks repository with its own password.' : 'Add a login so devices can sign in with a password instead of the token. You can also add logins for friends, each with their own tracks.' }));
+      if (list.length) p.append(h('div', { class: 'loginlist' }, list.map(e => h('div', { class: 'loginrow' }, h('span', {}, icon('key'), e.label || 'Login'), (e.label || '') === mine ? h('small', { text: 'this device' }) : null,
+        confirmBtn('Remove', () => { const next = list.filter(x => x !== e); if (!next.length) { toast('Keep at least one login. To turn the lock screen off, delete login.json from the app’s repository instead.'); return; } this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next }; download(new Blob([this.loginJson(next)], { type: 'application/json' }), 'login.json'); toast('Saved a new login.json without "' + (e.label || 'Login') + '". Upload it to replace the old one.'); this._force = true; this.panel(); })))));
+      let who = 'me';
+      const nm = h('input', { type: 'text', placeholder: 'e.g. Shannon, or your friend’s name', value: list.length ? '' : (mine || ''), maxlength: 30 });
+      const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks-friend', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });
+      const other = h('div', { class: 'inner', hidden: true },
+        h('ol', { class: 'steps' },
+          h('li', {}, 'On GitHub create another ', h('b', { text: 'private' }), ' repository for them, for example "gpx-tracks-friend".'),
+          h('li', {}, 'Create a fine-grained token with access to ', h('b', { text: 'only that repository' }), ' and Contents: Read and write.')),
+        fld('Their repository (owner/name)', repo), fld('Their token', tok));
       const pw = h('input', { type: 'password', placeholder: 'At least 12 characters', autocomplete: 'new-password' }), pw2 = h('input', { type: 'password', placeholder: 'Type it again', autocomplete: 'new-password' }), out = h('p', { class: 'bad' });
-      p.append(h('h3', { text: 'Password login for your other devices' }),
-        h('p', { text: this.loginFile ? 'A login file is installed, so other devices can sign in with your password. Make a new one here if you change the password or the token.' : 'Choose a password, then other devices can sign in with it instead of the token.' }),
-        fld('Password', pw), fld('Repeat password', pw2), out,
-        h('button', { text: 'Create login file', onclick: async () => {
+      p.append(h('h3', { text: list.length ? 'Add a login' : 'Create the first login' }), fld('Name', nm),
+        h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'lwho', checked: true, onchange: () => { who = 'me'; other.hidden = true; } }), 'Opens my tracks (' + this.cfg.repo + ')'),
+        h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'lwho', onchange: () => { who = 'other'; other.hidden = false; } }), 'Opens another tracks repository (for a friend)'),
+        other, fld('Password for this login', pw), fld('Repeat password', pw2), out,
+        h('button', { text: list.length ? 'Add login and save login.json' : 'Create login file', onclick: async ev => {
+          const label = nm.value.trim();
           if (!window.crypto || !crypto.subtle) { out.textContent = 'This needs the app to be open at its https:// web address.'; return; }
+          if (!label) { out.textContent = 'Give the login a name, so you can tell logins apart.'; return; }
           if (pw.value.length < 12) { out.textContent = 'Use at least 12 characters. Four or five random words work well.'; return; }
           if (pw.value !== pw2.value) { out.textContent = "The two passwords don't match."; return; }
-          out.textContent = 'Encrypting…';
-          try { download(new Blob([JSON.stringify(await this.makeLogin(pw.value), null, 1)], { type: 'application/json' }), 'login.json'); } catch (e) { console.warn(e); out.textContent = "Couldn't create the file in this browser."; return; }
-          pw.value = pw2.value = ''; out.className = ''; out.textContent = 'Saved login.json. Upload it to the app’s GitHub repository, in the same place as index.html. About a minute later, other devices will show a Sign in box.';
+          let r = this.cfg.repo, t = this.cfg.token;
+          if (who === 'other') {
+            r = repo.value.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, ''); t = tok.value.trim();
+            if (!/^[\w.-]+\/[\w.-]+$/.test(r) || !t) { out.textContent = 'Enter their repository as owner/name, and paste their token.'; return; }
+            if (r.toLowerCase() === this.cfg.repo.toLowerCase()) { out.textContent = 'That is your own repository. Choose "Opens my tracks" instead, or give your friend their own repository.'; return; }
+            ev.target.disabled = true; out.textContent = 'Checking their repository and token…';
+            const bad = await this.checkRepo(r, t); ev.target.disabled = false; if (bad) { out.textContent = bad; return; }
+          }
+          out.textContent = 'Encrypting…'; ev.target.disabled = true;
+          const keep = list.filter(x => (x.label || '').toLowerCase() !== label.toLowerCase());
+          try {
+            const next = keep.concat([await this.makeLogin(label, pw.value, r, t)]);
+            download(new Blob([this.loginJson(next)], { type: 'application/json' }), 'login.json');
+            this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next };
+            if (who === 'me') { this.cfg.label = label; try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ } }
+          } catch (e) { console.warn(e); out.textContent = "Couldn't create the file in this browser."; ev.target.disabled = false; return; }
+          this._force = true; this.panel();
+          toast('Saved login.json with ' + (keep.length + 1) + ' login' + (keep.length ? 's' : '') + '. Upload it to the app’s repository, replacing the old one.');
         } }));
       return;
     }
@@ -1835,6 +1898,203 @@ const Lock = {
 };
 
 // ============================================================================
+// Share page: saves the selected tracks as one self-contained, read-only web page
+// (map, tracks, waypoints, elevation profile, stats, and the GPX files to download).
+// The viewer below runs inside the exported page, so it must not use anything from the app.
+// ============================================================================
+function gpxViewerMain() {
+  const D = JSON.parse(document.getElementById('gpxw-data').textContent);
+  const $ = id => document.getElementById(id), RAD = Math.PI / 180;
+  const dist = (a, b) => { const p1 = a[0] * RAD, p2 = b[0] * RAD, dl = (b[1] - a[1]) * RAD, x = Math.sin((p2 - p1) / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2; return 12742017.6 * Math.asin(Math.min(1, Math.sqrt(x))); };
+  const bearing = (a, b) => { const p1 = a[0] * RAD, p2 = b[0] * RAD, dl = (b[1] - a[1]) * RAD; return (Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl)) / RAD + 360) % 360; };
+  const fmt = m => m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(m < 100000 ? 1 : 0) + ' km';
+  const esc = s => String(s == null ? '' : s).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c]));
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  // ---- stats per track
+  for (const f of D.files) {
+    const d = [], e = [], pts = []; let total = 0, asc = 0, desc = 0, min = Infinity, max = -Infinity, ref = null, hasEle = false;
+    f.segs.forEach(seg => { ref = null; seg.forEach((p, i) => { if (i > 0) total += dist(seg[i - 1], p); d.push(total); e.push(p[2]); pts.push(p);
+      if (p[2] != null) { hasEle = true; min = Math.min(min, p[2]); max = Math.max(max, p[2]); if (ref == null) ref = p[2]; else if (p[2] - ref > 3) { asc += p[2] - ref; ref = p[2]; } else if (ref - p[2] > 3) { desc += ref - p[2]; ref = p[2]; } } }); });
+    f.st = { d, e, pts, total, asc, desc, min, max, hasEle };
+  }
+
+  // ---- map
+  const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/', OTM = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+  const BASES = [
+    { id: 'sat', name: 'Satellite', url: ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}', max: 19, attr: 'Imagery &copy; Esri, Maxar, Earthstar Geographics' },
+    { id: 'otm', name: 'Topo with contours', url: OTM, max: 17, attr: '&copy; OpenStreetMap contributors, SRTM | &copy; OpenTopoMap (CC-BY-SA)' },
+    { id: 'hot', name: 'Humanitarian', url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', max: 20, attr: '&copy; OpenStreetMap contributors | HOT, OSM France' },
+    { id: 'esritopo', name: 'Topo (Esri)', url: ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max: 19, attr: '&copy; Esri and contributors' },
+    { id: 'osm', name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', max: 19, attr: '&copy; OpenStreetMap contributors' }
+  ];
+  const map = L.map('map', { zoomControl: false, preferCanvas: true, renderer: L.canvas({ padding: 0.3, tolerance: 8 }), maxZoom: 20 });
+  L.control.zoom({ position: 'bottomright' }).addTo(map); L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+  map.createPane('blend').style.zIndex = 250; map.getPane('blend').style.mixBlendMode = 'multiply';
+  let baseLayer = null, contours = null;
+  const setBase = id => { const b = BASES.find(x => x.id === id) || BASES[0]; if (baseLayer) baseLayer.remove(); baseLayer = L.tileLayer(b.url, { maxNativeZoom: b.max, maxZoom: 20, attribution: b.attr }).addTo(map); baseLayer.bringToBack(); };
+  const sel = $('base'); BASES.forEach(b => sel.append(new Option(b.name, b.id))); sel.onchange = () => setBase(sel.value); setBase('sat');
+  $('cont').onchange = e => { if (contours) { contours.remove(); contours = null; } if (e.target.checked) contours = L.tileLayer(OTM, { pane: 'blend', maxNativeZoom: 17, maxZoom: 20, opacity: 0.7 }).addTo(map); };
+
+  const groups = [], bounds = L.latLngBounds([]); let active = 0;
+  D.files.forEach((f, fi) => {
+    const g = L.layerGroup();
+    f.segs.forEach(seg => { if (seg.length < 1) return; const ll = seg.map(p => [p[0], p[1]]); ll.forEach(x => bounds.extend(x));
+      L.polyline(ll, { color: '#ffffff', weight: f.width + 4, opacity: 0.8, interactive: false }).addTo(g);
+      L.polyline(ll, { color: f.color, weight: f.width, opacity: 0.95 }).on('click', () => setActive(fi)).addTo(g); });
+    f.wpts.forEach(w => { bounds.extend([w.lat, w.lon]);
+      L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt"><i>${esc(w.name || 'Waypoint')}</i></span>` }) })
+        .bindPopup(`<b>${esc(w.name || 'Waypoint')}</b>${w.desc ? '<br>' + esc(w.desc) : ''}<br><small>${w.lat.toFixed(5)}, ${w.lon.toFixed(5)}</small>`).addTo(g); });
+    const ends = f.st.pts; if (ends.length) { L.circleMarker([ends[0][0], ends[0][1]], { radius: 6, color: '#fff', weight: 2, fillColor: '#34c759', fillOpacity: 1, interactive: false }).addTo(g); const z = ends[ends.length - 1]; L.circleMarker([z[0], z[1]], { radius: 6, color: '#fff', weight: 2, fillColor: '#ff2d55', fillOpacity: 1, interactive: false }).addTo(g); }
+    g.addTo(map); groups.push(g);
+  });
+  if (bounds.isValid()) map.fitBounds(bounds.pad(0.06)); else map.setView([-30, 25], 5);
+
+  // direction arrows on the active track
+  const arrows = L.layerGroup().addTo(map);
+  function drawArrows() {
+    arrows.clearLayers(); const st = D.files[active] && D.files[active].st; if (!st || st.pts.length < 2 || !map.hasLayer(groups[active])) return;
+    const mpp = 40075016 * Math.cos(map.getCenter().lat * RAD) / (256 * 2 ** map.getZoom()), step = Math.max(mpp * 150, st.total / 250), b = map.getBounds().pad(0.2);
+    let k = 1; for (let dm = step / 2; dm < st.total; dm += step) { while (k < st.d.length - 1 && st.d[k] < dm) k++; const a = st.pts[k - 1], c = st.pts[k]; if (!b.contains([c[0], c[1]])) continue;
+      L.marker([c[0], c[1]], { interactive: false, icon: L.divIcon({ className: '', iconSize: [12, 11], iconAnchor: [6, 5], html: `<div class="arw" style="transform:rotate(${bearing(a, c).toFixed(0)}deg)"></div>` }) }).addTo(arrows); }
+  }
+  map.on('moveend', drawArrows);
+
+  // ---- track list (only when there is more than one)
+  const list = $('list');
+  if (D.files.length > 1) {
+    D.files.forEach((f, fi) => {
+      const row = document.createElement('label'); row.className = 'row';
+      row.innerHTML = `<input type="checkbox" checked aria-label="Show ${esc(f.name)}"><span class="dot" style="background:${esc(f.color)}"></span><span class="nm">${esc(f.name)}</span><span class="km">${fmt(f.st.total)}</span>`;
+      row.querySelector('input').onchange = e => { if (e.target.checked) groups[fi].addTo(map); else groups[fi].remove(); drawArrows(); };
+      row.querySelector('.nm').onclick = ev => { ev.preventDefault(); setActive(fi, true); };
+      list.append(row);
+    });
+  } else list.hidden = true;
+
+  // ---- stats + downloads
+  function renderStats() {
+    const f = D.files[active], st = f.st, box = $('stats'); box.textContent = '';
+    const item = (k, v) => { const s = document.createElement('span'); s.className = 'st'; s.innerHTML = `<span>${k}</span><b>${v}</b>`; box.append(s); };
+    if (D.files.length > 1) { const t = document.createElement('span'); t.className = 'ttl'; t.textContent = f.name; box.append(t); }
+    item('Distance', fmt(st.total)); if (st.hasEle) { item('Climb', Math.round(st.asc) + ' m'); item('Descent', Math.round(st.desc) + ' m'); item('High', Math.round(st.max) + ' m'); item('Low', Math.round(st.min) + ' m'); }
+    if (f.wpts.length) item('Waypoints', f.wpts.length);
+    [...list.children].forEach((r, i) => r.classList.toggle('on', i === active));
+  }
+  function save(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/gpx+xml' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 3000); }
+  const dl = $('dl');
+  if (D.files.length === 1) { dl.textContent = 'Download GPX'; dl.onclick = () => save(D.files[0].file, D.files[0].gpx); }
+  else {
+    dl.textContent = 'Download GPX ▾'; const menu = $('dlmenu');
+    D.files.forEach(f => { const b = document.createElement('button'); b.textContent = f.name; b.onclick = () => { menu.hidden = true; save(f.file, f.gpx); }; menu.append(b); });
+    dl.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; }; document.addEventListener('click', () => { menu.hidden = true; });
+  }
+
+  // ---- elevation profile
+  const cv = $('chart'); let hover = -1, dot = null;
+  function drawChart() {
+    const f = D.files[active], st = f.st, r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; if (!r.width) return;
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const g = cv.getContext('2d'); g.scale(dpr, dpr); g.clearRect(0, 0, r.width, r.height);
+    $('noele').hidden = st.hasEle; if (!st.hasEle) return;
+    const L0 = 46, T0 = 8, B0 = 18, W = r.width - L0 - 8, H = r.height - T0 - B0;
+    let lo = st.min, hi = st.max; if (hi - lo < 20) { const m = (hi + lo) / 2; lo = m - 10; hi = m + 10; } const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    const X = dm => L0 + dm / (st.total || 1) * W, Y = e => T0 + (1 - (e - lo) / (hi - lo)) * H; cv._g = { L0, W };
+    g.font = '11px system-ui, sans-serif'; g.fillStyle = css('--muted'); g.strokeStyle = css('--line'); g.textAlign = 'right'; g.textBaseline = 'middle';
+    const nice = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]; const es = nice.find(s => s >= (hi - lo) / 4) || 1000;
+    for (let e = Math.ceil(lo / es) * es; e < hi; e += es) { g.beginPath(); g.moveTo(L0, Y(e)); g.lineTo(L0 + W, Y(e)); g.stroke(); g.fillText(Math.round(e) + ' m', L0 - 5, Y(e)); }
+    const ds = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200].find(s => s >= st.total / 1000 / 8) || 500; g.textAlign = 'center'; g.textBaseline = 'top';
+    for (let km = 0; km * 1000 <= st.total; km += ds) g.fillText(+km.toFixed(1) + (km === 0 ? ' km' : ''), X(km * 1000), T0 + H + 4);
+    const step = Math.max(1, Math.floor(st.d.length / (W * 2))); g.beginPath(); let started = false, lx = L0;
+    for (let k = 0; k < st.d.length; k += step) { const e = st.e[k]; if (e == null) continue; const x = X(st.d[k]); if (!started) { g.moveTo(x, T0 + H); started = true; } g.lineTo(x, Y(e)); lx = x; }
+    g.lineTo(lx, T0 + H); g.closePath(); g.fillStyle = f.color + '55'; g.fill(); g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.stroke();
+    if (hover >= 0) {
+      const x = X(st.d[hover]), e = st.e[hover]; g.strokeStyle = css('--accent'); g.beginPath(); g.moveTo(x, T0); g.lineTo(x, T0 + H); g.stroke();
+      const a = Math.max(0, hover - 3), b = Math.min(st.d.length - 1, hover + 3); let slope = '';
+      if (st.d[b] - st.d[a] > 5 && st.e[a] != null && st.e[b] != null) slope = '  ' + ((st.e[b] - st.e[a]) / (st.d[b] - st.d[a]) * 100).toFixed(0) + '%';
+      const label = fmt(st.d[hover]) + (e == null ? '' : '  ' + Math.round(e) + ' m') + slope; g.font = '600 12px system-ui, sans-serif';
+      const tw = g.measureText(label).width + 10, tx = Math.min(Math.max(x - tw / 2, L0), L0 + W - tw);
+      g.fillStyle = css('--ink'); g.fillRect(tx, T0, tw, 18); g.fillStyle = css('--panel'); g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(label, tx + 5, T0 + 9);
+    }
+  }
+  const pick = e => { const st = D.files[active].st, gm = cv._g; if (!gm) return -1; const r = cv.getBoundingClientRect(), dm = Math.min(Math.max((e.clientX - r.left - gm.L0) / gm.W, 0), 1) * st.total; let lo = 0, hi = st.d.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (st.d[m] < dm) lo = m + 1; else hi = m; } return lo; };
+  cv.addEventListener('pointermove', e => { hover = pick(e); const p = D.files[active].st.pts[hover]; if (p) { if (!dot) dot = L.circleMarker([p[0], p[1]], { radius: 7, color: '#fff', weight: 3, fillColor: '#111', fillOpacity: 1, interactive: false }).addTo(map); else dot.setLatLng([p[0], p[1]]); } drawChart(); });
+  cv.addEventListener('pointerleave', () => { hover = -1; if (dot) { dot.remove(); dot = null; } drawChart(); });
+  cv.addEventListener('click', e => { const p = D.files[active].st.pts[pick(e)]; if (p) map.panTo([p[0], p[1]]); });
+  new ResizeObserver(drawChart).observe($('prof'));
+
+  function setActive(i, zoom) { active = i; hover = -1; renderStats(); drawChart(); drawArrows(); if (zoom) { const b = L.latLngBounds(D.files[i].st.pts.map(p => [p[0], p[1]])); if (b.isValid()) map.fitBounds(b.pad(0.08)); } }
+  setActive(0);
+}
+
+function viewerHtml(files) {
+  const title = files.length === 1 ? files[0].name : (files[0].folder && files.every(f => f.folder === files[0].folder) ? files[0].folder : files.length + ' tracks');
+  const data = { title, made: new Date().toISOString().slice(0, 10), files: files.map(f => ({
+    name: f.name, color: /^#[0-9a-f]{6}$/i.test(f.color) ? f.color : '#ff2d55', width: f.width || 4,
+    segs: f.segs.filter(s => s.pts.length).map(s => s.pts.map(p => [+p[0].toFixed(6), +p[1].toFixed(6), p[2] == null ? null : +p[2].toFixed(1)])),
+    wpts: f.wpts.map(w => ({ lat: +w.lat.toFixed(6), lon: +w.lon.toFixed(6), name: w.name || '', desc: w.desc || '' })),
+    file: safeName(f.name) + '.gpx', gpx: toGpx(f) })) };
+  const json = JSON.stringify(data).replace(/</g, '\\u003c');
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${xmlEsc(title)}</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root { --bg: #0a0b0a; --panel: #141614; --ink: #eceeea; --muted: #98a19a; --line: #2b312c; --accent: #c86bff; color-scheme: dark; }
+* { box-sizing: border-box; } html, body { height: 100%; margin: 0; } [hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); overflow: hidden; }
+header, main, footer { min-width: 0; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); background: var(--panel); border-bottom: 1px solid var(--line); }
+h1 { margin: 0; font-size: 1.25rem; font-weight: 700; flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; position: relative; }
+select, button { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; }
+button { cursor: pointer; font-weight: 600; } #dl { background: var(--accent); color: #14091a; border-color: var(--accent); }
+label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; } input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+#dlmenu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 1000; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px; display: grid; gap: 2px; min-width: 200px; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+#dlmenu button { border: 0; text-align: left; font-weight: 400; background: transparent; }
+main { position: relative; } #map { position: absolute; inset: 0; background: var(--bg); }
+#list { position: absolute; left: 10px; top: 10px; z-index: 800; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px; max-height: calc(100% - 20px); overflow-y: auto; width: min(280px, calc(100% - 20px)); box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+.row { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; }
+.row.on { background: #232824; } .row .dot { width: 12px; height: 12px; border-radius: 50%; } .row .nm { cursor: pointer; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .row .km { color: var(--muted); font-size: .8rem; }
+footer { background: var(--panel); border-top: 1px solid var(--line); }
+#stats { display: flex; gap: 16px; padding: 6px max(12px, env(safe-area-inset-left)); overflow-x: auto; align-items: baseline; font-variant-numeric: tabular-nums; }
+.st { white-space: nowrap; } .st span { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 5px; } .st b { font-size: 1.1rem; } .ttl { font-weight: 600; white-space: nowrap; }
+#prof { position: relative; height: 130px; } #chart { width: 100%; height: 100%; display: block; touch-action: none; }
+#noele { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
+.made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); }
+.wpt { transform: translate(-50%, -100%); display: inline-flex; flex-direction: column; align-items: center; white-space: nowrap; }
+.wpt i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.wpt::after { content: ""; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 2px #000; }
+.arw { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #fff; filter: drop-shadow(0 0 1.5px #000); }
+.leaflet-bar a, .leaflet-bar a:hover { background: var(--panel); color: var(--ink); border-bottom-color: var(--line); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--ink); }
+.leaflet-container .leaflet-control-attribution { background: rgba(20,22,20,.75); color: var(--muted); } .leaflet-container .leaflet-control-attribution a { color: var(--ink); }
+@media (max-width: 600px) { #prof { height: 100px; } h1 { flex-basis: 100%; } .ctl { width: 100%; } .ctl select { flex: 1 1 110px; min-width: 0; } }
+</style></head>
+<body>
+<header><h1>${xmlEsc(title)}</h1>
+  <div class="ctl"><select id="base" aria-label="Base map"></select><label class="chk"><input type="checkbox" id="cont"> Contours</label>
+  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div></div></header>
+<main><div id="map"></div><div id="list" aria-label="Tracks"></div></main>
+<footer><div id="stats"></div><div id="prof"><canvas id="chart" aria-label="Elevation profile"></canvas><div id="noele" hidden>This track has no elevation data.</div></div>
+<div class="made">Shared from GPX Workshop on ${data.made}. Needs an internet connection for the map.</div></footer>
+<script type="application/json" id="gpxw-data">${json}<\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"><\/script>
+<script>
+(${gpxViewerMain.toString()})();
+<\/script>
+</body></html>
+`;
+}
+
+function sharePage(files) {
+  files = files.filter(f => f.segs.some(s => s.pts.length) || f.wpts.length);
+  if (!files.length) { toast('Select one or more tracks to share.'); return; }
+  const html = viewerHtml(files), name = safeName(files.length === 1 ? files[0].name : (files[0].folder || 'GPX tracks')) + '.html';
+  download(new Blob([html], { type: 'text/html' }), name);
+  toast(`Saved ${name} (${Math.max(1, Math.round(html.length / 1024)).toLocaleString()} KB). Anyone can open it in a web browser, without signing in.`);
+}
+
+// ============================================================================
 // Start-up and event wiring
 // ============================================================================
 async function boot() {
@@ -1842,7 +2102,7 @@ async function boot() {
   if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!S.set.keys) S.set.keys = {};
   Sync.load(); if (!Sync.on()) Lock.pending();
   initMap(); Tools.init(); initChart();
-  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud'], ['bNewFolder', 'folder']]) {
+  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnShare', 'share'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud'], ['bNewFolder', 'folder']]) {
     const el = $(id), label = el.textContent; el.textContent = ''; el.append(icon(ic), h('span', { text: label }));
   }
   $('side').classList.toggle('closed', !S.set.sideOpen || window.innerWidth < 900);
@@ -1864,6 +2124,7 @@ async function boot() {
   $('btnImport').onclick = () => $('fileIn').click();
   $('fileIn').onchange = e => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) importFiles(fs); };
   $('btnExport').onclick = () => exportFiles(selFiles());
+  $('btnShare').onclick = () => sharePage(selFiles());
   $('btnUndo').onclick = undo; $('btnRedo').onclick = redo;
   $('search').onsubmit = e => { e.preventDefault(); search($('q').value); };
   $('btnLocate').onclick = () => { map.locate({ setView: true, maxZoom: 15 }); };
