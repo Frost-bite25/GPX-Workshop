@@ -55,6 +55,8 @@ label { display: block; }
 #top { grid-area: top; display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; }
 #top h1 { font-family: var(--display); font-size: 1.45rem; font-weight: 700; margin: 0 6px 0 2px; white-space: nowrap; letter-spacing: .01em; }
 #top h1 span { color: var(--accent); }
+#top h1 small { font-family: var(--body); font-size: .72rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 7px; vertical-align: middle; letter-spacing: 0; }
+#verNote { font-size: .72rem; }
 #top .grp { display: flex; gap: 4px; }
 #top .sp { flex: 1 1 auto; }
 #search { display: flex; gap: 4px; flex: 0 1 300px; min-width: 150px; }
@@ -161,6 +163,24 @@ ol.steps b { color: var(--ink); }
 #chart { width: 100%; height: 100%; display: block; touch-action: none; }
 #chartmsg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: .9rem; }
 
+/* Lock screen */
+#lock { position: fixed; inset: 0; z-index: 5000; background: var(--bg); display: grid; place-items: center; overflow-y: auto; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
+.lockcard { width: min(380px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.lockcard img { border-radius: 14px; }
+.lockcard h1 { margin: 0; font-family: var(--display); font-size: 2rem; font-weight: 700; line-height: 1; }
+.lockcard h1 span { color: var(--accent); }
+#lockBody { display: grid; gap: 10px; }
+#lockBody p { margin: 0; color: var(--muted); font-size: .92rem; }
+#lockBody p.bad { color: var(--warn); } #lockBody p.bad:empty { display: none; }
+#lockBody button.pri { padding: 10px; }
+#lock details { border-top: 1px solid var(--line); padding-top: 8px; }
+#lock summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+#lock details .inner { display: grid; gap: 8px; margin-top: 8px; }
+.keyrow { display: grid; gap: 4px; }
+.keyhd { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: .85rem; }
+.keyhd span { color: var(--muted); flex: 1 1 auto; }
+.keyhd a { color: var(--accent); font-weight: 600; }
+
 /* Leaflet bits */
 .leaflet-bar a, .leaflet-bar a:hover { background: var(--panel); color: var(--ink); border-bottom-color: var(--line); }
 .leaflet-bar a.leaflet-disabled { background: var(--bg); color: var(--muted); }
@@ -197,7 +217,7 @@ ol.steps b { color: var(--ink); }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 3, built 12 Nov 2026">v3</small></h1>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
       <button id="btnImport" title="Import GPX files or a backup zip">Import</button>
@@ -237,6 +257,7 @@ ol.steps b { color: var(--ink); }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
+      <span id="verNote">GPX Workshop version 3 · 12 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -268,10 +289,18 @@ ol.steps b { color: var(--ink); }
     </div>
   </footer>
 </div>
+<div id="lock" hidden>
+  <div class="lockcard">
+    <img src="data:image/png;base64,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" alt="" width="64" height="64">
+    <h1>GPX <span>Workshop</span></h1>
+    <div id="lockBody"></div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
+const APP_VERSION = '3';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -298,8 +327,10 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const PALETTE = ['#ff2d55', '#ff9500', '#ffd400', '#34c759', '#00c7be', '#0a84ff', '#a400e0', '#ff40ff', '#ffffff', '#1a1f1c'];
 
 const DEFAULTS = { routing: true, profile: 'trekking', base: 'sat', overlays: {}, contourOpacity: 0.7, custom: [], view: { lat: -34.05, lng: 23.37, z: 11 },
-  theme: 'dark', folders: [], collapsed: {}, arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
+  theme: 'dark', folders: [], collapsed: {}, keys: {}, cfgMod: 0, arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
 function loadSettings() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('gpxw-settings') || '{}')); } catch { return Object.assign({}, DEFAULTS); } }
+// Settings that follow you to other devices through Cloud sync: map keys, your own map layers and folders.
+function cfgTouched() { S.set.cfgMod = Date.now(); saveSettings(); if (typeof Sync !== 'undefined') Sync.poke(); }
 function saveSettings() { try { localStorage.setItem('gpxw-settings', JSON.stringify(S.set)); } catch { /* storage unavailable */ } }
 
 const S = { files: [], trash: [], showTrash: false, sel: new Set(), active: null, seg: 0, tool: null, undo: [], redo: [], set: loadSettings(), rt: new Map() };
@@ -550,6 +581,8 @@ const ICONS = {
   locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
   maps: '<path d="M12 3l9 5-9 5-9-5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
   cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.7-8.95A6 6 0 0 1 18 10.6a4 4 0 0 1-.5 7.9z"/>',
   trash: '<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>',
   draw: '<path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/>',
@@ -589,8 +622,22 @@ const BASES = [
   { id: 'esritopo', name: 'Topo (Esri)', url: ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max: 19, attr: '&copy; Esri and contributors' },
   { id: 'cyclosm', name: 'Tracks and contours (CyclOSM)', url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', max: 20, attr: '&copy; OpenStreetMap contributors | Style: CyclOSM' },
   { id: 'osm', name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', max: 19, attr: '&copy; OpenStreetMap contributors' },
-  { id: 'voyager', name: 'Clean road map (Carto)', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', max: 20, sub: 'abcd', attr: '&copy; OpenStreetMap contributors &copy; CARTO' },
-  { id: 'dark', name: 'Dark map (Carto)', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', max: 20, sub: 'abcd', attr: '&copy; OpenStreetMap contributors &copy; CARTO' }
+  { id: 'hot', name: 'Humanitarian (tracks and villages)', url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', max: 20, attr: '&copy; OpenStreetMap contributors | Style: Humanitarian OpenStreetMap Team, hosted by OpenStreetMap France' }
+];
+// Maps that need a free key from their provider. A map appears in the list once its key has been entered under Maps → Map keys.
+const KEYED = [
+  { prov: 'thunderforest', label: 'Thunderforest', signup: 'https://www.thunderforest.com/pricing/', layers: [
+    { id: 'tf-outdoors', name: 'Outdoors (Thunderforest)', url: 'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey={key}', max: 22, attr: 'Maps &copy; Thunderforest, Data &copy; OpenStreetMap contributors' },
+    { id: 'tf-landscape', name: 'Landscape (Thunderforest)', url: 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey={key}', max: 22, attr: 'Maps &copy; Thunderforest, Data &copy; OpenStreetMap contributors' }] },
+  { prov: 'tracestrack', label: 'Tracestrack', signup: 'https://console.tracestrack.com/', layers: [
+    { id: 'tt-topo', name: 'Topo (Tracestrack)', url: 'https://tile.tracestrack.com/topo__/{z}/{x}/{y}.png?key={key}', max: 19, attr: '&copy; Tracestrack, &copy; OpenStreetMap contributors' }] },
+  { prov: 'maptiler', label: 'MapTiler', signup: 'https://cloud.maptiler.com/account/keys/', layers: [
+    { id: 'mt-outdoor', name: 'Outdoor (MapTiler)', url: 'https://api.maptiler.com/maps/outdoor-v2/256/{z}/{x}/{y}.png?key={key}', max: 20, attr: '&copy; MapTiler &copy; OpenStreetMap contributors' }] },
+  { prov: 'mapy', label: 'Mapy.com', signup: 'https://developer.mapy.com/', layers: [
+    { id: 'mapy-outdoor', name: 'Outdoor (Mapy.com)', url: 'https://api.mapy.com/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey={key}', max: 19, attr: '&copy; Seznam.cz a.s. and others' }] },
+  { prov: 'carto', label: 'Carto', signup: 'https://carto.com/basemaps/apikey/', layers: [
+    { id: 'voyager', name: 'Clean road map (Carto)', url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key={key}', max: 20, attr: '&copy; OpenStreetMap contributors &copy; CARTO' },
+    { id: 'dark', name: 'Dark map (Carto)', url: 'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key={key}', max: 20, attr: '&copy; OpenStreetMap contributors &copy; CARTO' }] }
 ];
 const OVERLAYS = [
   { id: 'contours', name: 'Contours on top (blend with satellite)', urls: [OTM], max: 17, blend: true, attr: 'Contours: OpenTopoMap (CC-BY-SA)' },
@@ -613,17 +660,38 @@ function initMap() {
   decor = L.layerGroup().addTo(map); previewLayer = L.layerGroup().addTo(map); anchorsLayer = L.layerGroup().addTo(map);
   setBase(S.set.base);
   for (const o of OVERLAYS) if (S.set.overlays[o.id]) setOverlay(o.id, true);
+  for (const c of customLayers('overlay')) if (S.set.overlays[c.id]) setCustomOverlay(c.id, true);
   map.on('moveend', () => { const c = map.getCenter(); S.set.view = { lat: c.lat, lng: c.lng, z: map.getZoom() }; saveSettings(); renderDecor(); Tools.onMove(); });
   map.on('mousemove', e => { $('status').textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}  z${map.getZoom()}`; });
   map.on('click', e => { hideCtx(); Tools.onMapClick(e); });
   map.on('contextmenu', e => showCtx(e));
 }
-function allBases() { return BASES.concat(S.set.custom.map(c => ({ id: c.id, name: c.name, url: c.url, max: 19, attr: 'Custom layer', custom: true }))); }
+function keyedLayers() {
+  const out = [], keys = S.set.keys || {};
+  for (const k of KEYED) if (keys[k.prov]) for (const l of k.layers) out.push(Object.assign({}, l, { url: l.url.replace('{key}', encodeURIComponent(keys[k.prov])), prov: k.prov }));
+  return out;
+}
+const customLayers = kind => (S.set.custom || []).filter(c => (c.kind || 'base') === kind);
+function allBases() { return BASES.concat(keyedLayers(), customLayers('base').map(c => ({ id: c.id, name: c.name, url: c.url, max: 19, attr: 'Custom layer', custom: true }))); }
 function setBase(id) {
   const b = allBases().find(x => x.id === id) || BASES[0];
   if (baseLayer) baseLayer.remove();
   baseLayer = L.tileLayer(b.url, { maxNativeZoom: b.max, maxZoom: 21, subdomains: b.sub || 'abc', attribution: b.attr, detectRetina: false }).addTo(map);
-  baseLayer.bringToBack(); S.set.base = b.id; saveSettings();
+  baseLayer.bringToBack(); if (id === b.id || !S.set.base) S.set.base = b.id; saveSettings();
+}
+// Your own layers added as overlays, drawn above the base map at their own opacity.
+function setCustomOverlay(id, on) {
+  const c = (S.set.custom || []).find(x => x.id === id);
+  if (overlayLayers[id]) { overlayLayers[id].remove(); delete overlayLayers[id]; }
+  if (on && c) overlayLayers[id] = L.tileLayer(c.url, { pane: 'over', maxNativeZoom: 19, maxZoom: 21, opacity: c.opacity == null ? 0.7 : c.opacity, attribution: 'Custom layer' }).addTo(map);
+  S.set.overlays[id] = !!(on && c); saveSettings();
+}
+// Re-apply layers after map keys or custom layers changed (here or on another device).
+function refreshLayers() {
+  setBase(S.set.base);
+  for (const id of Object.keys(overlayLayers)) if (!OVERLAYS.some(o => o.id === id) && !customLayers('overlay').some(c => c.id === id)) { overlayLayers[id].remove(); delete overlayLayers[id]; }
+  for (const c of customLayers('overlay')) setCustomOverlay(c.id, !!S.set.overlays[c.id]);
+  if (!$('layers').hidden) renderLayersPanel();
 }
 function setOverlay(id, on) {
   const o = OVERLAYS.find(x => x.id === id); if (!o) return;
@@ -751,12 +819,12 @@ function moveToFolder(ids, folder) {
 }
 function renameFolder(old, name) {
   const fs = S.files.filter(f => f.folder === old);
-  S.set.folders = (S.set.folders || []).filter(x => x !== old && x !== name).concat([name]); S.set.collapsed[name] = S.set.collapsed[old]; delete S.set.collapsed[old]; saveSettings();
+  S.set.folders = (S.set.folders || []).filter(x => x !== old && x !== name).concat([name]); S.set.collapsed[name] = S.set.collapsed[old]; delete S.set.collapsed[old]; cfgTouched();
   if (fs.length) op('Rename folder', fs.map(f => f.id), () => fs.forEach(f => { f.folder = name; })); else refreshUI();
 }
 function removeFolder(fo) {
   const fs = S.files.filter(f => f.folder === fo);
-  S.set.folders = (S.set.folders || []).filter(x => x !== fo); delete S.set.collapsed[fo]; saveSettings();
+  S.set.folders = (S.set.folders || []).filter(x => x !== fo); delete S.set.collapsed[fo]; cfgTouched();
   if (fs.length) { op('Remove folder ' + fo, fs.map(f => f.id), () => fs.forEach(f => { f.folder = ''; })); toast(`Removed the folder "${fo}". Its ${fs.length} track${fs.length > 1 ? 's are' : ' is'} now Unfiled.`, { label: 'Undo', fn: undo }); }
   else refreshUI();
 }
@@ -778,7 +846,7 @@ function renderList() {
   const list = $('list'); if (list.querySelector('input.inl:focus')) return;      // don't wipe a name while it is being typed
   const q = $('filter').value.trim().toLowerCase(); list.textContent = '';
   if (S.showTrash) { renderTrash(list, q); return; }
-  if (UI.newFolder) list.append(h('div', { class: 'folder edit' }, icon('folder'), inlineInput('', 'New folder name', v => { UI.newFolder = false; if (v && !allFolders().includes(v)) { S.set.folders = (S.set.folders || []).concat([v]); saveSettings(); toast(`Folder "${v}" created. Select tracks and use "Move to folder", or drag them onto it.`); } refreshUI(); })));
+  if (UI.newFolder) list.append(h('div', { class: 'folder edit' }, icon('folder'), inlineInput('', 'New folder name', v => { UI.newFolder = false; if (v && !allFolders().includes(v)) { S.set.folders = (S.set.folders || []).concat([v]); cfgTouched(); toast(`Folder "${v}" created. Select tracks and use "Move to folder", or drag them onto it.`); } refreshUI(); })));
   const folders = allFolders();
   if (!S.files.length && !folders.length) {
     if (!UI.newFolder) list.append(h('div', { class: 'empty' }, h('b', { text: 'No tracks yet' }),
@@ -996,14 +1064,21 @@ async function search(q) {
 
 // ---------- Maps panel ----------
 function renderLayersPanel() {
-  const p = $('layers'); p.textContent = '';
+  const p = $('layers'), keep = p.querySelector('input:focus'); if (keep && keep.dataset.keyed) return;   // don't redraw while a key is being typed
+  p.textContent = '';
+  const removeBtn = c => h('button', { text: 'Remove', style: 'padding:0 6px;font-size:.75rem', onclick: () => { S.set.custom = S.set.custom.filter(x => x.id !== c.id); delete S.set.overlays[c.id]; cfgTouched(); refreshLayers(); } });
   p.append(h('h2', {}, 'Maps', h('button', { text: 'Close', onclick: () => { p.hidden = true; } })), h('h3', { text: 'Base map' }));
   for (const b of allBases()) {
-    p.append(h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'base', checked: S.set.base === b.id, onchange: () => setBase(b.id) }), h('span', { style: 'flex:1', text: b.name }),
-      b.custom ? h('button', { text: 'Remove', style: 'padding:0 6px;font-size:.75rem', onclick: () => { S.set.custom = S.set.custom.filter(c => c.id !== b.id); if (S.set.base === b.id) setBase('sat'); saveSettings(); renderLayersPanel(); } }) : null));
+    p.append(h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'base', checked: S.set.base === b.id, onchange: () => setBase(b.id) }), h('span', { style: 'flex:1', text: b.name }), b.custom ? removeBtn(b) : null));
   }
+  const missing = KEYED.filter(k => !(S.set.keys || {})[k.prov]);
+  if (missing.length) p.append(h('p', { text: 'More maps appear here when you add their free key under Map keys: ' + missing.map(k => k.label).join(', ') + '.' }));
   p.append(h('h3', { text: 'Overlays' }));
   for (const o of OVERLAYS) p.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: !!S.set.overlays[o.id], onchange: e => setOverlay(o.id, e.target.checked) }), o.name));
+  for (const c of customLayers('overlay')) {
+    p.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: !!S.set.overlays[c.id], onchange: e => setCustomOverlay(c.id, e.target.checked) }), h('span', { style: 'flex:1', text: c.name }), removeBtn(c)),
+      h('label', { class: 'fld' }, h('span', { text: c.name + ' strength' }), h('input', { type: 'range', min: 0.1, max: 1, step: 0.05, value: c.opacity == null ? 0.7 : c.opacity, oninput: e => { c.opacity = +e.target.value; if (overlayLayers[c.id]) overlayLayers[c.id].setOpacity(c.opacity); }, onchange: () => cfgTouched() })));
+  }
   p.append(h('label', { class: 'fld' }, h('span', { text: 'Contour strength' }), h('input', { type: 'range', min: 0.2, max: 1, step: 0.05, value: S.set.contourOpacity, oninput: e => { S.set.contourOpacity = +e.target.value; saveSettings(); if (overlayLayers.contours) overlayLayers.contours.eachLayer(l => l.setOpacity(S.set.contourOpacity)); } })));
   p.append(h('h3', { text: 'Appearance' }),
     h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'theme', checked: S.set.theme !== 'light', onchange: () => setTheme('dark') }), 'Black'),
@@ -1012,9 +1087,27 @@ function renderLayersPanel() {
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.arrows, onchange: e => { S.set.arrows = e.target.checked; saveSettings(); renderDecor(); } }), 'Direction arrows'),
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.kmMarks, onchange: e => { S.set.kmMarks = e.target.checked; saveSettings(); renderDecor(); } }), 'Distance marks (km)'),
     h('label', { class: 'fld' }, h('span', { text: 'Fuel range marks every (km, 0 = off)' }), h('input', { type: 'number', min: 0, step: 10, value: S.set.range, oninput: e => { S.set.range = Math.max(0, +e.target.value || 0); saveSettings(); renderDecor(); } })));
+  // map keys
+  p.append(h('h3', {}, 'Map keys'), h('p', { text: 'Free for personal use. Register with the provider, copy your key and paste it here. Keys sync to your other devices with Cloud sync.' }));
+  for (const k of KEYED) {
+    const inp = h('input', { type: 'text', value: (S.set.keys || {})[k.prov] || '', placeholder: 'Paste your ' + k.label + ' key', autocomplete: 'off', autocapitalize: 'off', spellcheck: false, 'aria-label': k.label + ' key' });
+    inp.dataset.keyed = '1';
+    inp.addEventListener('change', () => { const v = inp.value.trim(); S.set.keys = S.set.keys || {}; if (v) S.set.keys[k.prov] = v; else delete S.set.keys[k.prov]; cfgTouched(); inp.blur(); refreshLayers(); toast(v ? `${k.label} maps added to the base map list.` : `${k.label} key removed.`); });
+    p.append(h('div', { class: 'keyrow' }, h('div', { class: 'keyhd' }, h('b', { text: k.label }), h('span', { text: k.layers.map(l => l.name.replace(/ \(.*\)$/, '')).join(', ') }), h('a', { href: k.signup, target: '_blank', rel: 'noopener', text: 'Get a free key' })), inp));
+  }
+  // own layers
   const nm = h('input', { type: 'text', placeholder: 'Name' }), url = h('input', { type: 'text', placeholder: 'https://…/{z}/{x}/{y}.png' });
+  let kind = 'base';
   p.append(h('h3', { text: 'Add your own map layer' }), nm, url,
-    h('button', { text: 'Add layer', onclick: () => { const u = url.value.trim(); if (!/^https:\/\/.*\{z\}.*\{x\}.*\{y\}/.test(u)) { toast('The address must start with https:// and contain {z}, {x} and {y}.'); return; } const c = { id: 'c' + uid().slice(0, 8), name: nm.value.trim() || 'Custom map', url: u }; S.set.custom.push(c); setBase(c.id); renderLayersPanel(); } }));
+    h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'ckind', checked: true, onchange: () => { kind = 'base'; } }), 'As a base map'),
+    h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'ckind', onchange: () => { kind = 'overlay'; } }), 'As an overlay on top of the base map'),
+    h('button', { text: 'Add layer', onclick: () => {
+      const u = url.value.trim(); if (!/^https:\/\/.*\{z\}.*\{x\}.*\{y\}/.test(u)) { toast('The address must start with https:// and contain {z}, {x} and {y}.'); return; }
+      const c = { id: 'c' + uid().slice(0, 8), name: nm.value.trim() || 'Custom map', url: u, kind, opacity: 0.7 };
+      S.set.custom = (S.set.custom || []).concat([c]); cfgTouched();
+      if (kind === 'base') setBase(c.id); else setCustomOverlay(c.id, true);
+      renderLayersPanel();
+    } }));
 }
 
 function setTheme(t) { S.set.theme = t === 'light' ? 'light' : 'dark'; document.documentElement.dataset.theme = S.set.theme; saveSettings(); const cv = $('chart'); if (cv && cv._st !== undefined) drawChart(cv._st); }
@@ -1241,6 +1334,7 @@ const Tools = {
   onLineClick(f, si, e) {
     if (S.tool === 'split') { splitAt(f, si, nearestIdx(f.segs[si].pts, e.latlng.lat, e.latlng.lng).i, S.set.splitMode); return; }
     if (S.tool === 'wpt') { this.addWaypointAt(e.latlng); return; }
+    if (S.tool === 'draw' && f.id !== S.active && activeFile()) { this.onMapClick(e); return; }   // drawing over another track adds a point here
     if (S.tool === 'draw' && f.id === S.active) {
       if (si !== S.seg) { S.seg = si; this.refresh(); return; }
       const seg = f.segs[si], a = ensureAnchors(seg), i = nearestIdx(seg.pts, e.latlng.lat, e.latlng.lng).i;
@@ -1516,10 +1610,10 @@ const Sync = {
   async get(path) { return JSON.parse(await this.api('GET', '/contents/' + path + '?ref=' + encodeURIComponent(this.branch), null, true)); },
   async listRemote() {
     const info = await this.api('GET', ''); this.branch = info.default_branch || 'main'; this.isPrivate = !!info.private;
-    const out = { tracks: {}, trash: {} }; let t;
+    const out = { tracks: {}, trash: {}, cfg: null }; let t;
     try { t = await this.api('GET', '/git/trees/' + encodeURIComponent(this.branch) + '?recursive=1'); }
     catch (e) { if (e.status === 409 || e.status === 404) return out; throw e; }   // empty repository
-    for (const n of t.tree || []) { if (n.type !== 'blob') continue; const m = n.path.match(/^(tracks|trash)\/([\w-]+)\.json$/); if (m) out[m[1]][m[2]] = n.sha; }
+    for (const n of t.tree || []) { if (n.type !== 'blob') continue; if (n.path === 'config/settings.json') out.cfg = n.sha; const m = n.path.match(/^(tracks|trash)\/([\w-]+)\.json$/); if (m) out[m[1]][m[2]] = n.sha; }
     return out;
   },
 
@@ -1585,6 +1679,8 @@ const Sync = {
         else { const rec = await this.get(xp(id)); rec.file.visible = true; S.trash.push(rec); DB.put(rec, 'trash'); st.trash[id] = R.trash[id]; }
       }
       for (const id of Object.keys(st.trash)) if (!S.trash.some(t => t.id === id)) delete st.trash[id];
+      // ---- Settings that follow you: map keys, your own map layers, folders
+      await this.syncConfig(R.cfg); this.saveState();
       this.saveState(); this.last = Date.now(); try { localStorage.setItem('gpxw-synclast', this.last); } catch { /* ignore */ }
       const parts = []; if (n.up) parts.push(n.up + ' uploaded'); if (n.down) parts.push(n.down + ' downloaded'); if (n.gone) parts.push(n.gone + ' moved to Recently deleted'); if (n.conflict) parts.push(n.conflict + ' conflict cop' + (n.conflict > 1 ? 'ies' : 'y') + ' kept');
       this.msg = parts.length ? parts.join(', ') + '.' : 'Everything is up to date.';
@@ -1596,6 +1692,22 @@ const Sync = {
       this.internal = false; this.busy = false; this.saveState(); refreshUI(); this.ui();
       if (this.pending) { this.pending = false; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(false), 20000); }
     }
+  },
+
+  cfgOf(src) { return { keys: Object.assign({}, src.keys || {}), custom: (src.custom || []).map(c => Object.assign({}, c)), folders: (src.folders || []).slice(), mod: src.cfgMod || src.mod || 0 }; },
+  applyCfg(c) {
+    S.set.keys = c.keys || {}; S.set.custom = c.custom || []; S.set.folders = c.folders || []; S.set.cfgMod = c.mod || 0; saveSettings();
+    refreshLayers(); renderList(); updateButtons();
+  },
+  async syncConfig(remoteSha) {
+    const path = 'config/settings.json', cs = this.state.cfg || {}, localChanged = (S.set.cfgMod || 0) !== (cs.mod || 0);
+    if (remoteSha && remoteSha !== cs.sha) {                       // changed on another device
+      const remote = await this.get(path);
+      if (!localChanged) { this.applyCfg(remote); this.state.cfg = { sha: remoteSha, mod: S.set.cfgMod }; return; }
+      const local = this.cfgOf(S.set), merged = { keys: Object.assign({}, remote.keys || {}, local.keys), custom: (remote.custom || []).filter(c => !local.custom.some(x => x.id === c.id)).concat(local.custom), folders: [...new Set((remote.folders || []).concat(local.folders))], mod: Date.now() };
+      this.applyCfg(merged); this.state.cfg = { sha: await this.put(path, merged, remoteSha, 'Update settings'), mod: merged.mod }; return;
+    }
+    if (localChanged) { const c = this.cfgOf(S.set); this.state.cfg = { sha: await this.put(path, c, remoteSha, 'Update settings'), mod: c.mod }; }
   },
 
   // ---- Password login: the repository name and token, encrypted with a password, in a public login.json next to the app.
@@ -1617,11 +1729,11 @@ const Sync = {
   },
   async findLogin() {
     try {
-      const r = await fetch('login.json', { cache: 'no-store' }); if (!r.ok) return;
-      const j = await r.json(); if (j && j.app === 'gpx-workshop-login' && j.salt && j.iv && j.data && j.iter >= 100000) this.loginFile = j;
+      const r = await fetch('login.json', { cache: 'no-store' });
+      if (r.ok) { const j = await r.json(); if (j && j.app === 'gpx-workshop-login' && j.salt && j.iv && j.data && j.iter >= 100000) this.loginFile = j; }
     } catch { /* no login file here */ }
     this.ui();
-    if (this.loginFile && !this.on() && !S.files.length) { $('syncp').hidden = false; this.panel(); }
+    if (!this.on()) { if (this.loginFile) Lock.show(); else Lock.hide(); }
   },
   // Checks the repository and token, saves them in this browser and starts the first sync. Returns an error message, or ''.
   async connect(repo, token) {
@@ -1629,6 +1741,40 @@ const Sync = {
     try { await this.listRemote(); } catch (err) { this.cfg = null; return this.explain(err); }
     try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ }
     this.state = { files: {}, trash: {} }; this.err = ''; this.ui(); this.run(true); return '';
+  },
+
+  // The sign-in form, used in the Cloud sync panel and on the lock screen. onDone runs after a successful connection.
+  loginForm(onDone) {
+    const tokenForm = () => {
+      const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' }), out = h('p', { class: 'bad' });
+      return [h('ol', { class: 'steps' },
+        h('li', {}, 'On github.com, create a new ', h('b', { text: 'private' }), ' repository, for example "gpx-tracks".'),
+        h('li', {}, 'Open github.com/settings/personal-access-tokens/new (or your profile picture → Settings → Developer settings → Fine-grained tokens).'),
+        h('li', {}, 'Under Repository access choose ', h('b', { text: 'Only select repositories' }), ' and pick that repository.'),
+        h('li', {}, 'Under Repository permissions set ', h('b', { text: 'Contents: Read and write' }), ', then generate and copy the token.')),
+        fld('Repository (owner/name)', repo), fld('Token', tok), out,
+        h('button', { class: this.loginFile ? '' : 'pri', text: 'Connect and sync', onclick: async e => {
+          const r = repo.value.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, ''), t = tok.value.trim();
+          if (!/^[\w.-]+\/[\w.-]+$/.test(r) || !t) { out.textContent = 'Enter the repository as owner/name, and paste the token.'; return; }
+          e.target.disabled = true; out.textContent = 'Connecting…';
+          const err = await this.connect(r, t); if (err) { out.textContent = err; e.target.disabled = false; } else onDone();
+        } }),
+        h('p', { text: 'The token is stored only in this browser. It is limited to one repository, so it gives no access to anything else on your GitHub account.' })];
+    };
+    if (!this.loginFile) return [h('p', { text: 'Keeps your tracks in a private GitHub repository, so the same library appears on every device you connect and survives this browser being cleared.' }), ...tokenForm()];
+    const pw = h('input', { type: 'password', placeholder: 'Your GPX Workshop password', autocomplete: 'current-password', 'aria-label': 'Password' }), out = h('p', { class: 'bad' });
+    const go = async () => {
+      if (!window.crypto || !crypto.subtle) { out.textContent = 'Signing in needs the app to be open at its https:// web address.'; return; }
+      if (!pw.value) { out.textContent = 'Enter your password.'; return; }
+      btn.disabled = true; out.textContent = 'Signing in…'; let c;
+      try { c = await this.openLogin(pw.value); } catch { out.textContent = 'Wrong password.'; btn.disabled = false; pw.select(); return; }
+      const err = await this.connect(c.repo, c.token);
+      if (err) { out.textContent = /rejected the token/.test(err) ? 'The password is right, but the saved token no longer works. On a device that is still connected, create a new token and a new login file.' : err; btn.disabled = false; } else onDone();
+    };
+    const btn = h('button', { class: 'pri', text: 'Sign in', onclick: go });
+    pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    setTimeout(() => pw.focus(), 0);
+    return [fld('Password', pw), out, btn, h('details', {}, h('summary', { text: 'Connect with a token instead' }), h('div', { class: 'inner' }, tokenForm()))];
   },
 
   // ---- UI
@@ -1652,7 +1798,7 @@ const Sync = {
         h('p', { text: this.busy ? (this.msg || 'Syncing…') : this.err ? '' : (this.last ? 'Last synced ' + new Date(this.last).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) + '. ' : '') + (this.msg || '') }),
         this.err ? h('p', { class: 'bad', text: this.err }) : null,
         h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Sync now', disabled: this.busy, onclick: () => this.run(true) }),
-          confirmBtn('Sign out', () => { this.cfg = null; this.state = { files: {}, trash: {} }; this.err = ''; this.msg = ''; this.last = 0; clearTimeout(this.timer); try { localStorage.removeItem('gpxw-sync'); localStorage.removeItem('gpxw-syncstate'); localStorage.removeItem('gpxw-synclast'); } catch { /* ignore */ } this._force = true; this.ui(); toast('Signed out. Your tracks stay on this device and in the repository.'); }))].filter(Boolean));
+          confirmBtn('Sign out', () => { this.cfg = null; this.state = { files: {}, trash: {} }; this.err = ''; this.msg = ''; this.last = 0; clearTimeout(this.timer); try { localStorage.removeItem('gpxw-sync'); localStorage.removeItem('gpxw-syncstate'); localStorage.removeItem('gpxw-synclast'); } catch { /* ignore */ } this._force = true; this.ui(); if (this.loginFile) { $('syncp').hidden = true; Lock.show(); } else toast('Signed out. Your tracks stay on this device and in the repository.'); }))].filter(Boolean));
       // password login for other devices
       const pw = h('input', { type: 'password', placeholder: 'At least 12 characters', autocomplete: 'new-password' }), pw2 = h('input', { type: 'password', placeholder: 'Type it again', autocomplete: 'new-password' }), out = h('p', { class: 'bad' });
       p.append(h('h3', { text: 'Password login for your other devices' }),
@@ -1670,41 +1816,22 @@ const Sync = {
     }
 
     // ---- not connected
-    const tokenForm = () => {
-      const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' }), out = h('p', { class: 'bad' });
-      return [h('ol', { class: 'steps' },
-        h('li', {}, 'On github.com, create a new ', h('b', { text: 'private' }), ' repository, for example "gpx-tracks".'),
-        h('li', {}, 'Go to Settings → Developer settings → Personal access tokens → ', h('b', { text: 'Fine-grained tokens' }), ' → Generate new token.'),
-        h('li', {}, 'Under Repository access choose ', h('b', { text: 'Only select repositories' }), ' and pick that repository.'),
-        h('li', {}, 'Under Repository permissions set ', h('b', { text: 'Contents: Read and write' }), ', then generate and copy the token.')),
-        fld('Repository (owner/name)', repo), fld('Token', tok), out,
-        h('button', { class: this.loginFile ? '' : 'pri', text: 'Connect and sync', onclick: async e => {
-          const r = repo.value.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, ''), t = tok.value.trim();
-          if (!/^[\w.-]+\/[\w.-]+$/.test(r) || !t) { out.textContent = 'Enter the repository as owner/name, and paste the token.'; return; }
-          e.target.disabled = true; out.textContent = 'Connecting…';
-          const err = await this.connect(r, t); if (err) { out.textContent = err; e.target.disabled = false; } else redraw();
-        } }),
-        h('p', { text: 'The token is stored only in this browser. It is limited to one repository, so it gives no access to anything else on your GitHub account.' })];
-    };
-    if (this.loginFile) {
-      const pw = h('input', { type: 'password', placeholder: 'Your GPX Workshop password', autocomplete: 'current-password' }), out = h('p', { class: 'bad' });
-      const go = async () => {
-        if (!window.crypto || !crypto.subtle) { out.textContent = 'Signing in needs the app to be open at its https:// web address.'; return; }
-        if (!pw.value) { out.textContent = 'Enter your password.'; return; }
-        btn.disabled = true; out.textContent = 'Signing in…'; let c;
-        try { c = await this.openLogin(pw.value); } catch { out.textContent = 'Wrong password.'; btn.disabled = false; pw.select(); return; }
-        const err = await this.connect(c.repo, c.token);
-        if (err) { out.textContent = /rejected the token/.test(err) ? 'The password is right, but the saved token no longer works. On a device that is still connected, create a new token and a new login file.' : err; btn.disabled = false; } else redraw();
-      };
-      const btn = h('button', { class: 'pri', text: 'Sign in', onclick: go });
-      pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
-      p.append(h('p', { text: 'Sign in to load your tracks on this device and keep them in sync.' }), fld('Password', pw), out, btn,
-        h('details', {}, h('summary', { text: 'Connect with a token instead' }), h('div', { class: 'inner' }, tokenForm())));
-      setTimeout(() => pw.focus(), 0);
-    } else {
-      p.append(h('p', { text: 'Keeps your tracks in a private GitHub repository, so the same library appears on every device you connect and survives this browser being cleared.' }), ...tokenForm());
-    }
+    p.append(...this.loginForm(redraw));
   }
+};
+
+// ============================================================================
+// Lock screen: when a login file is installed, the app stays covered until this device signs in.
+// ============================================================================
+const Lock = {
+  isOn() { const l = $('lock'); return !!l && !l.hidden; },
+  pending() { const b = $('lockBody'); b.textContent = ''; b.append(h('p', { text: 'Opening…' })); $('lock').hidden = false; },
+  show() {
+    const b = $('lockBody'); b.textContent = '';
+    b.append(h('p', { text: 'Enter your password to open GPX Workshop on this device.' }), ...Sync.loginForm(() => this.hide()));
+    $('lock').hidden = false; $('syncp').hidden = true; $('layers').hidden = true; if (S.tool) Tools.close();
+  },
+  hide() { $('lock').hidden = true; if (typeof map !== 'undefined' && map) map.invalidateSize(); }
 };
 
 // ============================================================================
@@ -1712,7 +1839,8 @@ const Sync = {
 // ============================================================================
 async function boot() {
   document.documentElement.dataset.theme = S.set.theme === 'light' ? 'light' : 'dark';
-  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {};
+  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!S.set.keys) S.set.keys = {};
+  Sync.load(); if (!Sync.on()) Lock.pending();
   initMap(); Tools.init(); initChart();
   for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud'], ['bNewFolder', 'folder']]) {
     const el = $(id), label = el.textContent; el.textContent = ''; el.append(icon(ic), h('span', { text: label }));
@@ -1762,13 +1890,14 @@ async function boot() {
 
   // Drag and drop
   let dragDepth = 0; const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
-  window.addEventListener('dragenter', e => { if (hasFiles(e)) { dragDepth++; $('drop').hidden = false; e.preventDefault(); } });
+  window.addEventListener('dragenter', e => { if (hasFiles(e) && !Lock.isOn()) { dragDepth++; $('drop').hidden = false; e.preventDefault(); } });
   window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
   window.addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $('drop').hidden = true; });
-  window.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth = 0; $('drop').hidden = true; const fs = [...e.dataTransfer.files].filter(f => /\.(gpx|zip)$/i.test(f.name)); if (fs.length) importFiles(fs); else toast('Drop .gpx files or a backup .zip.'); });
+  window.addEventListener('drop', e => { if (!hasFiles(e) || Lock.isOn()) { if (hasFiles(e)) e.preventDefault(); return; } e.preventDefault(); dragDepth = 0; $('drop').hidden = true; const fs = [...e.dataTransfer.files].filter(f => /\.(gpx|zip)$/i.test(f.name)); if (fs.length) importFiles(fs); else toast('Drop .gpx files or a backup .zip.'); });
 
   // Keyboard
   window.addEventListener('keydown', e => {
+    if (Lock.isOn()) return;
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') { if (!typing) { e.preventDefault(); undo(); } }
     else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!typing) { e.preventDefault(); redo(); } }
