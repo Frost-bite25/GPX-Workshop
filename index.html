@@ -106,9 +106,9 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 #mapwrap { grid-area: map; position: relative; min-height: 0; min-width: 0; }
 #map { position: absolute; inset: 0; z-index: 0; background: var(--bg); }
 #rail { position: absolute; left: 30px; top: 8px; bottom: 8px; z-index: 800; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; pointer-events: none; scrollbar-width: none; }
-#rail button { pointer-events: auto; width: 36px; height: 36px; padding: 0; border-radius: 9px; border-color: transparent; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
-#rail button span { display: none; }
-#rail button .ic { width: 19px; height: 19px; color: var(--accent); }
+#rail button { pointer-events: auto; width: 58px; min-height: 42px; padding: 4px 2px 3px; border-radius: 9px; border-color: transparent; box-shadow: 0 1px 4px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; }
+#rail button span { display: block; font-size: 10.5px; font-weight: 600; line-height: 1.1; letter-spacing: .01em; white-space: nowrap; }
+#rail button .ic { width: 18px; height: 18px; color: var(--accent); }
 #rail button.on .ic { color: inherit; }
 #top button .ic { color: var(--accent); }
 #top button.on .ic, #top button:disabled .ic { color: inherit; }
@@ -175,6 +175,27 @@ ol.steps b { color: var(--ink); }
 button.segtog { display: inline-flex; gap: 3px; margin-left: 6px; padding: 0 6px; font-size: .74rem; font-weight: 600; border-radius: 99px; background: var(--bg); color: var(--ink); vertical-align: 1px; }
 button.segtog.open { border-color: #ffd400; }
 button.segtog .chev { color: #ffd400; }
+.guestbadge { display: inline-flex; gap: 5px; padding: 3px 10px; border-radius: 99px; background: #ffd400; color: #1a1f1c; border-color: #ffd400; font-size: .82rem; }
+.guestbadge .ic { width: 15px; height: 15px; color: #1a1f1c !important; }
+.guestopt { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+.guestopt > span { font-size: .85rem; color: var(--muted); }
+html.guest #btnSync { border-color: #ffd400; }
+#expmenu { width: 250px; padding: 4px; display: grid; gap: 2px; z-index: 1000; }
+#expmenu button { display: grid; justify-items: start; gap: 1px; border: 0; text-align: left; padding: 7px 10px; }
+#expmenu button span { font-weight: 400; font-size: .8rem; color: var(--muted); white-space: normal; }
+#view3d { position: absolute; inset: 0; z-index: 940; background: var(--bg); }
+#map3d { position: absolute; inset: 0; }
+#ctl3d { right: 8px; top: 8px; width: 270px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; }
+.ttl3d { display: flex; align-items: center; gap: 8px; }
+.ttl3d .ic { color: var(--accent); width: 20px; height: 20px; }
+.ttl3d b { flex: 1; font-size: 1.1rem; }
+.ttl3d button { padding: 3px 9px; font-size: .82rem; }
+.wpt3d { display: inline-flex; flex-direction: column; align-items: center; pointer-events: none; }
+.wpt3d i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px var(--body); box-shadow: 0 1px 4px rgba(0,0,0,.5); white-space: nowrap; }
+.wpt3d::after { content: ""; width: 2px; height: 10px; background: #fff; box-shadow: 0 0 2px #000; }
+.maplibregl-ctrl-group { background: var(--panel) !important; } .maplibregl-ctrl-group button + button { border-top-color: var(--line) !important; }
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
+:root[data-theme="light"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: none; }
 #busy { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 1000; background: var(--accent); color: var(--accent-ink); padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: .85rem; }
 #ctx { position: absolute; z-index: 1100; padding: 4px; display: grid; gap: 2px; min-width: 190px; }
 #ctx button { border: 0; justify-content: flex-start; font-weight: 400; }
@@ -183,7 +204,7 @@ button.segtog .chev { color: #ffd400; }
 /* Profile */
 #prof { grid-area: prof; background: var(--panel); border-top: 1px solid var(--line); min-width: 0; }
 #prof.closed { border-top: 0; }
-#prof.closed #stats, #prof.closed #chartwrap { display: none; }
+#prof.closed #chartwrap { display: none; }
 #stats { display: flex; gap: 16px; padding: 5px 10px; overflow-x: auto; align-items: baseline; font-variant-numeric: tabular-nums; }
 #stats .st { white-space: nowrap; }
 #stats .st span { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 5px; }
@@ -243,7 +264,7 @@ button.segtog .chev { color: #ffd400; }
 .selbox { position: absolute; z-index: 850; border: 2px dashed var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; }
 
 @media (max-width: 900px) {
-  #btnUndo span, #btnRedo span, #btnLocate span, #btnShare span, #btnExport span { display: none; }
+  #btnUndo span, #btnRedo span, #btnLocate span, #btnShare span, #btnExport span, #btn3d .ic { display: none; }
   #app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "map" "prof"; }
   #side { position: fixed; z-index: 1300; left: 0; top: 46px; bottom: 0; width: min(320px, 88vw); box-shadow: 4px 0 20px rgba(0,0,0,.3); }
   #top h1 { display: none; }
@@ -257,12 +278,14 @@ button.segtog .chev { color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 6.1, built 12 Nov 2026">v6.1</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 8.1, built 12 Nov 2026">v8.1</small></h1>
+    <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
       <button id="btnImport" title="Import GPX files or a backup zip">Import</button>
       <button id="btnExport" title="Export the selected tracks as GPX">Export</button>
       <button id="btnShare" title="Share the selected tracks with a link">Share</button>
+      <button id="btn3d" title="View the map in 3D, with terrain">3D</button>
     </div>
     <div class="grp">
       <button id="btnUndo" title="Undo (Ctrl+Z)" disabled>Undo</button>
@@ -298,7 +321,7 @@ button.segtog .chev { color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 6.1 · 12 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 8.1 · 12 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -316,6 +339,8 @@ button.segtog .chev { color: #ffd400; }
     <section id="layers" class="float" hidden></section>
     <section id="syncp" class="float" hidden></section>
     <section id="sharep" class="float" hidden></section>
+    <div id="expmenu" class="float" hidden></div>
+    <div id="view3d" hidden><div id="map3d"></div><section id="ctl3d" class="float"></section></div>
     <button id="sideTab" class="edgetab" title="Show or hide the library" aria-label="Show or hide the library"></button>
     <button id="profTab" class="edgetab" title="Show or hide the elevation profile" aria-label="Show or hide the elevation profile"></button>
     <div id="ctx" class="float" hidden></div>
@@ -344,7 +369,7 @@ button.segtog .chev { color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '6.1';
+const APP_VERSION = '8.1';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -372,10 +397,14 @@ const PALETTE = ['#ff2d55', '#ff9500', '#ffd400', '#34c759', '#00c7be', '#0a84ff
 
 const DEFAULTS = { routing: true, profile: 'trekking', base: 'sat', overlays: {}, contourOpacity: 0.7, custom: [], view: { lat: -34.05, lng: 23.37, z: 11 },
   theme: 'dark', folders: [], collapsed: {}, keys: {}, shares: [], cfgMod: 0, arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
-function loadSettings() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('gpxw-settings') || '{}')); } catch { return Object.assign({}, DEFAULTS); } }
+// Guest mode: someone using the app without a login. Their settings and tracks are kept apart from yours, even on the same device.
+const GUEST = (() => { try { return localStorage.getItem('gpxw-guest') === '1'; } catch { return false; } })();
+const SETTINGS_KEY = GUEST ? 'gpxw-guest-settings' : 'gpxw-settings';
+function loadSettings() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch { return Object.assign({}, DEFAULTS); } }
 // Settings that follow you to other devices through Cloud sync: map keys, your own map layers and folders.
 function cfgTouched() { S.set.cfgMod = Date.now(); saveSettings(); if (typeof Sync !== 'undefined') Sync.poke(); }
-function saveSettings() { try { localStorage.setItem('gpxw-settings', JSON.stringify(S.set)); } catch { /* storage unavailable */ } }
+function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(S.set)); } catch { /* storage unavailable */ } }
+function setGuest(on) { try { if (on) localStorage.setItem('gpxw-guest', '1'); else { localStorage.removeItem('gpxw-guest'); localStorage.setItem('gpxw-relock', '1'); } } catch { /* ignore */ } location.reload(); }
 
 const S = { files: [], trash: [], showTrash: false, sel: new Set(), active: null, seg: 0, tool: null, undo: [], redo: [], set: loadSettings(), rt: new Map() };
 const fileById = id => S.files.find(f => f.id === id);
@@ -558,7 +587,7 @@ const DB = {
   open() {
     return new Promise(res => {
       try {
-        const r = indexedDB.open('gpx-workshop', 2);
+        const r = indexedDB.open(GUEST ? 'gpx-workshop-guest' : 'gpx-workshop', 2);
         r.onupgradeneeded = () => { for (const st of ['files', 'trash']) if (!r.result.objectStoreNames.contains(st)) r.result.createObjectStore(st, { keyPath: 'id' }); };
         r.onsuccess = () => { DB.db = r.result; res(true); };
         r.onerror = () => res(false);
@@ -628,6 +657,8 @@ const ICONS = {
   lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
   share: '<path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/>',
+  guest: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  cube: '<path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5zM3.5 7.25L12 12l8.5-4.75M12 12v9.5"/>',
   cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.7-8.95A6 6 0 0 1 18 10.6a4 4 0 0 1-.5 7.9z"/>',
   trash: '<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>',
   draw: '<path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/>',
@@ -837,7 +868,7 @@ function touched(ids, keepMod) {
   const f = activeFile(); if (f && S.seg >= f.segs.length) S.seg = Math.max(0, f.segs.length - 1);
   refreshUI(); if (keepMod !== 'vis') Sync.poke();
 }
-function refreshUI() { renderList(); renderProfile(); renderDecor(); updateButtons(); Tools.refresh(); if (!$('sharep').hidden) Shares.panel(); }
+function refreshUI() { renderList(); renderProfile(); renderDecor(); updateButtons(); Tools.refresh(); if (!$('sharep').hidden) Shares.panel(); if (typeof View3D !== 'undefined' && View3D.isOpen) View3D.refresh(); }
 function updateButtons() {
   const n = S.sel.size;
   $('btnUndo').disabled = !S.undo.length; $('btnRedo').disabled = !S.redo.length;
@@ -892,7 +923,7 @@ function startRename(id) { UI.renaming = id; const f = fileById(id); if (f && f.
 function segRows(f) {
   const box = h('div', { class: 'segs', role: 'group', 'aria-label': 'Segments in ' + f.name });
   f.segs.forEach((s, i) => {
-    const on = f.id === S.active && S.seg === i, len = ptsLen(s.pts), label = s.name && s.name !== f.name ? s.name : 'Segment ' + (i + 1);
+    const on = f.id === S.active && S.seg === i, len = ptsLen(s.pts), label = segLabel(f, s, i);
     const row = h('div', { class: 'segrow' + (on ? ' on' : ''), title: 'Click to pick this segment. Double-click to zoom to it.' },
       h('span', { class: 'segmark', text: String(i + 1) }),
       h('div', {}, h('div', { class: 'nm', text: label }), h('div', { class: 'sub', text: `${fmtDist(len)} · ${s.pts.length.toLocaleString()} pts` })),
@@ -908,8 +939,17 @@ function pickSeg(f, i) {
   if (S.active !== f.id || !S.sel.has(f.id)) select([f.id], { active: f.id });
   S.seg = i; renderFile(f); renderList(); if (S.tool) Tools.refresh();
 }
+// Segment numbers are fixed the first time one is taken out, so names stay "Segment 1, 2, 3" however many are removed.
+function segLabel(f, s, i) { return s.name && s.name !== f.name ? s.name : 'Segment ' + (i + 1); }
+function freezeSegNames(f) { f.segs.forEach((s, k) => { s.name = segLabel(f, s, k); }); }
 function extractSeg(f, i) {
-  let nf; op('Make segment a track', [f.id], () => { const s = f.segs.splice(i, 1)[0]; nf = mkFile(s.name && s.name !== f.name ? s.name : `${f.name} (segment ${i + 1})`, [mkSeg(s.name, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(PALETTE.indexOf(f.color) + 1) % 8]; nf.width = f.width; S.files.push(nf); });
+  let nf;
+  op('Make segment a track', [f.id], () => {
+    freezeSegNames(f);
+    const s = f.segs.splice(i, 1)[0], name = `${f.name} – ${s.name}`;
+    nf = mkFile(name, [mkSeg(name, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(PALETTE.indexOf(f.color) + 1) % 8]; nf.width = f.width; S.files.push(nf);
+    if (f.segs.length === 1) { const last = `${f.name} – ${f.segs[0].name}`; f.name = last; f.segs[0].name = last; }   // the one left over is now just that segment
+  });
   select([nf.id], { active: nf.id }); toast(`"${nf.name}" is now its own track.`, { label: 'Undo', fn: undo });
 }
 function renderList() {
@@ -987,16 +1027,27 @@ function renderProfile() {
   const f = activeFile(), box = $('stats'); box.textContent = '';
   const cv = $('chart'), msg = $('chartmsg');
   updateTabs();
-  if (!f) { box.append(h('span', { class: 'st', text: 'Select a track to see its distance, climb and elevation profile.' })); drawChart(null); msg.hidden = true; return; }
-  const st = stats(f), item = (k, v) => h('span', { class: 'st' }, h('span', { text: k }), h('b', { text: v }));
-  box.append(h('span', { class: 'ttl', text: f.name }), item('Distance', fmtDist(st.total)));
-  if (st.hasEle) box.append(item('Climb', Math.round(st.asc) + ' m'), item('Descent', Math.round(st.desc) + ' m'), item('High', Math.round(st.max) + ' m'), item('Low', Math.round(st.min) + ' m'));
-  if (st.t0 != null && st.t1 > st.t0) {
-    box.append(item('Time', fmtDur((st.t1 - st.t0) / 1000)));
-    if (st.moving > 0) box.append(item('Moving avg', (st.total / st.moving * 3.6).toFixed(1) + ' km/h'));
+  const item = (k, v) => h('span', { class: 'st' }, h('span', { text: k }), h('b', { text: v }));
+  const sel = selFiles();
+  if (sel.length > 1) {      // several tracks selected: totals across them
+    let total = 0, asc = 0, desc = 0, n = 0, hi = -Infinity, lo = Infinity, ele = false;
+    for (const x of sel) { const s = stats(x); total += s.total; asc += s.asc; desc += s.desc; n += s.n; if (s.hasEle) { ele = true; hi = Math.max(hi, s.max); lo = Math.min(lo, s.min); } }
+    box.append(h('span', { class: 'ttl', text: sel.length + ' tracks selected' }), item('Distance', fmtDist(total)));
+    if (ele) box.append(item('Climb', Math.round(asc) + ' m'), item('Descent', Math.round(desc) + ' m'), item('High', Math.round(hi) + ' m'), item('Low', Math.round(lo) + ' m'));
+    box.append(item('Points', n.toLocaleString()));
   }
-  box.append(item('Points', st.n.toLocaleString()));
-  if (!S.set.profOpen) return;
+  if (!f) { if (!sel.length) box.append(h('span', { class: 'st', text: 'Select a track to see its distance, climb and elevation profile.' })); drawChart(null); msg.hidden = true; return; }
+  const st = stats(f);
+  if (sel.length <= 1) {
+    box.append(h('span', { class: 'ttl', text: f.name }), item('Distance', fmtDist(st.total)));
+    if (st.hasEle) box.append(item('Climb', Math.round(st.asc) + ' m'), item('Descent', Math.round(st.desc) + ' m'), item('High', Math.round(st.max) + ' m'), item('Low', Math.round(st.min) + ' m'));
+    if (st.t0 != null && st.t1 > st.t0) {
+      box.append(item('Time', fmtDur((st.t1 - st.t0) / 1000)));
+      if (st.moving > 0) box.append(item('Moving avg', (st.total / st.moving * 3.6).toFixed(1) + ' km/h'));
+    }
+    box.append(item('Points', st.n.toLocaleString()));
+  }
+  if (S.set.profOpen === false) return;
   if (!st.hasEle) {
     msg.hidden = false; msg.textContent = '';
     msg.append(st.n > 1 ? 'This track has no elevation data.' : 'Add points to see a profile.', st.n > 1 ? h('button', { text: 'Get elevation', onclick: () => Tools.open('ele') }) : '');
@@ -1445,7 +1496,7 @@ const Tools = {
     if (id === 'extract') {
       const multi = files.filter(f => f.segs.length > 1); if (!multi.length) { toast('Extract needs a track with more than one segment.'); return; }
       const made = []; op('Extract segments', multi.map(f => f.id), () => {
-        for (const f of multi) { f.segs.forEach((s, i) => { const nf = mkFile(`${s.name || f.name} (${i + 1})`, [mkSeg(s.name, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(S.files.length) % 8]; S.files.push(nf); made.push(nf); }); }
+        for (const f of multi) { f.segs.forEach((s, i) => { const nm = `${f.name} – ${segLabel(f, s, i)}`, nf = mkFile(nm, [mkSeg(nm, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(S.files.length) % 8]; S.files.push(nf); made.push(nf); }); }
         S.files = S.files.filter(f => !multi.includes(f));
       });
       select(made.map(f => f.id), { active: made[0].id }); toast(`Made ${made.length} separate tracks.`);
@@ -1670,6 +1721,7 @@ const Sync = {
   cfg: null, state: { files: {}, trash: {} }, busy: false, pending: false, internal: false, timer: 0, last: 0, err: '', msg: '', isPrivate: true, branch: 'main',
 
   load() {
+    if (GUEST) { this.cfg = null; this.state = { files: {}, trash: {} }; this.last = 0; return; }   // a guest never uses your sign-in
     try { this.cfg = JSON.parse(localStorage.getItem('gpxw-sync') || 'null'); this.state = JSON.parse(localStorage.getItem('gpxw-syncstate') || 'null') || { files: {}, trash: {} }; this.last = +localStorage.getItem('gpxw-synclast') || 0; }
     catch { this.cfg = null; this.state = { files: {}, trash: {} }; }
   },
@@ -1816,7 +1868,8 @@ const Sync = {
     return { label, iter, salt: this.bytesB64(salt), iv: this.bytesB64(iv), data: this.bytesB64(new Uint8Array(data)) };
   },
   logins() { const f = this.loginFile; return !f ? [] : Array.isArray(f.logins) ? f.logins : [Object.assign({ label: 'Main login' }, f)]; },
-  loginJson(list) { return JSON.stringify({ app: 'gpx-workshop-login', v: 2, kdf: 'PBKDF2-SHA256', logins: list }, null, 1); },
+  guestsAllowed() { return !!(this.loginFile && this.loginFile.guests); },
+  loginJson(list, guests) { return JSON.stringify({ app: 'gpx-workshop-login', v: 2, kdf: 'PBKDF2-SHA256', guests: guests === undefined ? this.guestsAllowed() : !!guests, logins: list }, null, 1); },
   async openLogin(password) {   // tries every login; returns {repo, token, label}; throws if no login matches the password
     for (const e of this.logins()) {
       try {
@@ -1835,6 +1888,10 @@ const Sync = {
       }
     } catch { /* no login file here */ }
     this.ui();
+    let relock = false; try { relock = localStorage.getItem('gpxw-relock') === '1'; } catch { /* ignore */ }
+    if (GUEST) { if (this.loginFile && !this.guestsAllowed()) { try { localStorage.removeItem('gpxw-guest'); } catch { /* ignore */ } location.reload(); return; } Lock.hide(); return; }
+    if (this.on() && relock && this.loginFile) { Lock.show(true); return; }            // leaving guest mode on a signed-in device asks for the password again
+    if (relock) { try { localStorage.removeItem('gpxw-relock'); } catch { /* ignore */ } }
     if (!this.on()) { if (this.loginFile) Lock.show(); else Lock.hide(); }
   },
   async checkRepo(repo, token) {   // returns '' if the token can read and write that private repository, or a message
@@ -1856,7 +1913,7 @@ const Sync = {
   },
 
   // The sign-in form, used in the Cloud sync panel and on the lock screen. onDone runs after a successful connection.
-  loginForm(onDone) {
+  loginForm(onDone, verifyOnly) {
     const tokenForm = () => {
       const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' }), out = h('p', { class: 'bad' });
       return [h('ol', { class: 'steps' },
@@ -1880,12 +1937,14 @@ const Sync = {
       if (!pw.value) { out.textContent = 'Enter your password.'; return; }
       btn.disabled = true; out.textContent = 'Signing in…'; let c;
       try { c = await this.openLogin(pw.value); } catch { out.textContent = 'Wrong password.'; btn.disabled = false; pw.select(); return; }
+      if (verifyOnly) { if (this.cfg && c.repo === this.cfg.repo) { onDone(); return; } out.textContent = 'That password is for a different login. Use the password for this device.'; btn.disabled = false; return; }
       const err = await this.connect(c.repo, c.token); if (!err) { this.cfg.label = c.label; try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ } }
       if (err) { out.textContent = /rejected the token/.test(err) ? 'The password is right, but the saved token no longer works. On a device that is still connected, create a new token and a new login file.' : err; btn.disabled = false; } else onDone();
     };
     const btn = h('button', { class: 'pri', text: 'Sign in', onclick: go });
     pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
     setTimeout(() => pw.focus(), 0);
+    if (verifyOnly) return [fld('Password', pw), out, btn];
     return [fld('Password', pw), out, btn, h('details', {}, h('summary', { text: 'Connect with a token instead' }), h('div', { class: 'inner' }, tokenForm()))];
   },
 
@@ -1893,6 +1952,7 @@ const Sync = {
   ui() {
     const b = $('btnSync'); if (!b) return;
     const when = this.last ? new Date(this.last).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    if (GUEST) { b.lastChild.textContent = 'Guest mode · Export or exit'; $('storeNote').textContent = 'Guest mode: tracks are saved in this browser on this device only. Export anything you want to keep.'; if (!$('syncp').hidden) this.panel(); return; }
     b.lastChild.textContent = !this.on() ? (this.loginFile ? 'Sign in to sync your tracks' : 'Cloud sync: off') : this.busy ? 'Syncing…' : this.err ? 'Cloud sync: problem' : 'Cloud sync: on' + (when ? ' · ' + when : '');
     b.classList.toggle('warn', !!this.err && this.on()); b.classList.toggle('on', !this.on() && !!this.loginFile);
     $('storeNote').textContent = this.on() ? 'Tracks are saved in this browser and synced to your GitHub repository.' : 'Tracks are saved in this browser on this device.';
@@ -1903,6 +1963,13 @@ const Sync = {
     this._force = false; p.textContent = '';
     p.append(h('h2', {}, h('span', { class: 'ttl' }, icon('cloud'), this.on() || !this.loginFile ? 'Cloud sync' : 'Sign in'), h('button', { text: 'Close', onclick: () => { p.hidden = true; } })));
     const redraw = () => { this._force = true; this.panel(); };
+    if (GUEST) {
+      p.firstChild.firstChild.lastChild.textContent = 'Guest mode';
+      p.append(h('p', { text: 'You are using GPX Workshop as a guest. Your tracks are saved in this browser on this device only, and are kept apart from any signed-in library here.' }),
+        h('p', { text: 'Use "Export all" to keep a copy of your tracks as GPX files. Cloud sync and share links need a login.' }),
+        h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Export all', disabled: !S.files.length, onclick: () => exportFiles(S.files) }), h('button', { text: 'Exit guest mode', onclick: () => setGuest(false) })));
+      return;
+    }
 
     if (this.on()) {
       p.append(...[h('p', {}, this.cfg.label ? 'Signed in as ' : '', this.cfg.label ? h('b', { text: this.cfg.label }) : '', this.cfg.label ? ', using ' : 'Connected to ', h('b', { text: this.cfg.repo }), '.'),
@@ -1916,7 +1983,15 @@ const Sync = {
       p.append(h('h3', { text: 'Logins for this site' }),
         h('p', { text: list.length ? 'Each login opens its own private tracks repository with its own password.' : 'Add a login so devices can sign in with a password instead of the token. You can also add logins for friends, each with their own tracks.' }));
       if (list.length) p.append(h('div', { class: 'loginlist' }, list.map(e => h('div', { class: 'loginrow' }, h('span', {}, icon('key'), e.label || 'Login'), (e.label || '') === mine ? h('small', { text: 'this device' }) : null,
-        confirmBtn('Remove', () => { const next = list.filter(x => x !== e); if (!next.length) { toast('Keep at least one login. To turn the lock screen off, delete login.json from the app’s repository instead.'); return; } this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next }; download(new Blob([this.loginJson(next)], { type: 'application/json' }), 'login.json'); toast('Saved a new login.json without "' + (e.label || 'Login') + '". Upload it to replace the old one.'); this._force = true; this.panel(); })))));
+        confirmBtn('Remove', () => { const next = list.filter(x => x !== e); if (!next.length) { toast('Keep at least one login. To turn the lock screen off, delete login.json from the app’s repository instead.'); return; } this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next, guests: this.guestsAllowed() }; download(new Blob([this.loginJson(next)], { type: 'application/json' }), 'login.json'); toast('Saved a new login.json without "' + (e.label || 'Login') + '". Upload it to replace the old one.'); this._force = true; this.panel(); })))));
+      if (list.length) {
+        p.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.guestsAllowed(), onchange: e => {
+          const on = e.target.checked; this.loginFile = Object.assign({}, this.loginFile, { app: 'gpx-workshop-login', v: 2, logins: list, guests: on });
+          download(new Blob([this.loginJson(list, on)], { type: 'application/json' }), 'login.json');
+          toast((on ? 'Guests allowed. ' : 'Guests turned off. ') + 'Upload the new login.json to the app’s repository, replacing the old one.');
+        } }), 'Allow guests (a "Use as a guest" button on the lock screen)'),
+          h('button', { text: 'Hand this device to a guest', title: 'Switch this device to guest mode. Your password is needed to come back.', onclick: () => setGuest(true) }));
+      }
       let who = 'me';
       const nm = h('input', { type: 'text', placeholder: 'e.g. Shannon, or your friend’s name', value: list.length ? '' : (mine || ''), maxlength: 30 });
       const repo = h('input', { type: 'text', placeholder: 'your-name/gpx-tracks-friend', autocomplete: 'off', autocapitalize: 'off', spellcheck: false }), tok = h('input', { type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });
@@ -1949,7 +2024,7 @@ const Sync = {
           try {
             const next = keep.concat([await this.makeLogin(label, pw.value, r, t)]);
             download(new Blob([this.loginJson(next)], { type: 'application/json' }), 'login.json');
-            this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next };
+            this.loginFile = { app: 'gpx-workshop-login', v: 2, logins: next, guests: this.guestsAllowed() };
             if (who === 'me') { this.cfg.label = label; try { localStorage.setItem('gpxw-sync', JSON.stringify(this.cfg)); } catch { /* ignore */ } }
           } catch (e) { console.warn(e); out.textContent = "Couldn't create the file in this browser."; ev.target.disabled = false; return; }
           this._force = true; this.panel();
@@ -1969,9 +2044,11 @@ const Sync = {
 const Lock = {
   isOn() { const l = $('lock'); return !!l && !l.hidden; },
   pending() { const b = $('lockBody'); b.textContent = ''; b.append(h('p', { text: 'Opening…' })); $('lock').hidden = false; },
-  show() {
+  show(verifyOnly) {
     const b = $('lockBody'); b.textContent = '';
-    b.append(h('p', { text: 'Enter your password to open GPX Workshop on this device.' }), ...Sync.loginForm(() => this.hide()));
+    const done = () => { try { localStorage.removeItem('gpxw-relock'); } catch { /* ignore */ } this.hide(); };
+    b.append(h('p', { text: verifyOnly ? 'Guest mode has ended. Enter your password to open your tracks.' : 'Enter your password to open GPX Workshop on this device.' }), ...Sync.loginForm(done, verifyOnly));
+    if (!verifyOnly && Sync.guestsAllowed()) b.append(h('div', { class: 'guestopt' }, h('span', { text: 'No login?' }), h('button', { text: 'Use as a guest', onclick: () => setGuest(true) }), h('p', { text: 'Use every editing tool. Your tracks stay in this browser only, and you can export them as GPX.' })));
     $('lock').hidden = false; $('syncp').hidden = true; $('layers').hidden = true; if (S.tool) Tools.close();
   },
   hide() { $('lock').hidden = true; if (typeof map !== 'undefined' && map) map.invalidateSize(); }
@@ -2242,7 +2319,7 @@ const Shares = {
       } });
       p.append(...[fld('Link stays live for', days),
         h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.opts.download, onchange: e => { this.opts.download = e.target.checked; } }), 'Allow people to download the GPX'),
-        Sync.on() ? null : h('p', { text: 'Share links need Cloud sync. Sign in under Cloud sync first.' }), out,
+        Sync.on() ? null : h('p', { text: GUEST ? 'Share links need a login. As a guest you can use Save as file.' : 'Share links need Cloud sync. Sign in under Cloud sync first.' }), out,
         h('div', { class: 'row' }, make, h('button', { text: 'Save as file', title: 'Save a web page file instead of a link', onclick: () => saveSharePage(files) }))].filter(Boolean));
     }
     if (this.last && this.list().some(x => x.id === this.last.id)) {
@@ -2288,14 +2365,185 @@ async function openSharedView(id) {
 }
 
 // ============================================================================
+// Google Earth export (KML / KMZ) and the 3D view.
+// ============================================================================
+
+// ---------- KML / KMZ ----------
+function kmlColor(hex, opacity) {   // #rrggbb -> aabbggrr
+  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '') || [0, 'ff', '2d', '55'];
+  const a = Math.round(clamp(opacity == null ? 1 : opacity, 0, 1) * 255).toString(16).padStart(2, '0');
+  return (a + m[3] + m[2] + m[1]).toLowerCase();
+}
+function toKml(files, docName) {
+  const out = ['<?xml version="1.0" encoding="UTF-8"?>', '<kml xmlns="http://www.opengis.net/kml/2.2">', '<Document>', `<name>${xmlEsc(docName)}</name>`,
+    '<Style id="wpt"><IconStyle><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href></Icon></IconStyle></Style>'];
+  files.forEach((f, i) => {
+    out.push(`<Style id="t${i}"><LineStyle><color>${kmlColor(f.color, f.opacity)}</color><width>${Math.max(2, f.width || 4)}</width></LineStyle></Style>`);
+  });
+  files.forEach((f, i) => {
+    const st = stats(f);
+    out.push('<Folder>', `<name>${xmlEsc(f.name)}</name>`, `<description>${xmlEsc(fmtDist(st.total) + (st.hasEle ? ` · climb ${Math.round(st.asc)} m · descent ${Math.round(st.desc)} m` : ''))}</description>`);
+    f.segs.forEach((s, si) => {
+      if (s.pts.length < 2) return;
+      out.push('<Placemark>', `<name>${xmlEsc(f.segs.length > 1 ? (s.name && s.name !== f.name ? s.name : 'Segment ' + (si + 1)) : f.name)}</name>`, `<styleUrl>#t${i}</styleUrl>`,
+        '<LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>',
+        s.pts.map(p => `${+p[1].toFixed(7)},${+p[0].toFixed(7)}${p[2] != null ? ',' + (+p[2].toFixed(1)) : ''}`).join(' '),
+        '</coordinates></LineString>', '</Placemark>');
+    });
+    for (const w of f.wpts) out.push('<Placemark>', `<name>${xmlEsc(w.name || 'Waypoint')}</name>`, w.desc ? `<description>${xmlEsc(w.desc)}</description>` : '', '<styleUrl>#wpt</styleUrl>', `<Point><coordinates>${+w.lon.toFixed(7)},${+w.lat.toFixed(7)}</coordinates></Point>`, '</Placemark>');
+    out.push('</Folder>');
+  });
+  out.push('</Document>', '</kml>', ''); return out.join('\n');
+}
+function exportEarth(files, kmz) {
+  files = files.filter(f => f.segs.some(s => s.pts.length) || f.wpts.length); if (!files.length) return;
+  const name = files.length === 1 ? files[0].name : (files[0].folder && files.every(f => f.folder === files[0].folder) ? files[0].folder : 'GPX tracks');
+  const kml = toKml(files, name), base = safeName(name);
+  if (kmz) download(zipFiles([{ name: 'doc.kml', text: kml }]), base + '.kmz');
+  else download(new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' }), base + '.kml');
+  toast(`Saved ${base}.${kmz ? 'kmz' : 'kml'}. Open it in Google Earth (on the web: Projects → New project → Import KML file).`);
+}
+
+// ---------- Export menu (GPX / KMZ / KML) ----------
+function showExportMenu() {
+  const m = $('expmenu'), files = selFiles(); if (!m.hidden) { m.hidden = true; return; }
+  m.textContent = '';
+  const item = (label, sub, fn) => m.append(h('button', { onclick: () => { m.hidden = true; fn(); } }, h('b', { text: label }), h('span', { text: sub })));
+  item('GPX', files.length > 1 ? 'One zip with a GPX file per track' : 'For Garmin, apps and other editors', () => exportFiles(files));
+  item('KMZ for Google Earth', 'Tracks, colours and waypoints in one file', () => exportEarth(files, true));
+  item('KML', 'Plain KML, for apps that don’t take KMZ', () => exportEarth(files, false));
+  const r = $('btnExport').getBoundingClientRect(), w = $('mapwrap').getBoundingClientRect();
+  m.style.left = clamp(r.left - w.left, 8, w.width - 260) + 'px'; m.style.top = '8px'; m.hidden = false;
+}
+
+// ---------- 3D view (MapLibre GL with terrain) ----------
+const BASES_3D = [
+  { id: 'sat', name: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', max: 19, attr: 'Imagery © Esri, Maxar, Earthstar Geographics' },
+  { id: 'otm', name: 'Topo with contours', url: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', max: 17, attr: '© OpenStreetMap contributors, SRTM | © OpenTopoMap (CC-BY-SA)' },
+  { id: 'esritopo', name: 'Topo (Esri)', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max: 19, attr: '© Esri and contributors' },
+  { id: 'hot', name: 'Humanitarian', url: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', max: 20, attr: '© OpenStreetMap contributors | HOT, OSM France' }
+];
+const DEM_URL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+const View3D = {
+  map: null, isOpen: false, loading: null, markers: [], fly: null, ex: 1.5, base: 'sat',
+  load() {
+    if (window.maplibregl) return Promise.resolve();
+    if (!this.loading) this.loading = new Promise((res, rej) => {
+      const css = h('link', { rel: 'stylesheet', href: 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css' }); document.head.append(css);
+      const s = h('script', { src: 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js' }); s.onload = res; s.onerror = () => { this.loading = null; rej(new Error('load')); }; document.head.append(s);
+    });
+    return this.loading;
+  },
+  hasWebGL() { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } },
+  async open() {
+    if (this.isOpen) return this.close();
+    busy('Loading 3D…');
+    try { await this.load(); } catch { busy(''); toast('The 3D view needs an internet connection to load. Try again when you are online.'); return; }
+    busy('');
+    if (!this.hasWebGL()) { toast("This browser can't show 3D maps (WebGL is turned off)."); return; }
+    $('view3d').hidden = false; this.isOpen = true; $('btn3d').classList.add('on'); this.panel();
+    if (!this.map) this.create(); else { this.map.resize(); this.refresh(); this.fit(); }
+  },
+  close() {
+    this.stopFly(); $('view3d').hidden = true; this.isOpen = false; $('btn3d').classList.remove('on');
+    if (this.map) { const c = this.map.getCenter(); map.setView([c.lat, c.lng], Math.round(this.map.getZoom() + 1)); }
+  },
+  baseDef() { return BASES_3D.find(b => b.id === this.base) || BASES_3D[0]; },
+  create() {
+    const c = map.getCenter(), b = this.baseDef();
+    this.map = new maplibregl.Map({
+      container: 'map3d', center: [c.lng, c.lat], zoom: Math.max(2, map.getZoom() - 1), pitch: 62, bearing: -20, maxPitch: 85, attributionControl: { compact: true },
+      style: { version: 8,
+        sources: {
+          base: { type: 'raster', tiles: [b.url], tileSize: 256, maxzoom: b.max, attribution: b.attr },
+          dem: { type: 'raster-dem', tiles: [DEM_URL], encoding: 'terrarium', tileSize: 256, maxzoom: 14, attribution: 'Terrain: Mapzen/Tilezen, AWS Open Data' },
+          hs: { type: 'raster-dem', tiles: [DEM_URL], encoding: 'terrarium', tileSize: 256, maxzoom: 14 } },
+        layers: [{ id: 'base', type: 'raster', source: 'base' }, { id: 'hill', type: 'hillshade', source: 'hs', paint: { 'hillshade-exaggeration': 0.25, 'hillshade-shadow-color': '#000000' } }],
+        sky: { 'sky-color': '#7fb0e0', 'horizon-color': '#d6e6f2', 'fog-color': '#d6e6f2', 'sky-horizon-blend': 0.5, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.6 } }
+    });
+    this.map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+    this.map.on('load', () => {
+      this.map.setTerrain({ source: 'dem', exaggeration: this.ex });
+      this.map.addSource('tracks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      this.map.addLayer({ id: 'casing', type: 'line', source: 'tracks', filter: ['==', ['get', 'sel'], 1], layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': ['+', ['get', 'w'], 5], 'line-opacity': 0.9 } });
+      this.map.addLayer({ id: 'lines', type: 'line', source: 'tracks', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['get', 'w'], 'line-opacity': 0.95 } });
+      this.map.on('click', 'lines', e => { const id = e.features[0] && e.features[0].properties.id; if (id) select([id], { active: id }); });
+      this.map.on('mouseenter', 'lines', () => { this.map.getCanvas().style.cursor = 'pointer'; });
+      this.map.on('mouseleave', 'lines', () => { this.map.getCanvas().style.cursor = ''; });
+      this.refresh(); this.fit();
+    });
+  },
+  files() { return S.files.filter(f => f.visible); },
+  refresh() {
+    if (!this.map || !this.map.getSource('tracks')) return;
+    const feats = [];
+    for (const f of this.files()) f.segs.forEach(s => { if (s.pts.length > 1) feats.push({ type: 'Feature', properties: { id: f.id, color: f.color, w: f.width || 4, sel: S.sel.has(f.id) ? 1 : 0 }, geometry: { type: 'LineString', coordinates: s.pts.map(p => [p[1], p[0]]) } }); });
+    this.map.getSource('tracks').setData({ type: 'FeatureCollection', features: feats });
+    for (const m of this.markers) m.remove(); this.markers = [];
+    for (const f of this.files()) for (const w of f.wpts) {
+      const el = h('span', { class: 'wpt3d' }, h('i', { text: w.name || 'Waypoint' }));
+      this.markers.push(new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([w.lon, w.lat]).addTo(this.map));
+    }
+    this.panel();
+  },
+  fit() {
+    if (!this.map) return; const fs = selFiles().length ? selFiles() : this.files(); const b = new maplibregl.LngLatBounds(); let any = false;
+    for (const f of fs) for (const s of f.segs) for (const p of s.pts) { b.extend([p[1], p[0]]); any = true; }
+    if (any) this.map.fitBounds(b, { padding: { top: 80, bottom: 60, left: 60, right: 60 }, pitch: 62, bearing: -20, duration: 900, maxZoom: 15 });
+  },
+  setBase(id) { this.base = id; const b = this.baseDef(); if (this.map && this.map.getSource('base')) { this.map.getSource('base').setTiles([b.url]); } this.panel(); },
+  setEx(v) { this.ex = v; if (this.map && this.map.getTerrain()) this.map.setTerrain({ source: 'dem', exaggeration: v }); },
+
+  // Fly along the active track: the camera follows it from behind at an angle.
+  speedMult: 1, paused: null,
+  startFly(fromDm) {
+    const f = activeFile(); if (!f || !this.map) { toast('Select a track to fly along.'); return; }
+    const st = stats(f); if (st.n < 2) return;
+    this.stopFly(true);
+    const P = k => f.segs[st.segOf[k]].pts[st.idxOf[k]];
+    const at = dm => { let lo = 0, hi = st.n - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (st.d[m] < dm) lo = m + 1; else hi = m; } return P(lo); };
+    const speed = clamp(st.total / 60, 80, 600);    // metres per second at Normal speed
+    let dm = fromDm || 0, last = performance.now(), brg = bearing(at(dm), at(Math.min(st.total, dm + 250)));
+    const step = now => {
+      if (!this.fly) return;
+      dm += Math.min(100, now - last) / 1000 * speed * this.speedMult; last = now;
+      if (dm >= st.total) { this.fly = null; this.paused = null; this.panel(); toast('Reached the end of the track.'); return; }
+      const p = at(dm), ahead = at(Math.min(st.total, dm + 250)), target = bearing(p, ahead);
+      const diff = ((target - brg + 540) % 360) - 180; brg = (brg + diff * 0.06 + 360) % 360;
+      this.map.jumpTo({ center: [p[1], p[0]], bearing: brg, pitch: 68, zoom: 14.6 });
+      this.fly.dm = dm; this.fly.raf = requestAnimationFrame(step); this.updateFlyLabel(dm, st.total);
+    };
+    this.paused = null; this.fly = { f: f.id, dm, raf: requestAnimationFrame(step) }; this.panel();
+  },
+  pauseFly() { if (!this.fly) return; cancelAnimationFrame(this.fly.raf); this.paused = { f: this.fly.f, dm: this.fly.dm }; this.fly = null; this.panel(); },
+  stopFly(silent) { if (this.fly) cancelAnimationFrame(this.fly.raf); this.fly = null; if (!silent) { this.paused = null; this.panel(); } },
+  updateFlyLabel(dm, total) { const l = $('fly3dpos'); if (l) l.textContent = `${fmtDist(dm)} of ${fmtDist(total)}`; },
+  panel() {
+    const p = $('ctl3d'); if (!p || !this.isOpen) return; p.textContent = '';
+    const f = activeFile(), flying = !!this.fly, canResume = !!(f && this.paused && this.paused.f === f.id);
+    p.append(h('div', { class: 'ttl3d' }, icon('cube'), h('b', { text: '3D view' }), h('button', { text: 'Back to 2D', onclick: () => this.close() })),
+      fld('Map', h('select', { onchange: e => this.setBase(e.target.value) }, BASES_3D.map(b => h('option', { value: b.id, selected: b.id === this.base, text: b.name })))),
+      h('label', { class: 'fld' }, h('span', { text: 'Height exaggeration' }), h('input', { type: 'range', min: 1, max: 3, step: 0.25, value: this.ex, oninput: e => this.setEx(+e.target.value) })),
+      h('div', { class: 'row' }, h('button', { text: 'Fit tracks', onclick: () => this.fit() }), h('button', { text: 'Top-down', onclick: () => this.map && this.map.easeTo({ pitch: 0, bearing: 0, duration: 700 }) })),
+      h('h3', { text: 'Fly along the track' }),
+      f ? h('p', {}, h('b', { text: f.name }), ' · ', h('span', { id: 'fly3dpos', text: this.fly && this.fly.f === f.id ? '' : fmtDist(stats(f).total) })) : h('p', { text: 'Select a track in the library.' }),
+      h('div', { class: 'row' },
+        h('button', { class: 'pri', disabled: !f, text: flying ? 'Pause' : (canResume ? 'Resume' : 'Fly'), onclick: () => { if (this.fly) this.pauseFly(); else this.startFly(canResume ? this.paused.dm : 0); } }),
+        h('button', { disabled: !f, text: 'Restart', onclick: () => this.startFly(0) }),
+        h('select', { 'aria-label': 'Flying speed', onchange: e => { this.speedMult = +e.target.value; } }, [[0.5, 'Slow'], [1, 'Normal'], [2, 'Fast'], [4, 'Very fast']].map(([v, t]) => h('option', { value: v, selected: this.speedMult === v, text: t })))));
+  }
+};
+
+// ============================================================================
 // Start-up and event wiring
 // ============================================================================
 async function boot() {
   document.documentElement.dataset.theme = S.set.theme === 'light' ? 'light' : 'dark';
   if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!S.set.keys) S.set.keys = {};
-  Sync.load(); if (!Sync.on()) Lock.pending();
+  Sync.load(); if (!Sync.on() && !GUEST) Lock.pending();
+  if (GUEST) { document.documentElement.classList.add('guest'); $('guestBadge').hidden = false; }
   initMap(); Tools.init(); initChart();
-  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnShare', 'share'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud'], ['bNewFolder', 'folder']]) {
+  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnShare', 'share'], ['btn3d', 'cube'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', GUEST ? 'guest' : 'cloud'], ['guestBadge', 'guest'], ['bNewFolder', 'folder']]) {
     const el = $(id), label = el.textContent; el.textContent = ''; el.append(icon(ic), h('span', { text: label }));
   }
   $('side').classList.toggle('closed', !S.set.sideOpen || window.innerWidth < 900);
@@ -2316,7 +2564,9 @@ async function boot() {
   $('btnNew').onclick = () => { newRoute(); if (S.tool !== 'draw') Tools.open('draw'); toast('New route. Click the map to place points.'); };
   $('btnImport').onclick = () => $('fileIn').click();
   $('fileIn').onchange = e => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) importFiles(fs); };
-  $('btnExport').onclick = () => exportFiles(selFiles());
+  $('btnExport').onclick = e => { e.stopPropagation(); showExportMenu(); };
+  $('btn3d').onclick = () => View3D.open();
+  document.addEventListener('click', e => { const m = $('expmenu'); if (!m.hidden && !m.contains(e.target)) m.hidden = true; });
   $('btnShare').onclick = () => { const p = $('sharep'); p.hidden = !p.hidden; $('layers').hidden = true; $('syncp').hidden = true; if (!p.hidden) Shares.panel(); };
   $('sideTab').onclick = () => toggleSide();
   $('profTab').onclick = () => toggleProfile();
@@ -2339,6 +2589,7 @@ async function boot() {
   $('bNewFolder').onclick = () => { S.showTrash = false; UI.newFolder = true; refreshUI(); };
   $('moveTo').onchange = e => { const v = e.target.value; if (v) moveToFolder([...S.sel], v.startsWith('f:') ? v.slice(2) : ''); e.target.value = ''; };
   $('btnBackup').onclick = () => { download(zipFiles(S.files.map(f => ({ name: (f.folder ? safeName(f.folder) + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-workshop-backup-${new Date().toISOString().slice(0, 10)}.zip`); toast(`Backed up ${S.files.length} tracks. Import the zip to restore them.`); };
+  $('guestBadge').onclick = () => $('btnSync').click();
   $('btnSync').onclick = () => { const p = $('syncp'); p.hidden = !p.hidden; $('layers').hidden = true; if (!p.hidden) { Sync._force = true; Sync.panel(); } };
   $('btnTrash').onclick = () => { S.showTrash = !S.showTrash; refreshUI(); };
   $('btnShowAll').onclick = () => { const fs = S.files.filter(f => !f.visible); fs.forEach(f => { f.visible = true; }); touched(fs.map(f => f.id), 'vis'); };
@@ -2358,7 +2609,7 @@ async function boot() {
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') { if (!typing) { e.preventDefault(); undo(); } }
     else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!typing) { e.preventDefault(); redo(); } }
     else if (e.key === 'F2' && !typing && S.sel.size === 1) { e.preventDefault(); startRename([...S.sel][0]); }
-    else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; $('sharep').hidden = true; if (S.tool) Tools.close(); }
+    else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; $('sharep').hidden = true; $('expmenu').hidden = true; if (View3D.isOpen) View3D.close(); if (S.tool) Tools.close(); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !typing && S.sel.size && !S.tool) { e.preventDefault(); deleteFiles(selFiles()); }
   });
   window.addEventListener('resize', () => map.invalidateSize());
