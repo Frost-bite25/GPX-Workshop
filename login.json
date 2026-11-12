@@ -1,0 +1,9 @@
+{
+ "app": "gpx-workshop-login",
+ "v": 1,
+ "kdf": "PBKDF2-SHA256",
+ "iter": 600000,
+ "salt": "cIAvWKwzxCxjz9sbrP7oyg==",
+ "iv": "IW0RIA9cArIXCGit",
+ "data": "VWnxruauADztSFXYSdWbceWDfYjbn27Y8+Y5MkftLcOMIUstcDXEfNvpakQUj+ygh5/DXdKdoMqzv3ff2c1+qL3kUaW0rxRlt/3hkxHPUVyk14EOGzX0lCU017eLlz6ljZG7I1oiipM7PCl1zbQW9ls+F1Yb61+MjsMHlDZcWNN8uPvnAjhWmPxnYj1vRAmW3HjSNABzgwZ6Sw=="
+}
