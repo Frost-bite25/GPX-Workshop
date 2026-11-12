@@ -17,16 +17,16 @@
 /* Layout: app shell. Header on top, track library on the left, map in the middle with a tool rail,
    elevation profile along the bottom. Tool panels float over the map's top-right corner. */
 :root {
-  --bg: #eef0ec; --panel: #ffffff; --ink: #1a1f1c; --muted: #5d665f; --line: #d3d8d1;
-  --accent: #a400e0; --accent-ink: #ffffff; --ok: #1d7a45; --warn: #b3261e; --hover: #f1f3ef;
+  --bg: #0a0b0a; --panel: #141614; --ink: #eceeea; --muted: #98a19a; --line: #2b312c;
+  --accent: #c86bff; --accent-ink: #14091a; --ok: #4cc283; --warn: #ff7a70; --hover: #1f2420;
   --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  color-scheme: light;
+  color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #111412; --panel: #1a1e1b; --ink: #e8ebe7; --muted: #9aa39c; --line: #2f3631;
-    --accent: #c86bff; --accent-ink: #14091a; --ok: #4cc283; --warn: #ff7a70; --hover: #232824; color-scheme: dark; }
+:root[data-theme="light"] {
+  --bg: #eef0ec; --panel: #ffffff; --ink: #1a1f1c; --muted: #5d665f; --line: #d3d8d1;
+  --accent: #a400e0; --accent-ink: #ffffff; --ok: #1d7a45; --warn: #b3261e; --hover: #f1f3ef; color-scheme: light;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -67,8 +67,18 @@ label { display: block; }
 #side .hd .row button { padding: 4px 8px; font-size: .85rem; }
 #side .hd .cnt { font-size: .8rem; color: var(--muted); margin-left: auto; }
 #list { flex: 1 1 auto; overflow-y: auto; min-height: 0; }
-.folder { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 8px 10px 3px; position: sticky; top: 0; background: var(--panel); z-index: 1; }
-.frow { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); cursor: pointer; }
+.folder { display: flex; align-items: center; gap: 6px; padding: 6px 10px; position: sticky; top: 0; z-index: 1; background: var(--bg); border-top: 1px solid var(--line); cursor: pointer; }
+.folder .fname { flex: 1 1 auto; min-width: 0; font-family: var(--display); font-weight: 600; font-size: 1.05rem; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.folder .chev { display: inline-block; width: 1em; color: var(--muted); }
+.folder .fcount { margin-left: 8px; font-family: var(--body); font-size: .75rem; font-weight: 400; color: var(--muted); }
+.folder.dragover, .frow.dragover { outline: 2px dashed var(--accent); outline-offset: -2px; }
+.folder.edit { cursor: default; }
+button.mini { padding: 3px 5px; border-color: transparent; background: transparent; color: var(--muted); }
+button.mini .ic { width: 15px; height: 15px; }
+input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
+.frow.infolder { padding-left: 22px; }
+#moveTo { flex: 1 1 130px; padding: 4px 6px; font-size: .85rem; }
+.frow { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); cursor: pointer; }
 .frow:hover { background: var(--hover); }
 .frow.active { box-shadow: inset 3px 0 0 var(--accent); background: var(--hover); }
 .frow.hiddenfile .nm, .frow.hiddenfile .sub { opacity: .5; }
@@ -92,7 +102,7 @@ label { display: block; }
 
 /* Map */
 #mapwrap { grid-area: map; position: relative; min-height: 0; min-width: 0; }
-#map { position: absolute; inset: 0; z-index: 0; background: #cfd4cc; }
+#map { position: absolute; inset: 0; z-index: 0; background: var(--bg); }
 #rail { position: absolute; left: 8px; top: 8px; bottom: 8px; z-index: 800; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; pointer-events: none; scrollbar-width: none; }
 #rail button { pointer-events: auto; justify-content: flex-start; gap: 8px; padding: 6px 12px 6px 8px; font-size: .86rem; border-radius: 9px; border-color: transparent; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
 #rail button .ic { width: 20px; height: 20px; color: var(--accent); }
@@ -152,6 +162,13 @@ ol.steps b { color: var(--ink); }
 #chartmsg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: .9rem; }
 
 /* Leaflet bits */
+.leaflet-bar a, .leaflet-bar a:hover { background: var(--panel); color: var(--ink); border-bottom-color: var(--line); }
+.leaflet-bar a.leaflet-disabled { background: var(--bg); color: var(--muted); }
+.leaflet-bar { border-color: var(--line) !important; }
+.leaflet-control-scale-line { background: color-mix(in srgb, var(--panel) 80%, transparent); color: var(--ink); border-color: var(--ink); text-shadow: none; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--ink); }
+.leaflet-container .leaflet-control-attribution { background: color-mix(in srgb, var(--panel) 75%, transparent); color: var(--muted); }
+.leaflet-container .leaflet-control-attribution a { color: var(--ink); }
 .leaflet-container { font-family: var(--body); }
 .leaflet-control-attribution { font-size: 10px; }
 .leaflet-overlay-blend { mix-blend-mode: multiply; }
@@ -208,7 +225,12 @@ ol.steps b { color: var(--ink); }
         <button id="bZoom" disabled>Zoom to</button>
         <button id="bVis" disabled>Show/Hide</button>
         <button id="bDup" disabled>Duplicate</button>
+        <button id="bRename" title="Rename the selected track (F2)" disabled>Rename</button>
         <button id="bDel" class="danger" disabled>Delete</button>
+      </div>
+      <div class="row">
+        <select id="moveTo" aria-label="Move the selected tracks to a folder" disabled></select>
+        <button id="bNewFolder" title="Create a folder">New folder</button>
         <span class="cnt" id="selCount"></span>
       </div>
     </div>
@@ -276,7 +298,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const PALETTE = ['#ff2d55', '#ff9500', '#ffd400', '#34c759', '#00c7be', '#0a84ff', '#a400e0', '#ff40ff', '#ffffff', '#1a1f1c'];
 
 const DEFAULTS = { routing: true, profile: 'trekking', base: 'sat', overlays: {}, contourOpacity: 0.7, custom: [], view: { lat: -34.05, lng: 23.37, z: 11 },
-  arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
+  theme: 'dark', folders: [], collapsed: {}, arrows: true, kmMarks: true, range: 0, sideOpen: true, profOpen: true, splitMode: 'segments', units: 'km' };
 function loadSettings() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('gpxw-settings') || '{}')); } catch { return Object.assign({}, DEFAULTS); } }
 function saveSettings() { try { localStorage.setItem('gpxw-settings', JSON.stringify(S.set)); } catch { /* storage unavailable */ } }
 
@@ -519,6 +541,7 @@ function redo() { const u = S.redo.pop(); if (!u) return; S.undo.push({ label: u
 // ---------- Icons (24x24, stroked) ----------
 const ICONS = {
   library: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM12 11v5M9.5 13.5h5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   import: '<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>',
   export: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
@@ -710,39 +733,94 @@ function updateButtons() {
   $('selCount').textContent = n ? `${n} selected` : `${S.files.length} track${S.files.length === 1 ? '' : 's'}`;
   $('selAll').checked = n > 0 && n === S.files.length; $('selAll').indeterminate = n > 0 && n < S.files.length;
   $('btnBackup').disabled = !S.files.length;
+  $('bRename').disabled = n !== 1;
+  const mv = $('moveTo'), fos = allFolders(); mv.textContent = ''; mv.disabled = !n || !fos.length;
+  mv.append(h('option', { value: '', text: !fos.length ? 'No folders yet' : n ? `Move ${n} to folder…` : 'Move to folder…' }), ...fos.map(x => h('option', { value: 'f:' + x, text: x })), h('option', { value: 'u:', text: 'Unfiled (no folder)' }));
   $('btnTrash').lastChild.textContent = S.showTrash ? 'Back to library' : `Recently deleted (${S.trash.length})`;
   $('btnTrash').classList.toggle('on', S.showTrash);
 }
 
 // ---------- Library list ----------
+const UI = { renaming: null, newFolder: false, renFolder: null };
+function allFolders() { const s = new Set(S.set.folders || []); for (const f of S.files) if (f.folder) s.add(f.folder); return [...s].sort((a, b) => a.localeCompare(b)); }
+function moveToFolder(ids, folder) {
+  const fs = S.files.filter(f => ids.includes(f.id) && (f.folder || '') !== folder); if (!fs.length) return;
+  op('Move to ' + (folder || 'Unfiled'), fs.map(f => f.id), () => fs.forEach(f => { f.folder = folder; }));
+  if (folder) { S.set.collapsed[folder] = false; saveSettings(); renderList(); }
+  toast(`Moved ${fs.length} track${fs.length > 1 ? 's' : ''} to ${folder || 'Unfiled'}.`, { label: 'Undo', fn: undo });
+}
+function renameFolder(old, name) {
+  const fs = S.files.filter(f => f.folder === old);
+  S.set.folders = (S.set.folders || []).filter(x => x !== old && x !== name).concat([name]); S.set.collapsed[name] = S.set.collapsed[old]; delete S.set.collapsed[old]; saveSettings();
+  if (fs.length) op('Rename folder', fs.map(f => f.id), () => fs.forEach(f => { f.folder = name; })); else refreshUI();
+}
+function removeFolder(fo) {
+  const fs = S.files.filter(f => f.folder === fo);
+  S.set.folders = (S.set.folders || []).filter(x => x !== fo); delete S.set.collapsed[fo]; saveSettings();
+  if (fs.length) { op('Remove folder ' + fo, fs.map(f => f.id), () => fs.forEach(f => { f.folder = ''; })); toast(`Removed the folder "${fo}". Its ${fs.length} track${fs.length > 1 ? 's are' : ' is'} now Unfiled.`, { label: 'Undo', fn: undo }); }
+  else refreshUI();
+}
+// A text box that replaces a label while you rename something. Enter or clicking away saves; Esc cancels.
+function inlineInput(value, placeholder, onDone) {
+  let finished = false, cancelled = false; const i = h('input', { type: 'text', class: 'inl', value, placeholder, 'aria-label': placeholder });
+  i.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') i.blur(); else if (e.key === 'Escape') { cancelled = true; i.blur(); } });
+  i.addEventListener('blur', () => { if (finished) return; finished = true; onDone(cancelled ? null : i.value.trim()); });
+  i.addEventListener('click', e => e.stopPropagation()); i.addEventListener('dblclick', e => e.stopPropagation());
+  setTimeout(() => { i.focus(); i.select(); }, 0); return i;
+}
+function dropTarget(el, folder) {
+  el.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('text/gpxw')) { e.preventDefault(); el.classList.add('dragover'); } });
+  el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+  el.addEventListener('drop', e => { el.classList.remove('dragover'); const d = e.dataTransfer.getData('text/gpxw'); if (!d) return; e.preventDefault(); e.stopPropagation(); moveToFolder(d.split(','), folder); });
+}
+function startRename(id) { UI.renaming = id; const f = fileById(id); if (f && f.folder) S.set.collapsed[f.folder] = false; $('filter').value = ''; renderList(); }
 function renderList() {
-  const list = $('list'), q = $('filter').value.trim().toLowerCase(); list.textContent = '';
+  const list = $('list'); if (list.querySelector('input.inl:focus')) return;      // don't wipe a name while it is being typed
+  const q = $('filter').value.trim().toLowerCase(); list.textContent = '';
   if (S.showTrash) { renderTrash(list, q); return; }
-  if (!S.files.length) {
-    list.append(h('div', { class: 'empty' }, h('b', { text: 'No tracks yet' }),
+  if (UI.newFolder) list.append(h('div', { class: 'folder edit' }, icon('folder'), inlineInput('', 'New folder name', v => { UI.newFolder = false; if (v && !allFolders().includes(v)) { S.set.folders = (S.set.folders || []).concat([v]); saveSettings(); toast(`Folder "${v}" created. Select tracks and use "Move to folder", or drag them onto it.`); } refreshUI(); })));
+  const folders = allFolders();
+  if (!S.files.length && !folders.length) {
+    if (!UI.newFolder) list.append(h('div', { class: 'empty' }, h('b', { text: 'No tracks yet' }),
       h('span', { text: 'Import GPX files with the Import button (or drag them onto the map), or press New and use the Draw tool to plot a route.' }),
       h('span', { text: 'Everything you add is saved here automatically.' })));
     return;
   }
-  const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q));
-  const folders = [...new Set(shown.map(f => f.folder || ''))].sort((a, b) => a.localeCompare(b));
-  for (const fo of folders) {
-    if (folders.length > 1 || fo) list.append(h('div', { class: 'folder', text: fo || 'Unfiled' }));
-    for (const f of shown.filter(x => (x.folder || '') === fo).sort((a, b) => a.name.localeCompare(b.name))) {
-      const st = stats(f);
-      const row = h('div', { class: 'frow' + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), title: 'Click to select. Double-click to zoom to it.' },
-        h('input', { type: 'checkbox', checked: S.sel.has(f.id), 'aria-label': 'Select ' + f.name, onclick: e => { e.stopPropagation(); select([f.id], { add: true, toggle: true }); } }),
-        h('span', { class: 'dot', style: 'background:' + f.color }),
-        h('div', {}, h('div', { class: 'nm', text: f.name }),
-          h('div', { class: 'sub', text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts` + (f.segs.length > 1 ? ` · ${f.segs.length} segments` : '') + (f.wpts.length ? ` · ${f.wpts.length} wpt` : '') })),
-        h('button', { class: 'eye', text: f.visible ? 'Hide' : 'Show', onclick: e => { e.stopPropagation(); f.visible = !f.visible; touched([f.id], 'vis'); } }));
-      row.addEventListener('click', e => { if (e.shiftKey || e.ctrlKey || e.metaKey) select([f.id], { add: true, toggle: true }); else select([f.id], { active: f.id }); });
-      row.addEventListener('dblclick', () => zoomTo([f]));
-      list.append(row);
-    }
-  }
+  const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+  const fileRow = f => {
+    const st = stats(f);
+    const nameEl = UI.renaming === f.id
+      ? inlineInput(f.name, 'Track name', v => { UI.renaming = null; if (v && v !== f.name) op('Rename', [f.id], () => { f.name = v; }); else renderList(); })
+      : h('div', { class: 'nm', text: f.name });
+    const row = h('div', { class: 'frow' + (f.folder ? ' infolder' : '') + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), draggable: UI.renaming !== f.id, title: 'Click to select. Double-click to zoom to it. Drag onto a folder to move it.' },
+      h('input', { type: 'checkbox', checked: S.sel.has(f.id), 'aria-label': 'Select ' + f.name, onclick: e => { e.stopPropagation(); select([f.id], { add: true, toggle: true }); } }),
+      h('span', { class: 'dot', style: 'background:' + f.color }),
+      h('div', {}, nameEl,
+        h('div', { class: 'sub', text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts` + (f.segs.length > 1 ? ` · ${f.segs.length} segments` : '') + (f.wpts.length ? ` · ${f.wpts.length} wpt` : '') })),
+      h('button', { class: 'mini', title: 'Rename', 'aria-label': 'Rename ' + f.name, onclick: e => { e.stopPropagation(); startRename(f.id); } }, icon('draw')),
+      h('button', { class: 'eye', text: f.visible ? 'Hide' : 'Show', onclick: e => { e.stopPropagation(); f.visible = !f.visible; touched([f.id], 'vis'); } }));
+    row.addEventListener('click', e => { if (e.shiftKey || e.ctrlKey || e.metaKey) select([f.id], { add: true, toggle: true }); else select([f.id], { active: f.id }); });
+    row.addEventListener('dblclick', () => zoomTo([f]));
+    row.addEventListener('dragstart', e => { const ids = S.sel.has(f.id) ? [...S.sel] : [f.id]; e.dataTransfer.setData('text/gpxw', ids.join(',')); e.dataTransfer.effectAllowed = 'move'; });
+    return row;
+  };
+  const header = (fo, fs) => {
+    const shut = !!S.set.collapsed[fo] && !q, all = fs.length > 0 && fs.every(f => S.sel.has(f.id)), ids = fs.map(f => f.id);
+    const hd = h('div', { class: 'folder' + (shut ? ' shut' : ''), title: 'Click to open or close this folder' },
+      h('input', { type: 'checkbox', checked: all, disabled: !fs.length, title: 'Select every track in this folder', 'aria-label': 'Select every track in ' + (fo || 'Unfiled'), onclick: e => { e.stopPropagation(); if (all) select([...S.sel].filter(id => !ids.includes(id))); else select(ids, { add: true }); } }),
+      UI.renFolder === fo && fo
+        ? inlineInput(fo, 'Folder name', v => { UI.renFolder = null; if (v && v !== fo) renameFolder(fo, v); else renderList(); })
+        : h('span', { class: 'fname' }, h('span', { class: 'chev', text: shut ? '▸' : '▾' }), fo || 'Unfiled', h('span', { class: 'fcount', text: fs.length + (fs.length === 1 ? ' track' : ' tracks') })),
+      fo ? h('button', { class: 'mini', title: 'Rename folder', 'aria-label': 'Rename folder ' + fo, onclick: e => { e.stopPropagation(); UI.renFolder = fo; renderList(); } }, icon('draw')) : null,
+      fo ? h('button', { class: 'mini', title: 'Remove this folder. Its tracks move to Unfiled.', 'aria-label': 'Remove folder ' + fo, onclick: e => { e.stopPropagation(); removeFolder(fo); } }, icon('trash')) : null);
+    hd.addEventListener('click', () => { S.set.collapsed[fo] = !S.set.collapsed[fo]; saveSettings(); renderList(); });
+    dropTarget(hd, fo); list.append(hd);
+    if (!shut) fs.forEach(f => list.append(fileRow(f)));
+  };
+  for (const fo of folders) { const fs = shown.filter(f => f.folder === fo); if (!q || fs.length) header(fo, fs); }
+  const unfiled = shown.filter(f => !f.folder);
+  if (folders.length) { if (unfiled.length || !q) header('', unfiled); } else unfiled.forEach(f => list.append(fileRow(f)));
 }
-
 function renderTrash(list, q) {
   const items = S.trash.filter(t => !q || t.file.name.toLowerCase().includes(q)).sort((a, b) => b.deletedAt - a.deletedAt);
   list.append(h('div', { class: 'trashhd' }, h('b', { text: 'Recently deleted' }),
@@ -927,6 +1005,9 @@ function renderLayersPanel() {
   p.append(h('h3', { text: 'Overlays' }));
   for (const o of OVERLAYS) p.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: !!S.set.overlays[o.id], onchange: e => setOverlay(o.id, e.target.checked) }), o.name));
   p.append(h('label', { class: 'fld' }, h('span', { text: 'Contour strength' }), h('input', { type: 'range', min: 0.2, max: 1, step: 0.05, value: S.set.contourOpacity, oninput: e => { S.set.contourOpacity = +e.target.value; saveSettings(); if (overlayLayers.contours) overlayLayers.contours.eachLayer(l => l.setOpacity(S.set.contourOpacity)); } })));
+  p.append(h('h3', { text: 'Appearance' }),
+    h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'theme', checked: S.set.theme !== 'light', onchange: () => setTheme('dark') }), 'Black'),
+    h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'theme', checked: S.set.theme === 'light', onchange: () => setTheme('light') }), 'White'));
   p.append(h('h3', { text: 'On the active track' }),
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.arrows, onchange: e => { S.set.arrows = e.target.checked; saveSettings(); renderDecor(); } }), 'Direction arrows'),
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.kmMarks, onchange: e => { S.set.kmMarks = e.target.checked; saveSettings(); renderDecor(); } }), 'Distance marks (km)'),
@@ -935,6 +1016,8 @@ function renderLayersPanel() {
   p.append(h('h3', { text: 'Add your own map layer' }), nm, url,
     h('button', { text: 'Add layer', onclick: () => { const u = url.value.trim(); if (!/^https:\/\/.*\{z\}.*\{x\}.*\{y\}/.test(u)) { toast('The address must start with https:// and contain {z}, {x} and {y}.'); return; } const c = { id: 'c' + uid().slice(0, 8), name: nm.value.trim() || 'Custom map', url: u }; S.set.custom.push(c); setBase(c.id); renderLayersPanel(); } }));
 }
+
+function setTheme(t) { S.set.theme = t === 'light' ? 'light' : 'dark'; document.documentElement.dataset.theme = S.set.theme; saveSettings(); const cv = $('chart'); if (cv && cv._st !== undefined) drawChart(cv._st); }
 
 // ============================================================================
 // Editing tools
@@ -1628,8 +1711,10 @@ const Sync = {
 // Start-up and event wiring
 // ============================================================================
 async function boot() {
+  document.documentElement.dataset.theme = S.set.theme === 'light' ? 'light' : 'dark';
+  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {};
   initMap(); Tools.init(); initChart();
-  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud']]) {
+  for (const [id, ic] of [['sideToggle', 'library'], ['btnNew', 'plus'], ['btnImport', 'import'], ['btnExport', 'export'], ['btnUndo', 'undo'], ['btnRedo', 'redo'], ['btnLocate', 'locate'], ['btnLayers', 'maps'], ['btnGo', 'search'], ['btnTrash', 'trash'], ['btnSync', 'cloud'], ['bNewFolder', 'folder']]) {
     const el = $(id), label = el.textContent; el.textContent = ''; el.append(icon(ic), h('span', { text: label }));
   }
   $('side').classList.toggle('closed', !S.set.sideOpen || window.innerWidth < 900);
@@ -1666,6 +1751,9 @@ async function boot() {
   $('bVis').onclick = () => { const fs = selFiles(), show = fs.some(f => !f.visible); fs.forEach(f => { f.visible = show; }); touched(fs.map(f => f.id), 'vis'); };
   $('bDup').onclick = () => duplicateFiles(selFiles());
   $('bDel').onclick = () => deleteFiles(selFiles());
+  $('bRename').onclick = () => { if (S.sel.size === 1) startRename([...S.sel][0]); };
+  $('bNewFolder').onclick = () => { S.showTrash = false; UI.newFolder = true; refreshUI(); };
+  $('moveTo').onchange = e => { const v = e.target.value; if (v) moveToFolder([...S.sel], v.startsWith('f:') ? v.slice(2) : ''); e.target.value = ''; };
   $('btnBackup').onclick = () => { download(zipFiles(S.files.map(f => ({ name: (f.folder ? safeName(f.folder) + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-workshop-backup-${new Date().toISOString().slice(0, 10)}.zip`); toast(`Backed up ${S.files.length} tracks. Import the zip to restore them.`); };
   $('btnSync').onclick = () => { const p = $('syncp'); p.hidden = !p.hidden; $('layers').hidden = true; if (!p.hidden) { Sync._force = true; Sync.panel(); } };
   $('btnTrash').onclick = () => { S.showTrash = !S.showTrash; refreshUI(); };
@@ -1684,6 +1772,7 @@ async function boot() {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') { if (!typing) { e.preventDefault(); undo(); } }
     else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!typing) { e.preventDefault(); redo(); } }
+    else if (e.key === 'F2' && !typing && S.sel.size === 1) { e.preventDefault(); startRename([...S.sel][0]); }
     else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; if (S.tool) Tools.close(); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !typing && S.sel.size && !S.tool) { e.preventDefault(); deleteFiles(selFiles()); }
   });
