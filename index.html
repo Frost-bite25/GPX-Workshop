@@ -82,7 +82,10 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 #moveTo { flex: 1 1 130px; padding: 4px 6px; font-size: .85rem; }
 .frow { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); cursor: pointer; }
 .frow:hover { background: var(--hover); }
-.frow.active { box-shadow: inset 3px 0 0 var(--accent); background: var(--hover); }
+.frow.active { box-shadow: inset 4px 0 0 var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
+.frow.active .nm { color: var(--accent); font-weight: 700; }
+.frow.flash { animation: rowflash 1.4s ease-out; }
+@keyframes rowflash { 0%, 30% { background: color-mix(in srgb, var(--accent) 45%, var(--panel)); } 100% { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); } }
 .frow.hiddenfile .nm, .frow.hiddenfile .sub { opacity: .5; }
 .frow .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); }
 .frow .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -324,7 +327,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 9, built 12 Nov 2026">v9</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 9.1, built 13 Nov 2026">v9.1</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -367,7 +370,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 9 · 12 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 9.1 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -415,7 +418,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '9';
+const APP_VERSION = '9.1';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -981,6 +984,17 @@ function segRows(f) {
   });
   return box;
 }
+// Find a track clicked on the map in the library: open its folder, clear a filter that hides it, scroll to it and flash it.
+function revealInList(id) {
+  const f = fileById(id); if (!f || S.showTrash) return;
+  const q = $('filter').value.trim().toLowerCase();
+  if (q && !f.name.toLowerCase().includes(q) && !(f.folder || '').toLowerCase().includes(q)) $('filter').value = '';
+  if (f.folder && S.set.collapsed[f.folder]) { S.set.collapsed[f.folder] = false; saveSettings(); }
+  renderList();
+  const row = $('list').querySelector(`.frow[data-id="${id}"]`); if (!row) return;
+  row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+}
 function pickSeg(f, i) {
   if (S.active !== f.id || !S.sel.has(f.id)) select([f.id], { active: f.id });
   S.seg = i; renderFile(f); renderList(); if (S.tool) Tools.refresh();
@@ -1016,7 +1030,7 @@ function renderList() {
     const nameEl = UI.renaming === f.id
       ? inlineInput(f.name, 'Track name', v => { UI.renaming = null; if (v && v !== f.name) op('Rename', [f.id], () => { f.name = v; }); else renderList(); })
       : h('div', { class: 'nm', text: f.name });
-    const row = h('div', { class: 'frow' + (f.folder ? ' infolder' : '') + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), draggable: UI.renaming !== f.id, title: 'Click to select. Double-click to zoom to it. Drag onto a folder to move it.' },
+    const row = h('div', { 'data-id': f.id, class: 'frow' + (f.folder ? ' infolder' : '') + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), draggable: UI.renaming !== f.id, title: 'Click to select. Double-click to zoom to it. Drag onto a folder to move it.' },
       h('input', { type: 'checkbox', checked: S.sel.has(f.id), 'aria-label': 'Select ' + f.name, onclick: e => { e.stopPropagation(); select([f.id], { add: true, toggle: true }); } }),
       h('span', { class: 'dot', style: 'background:' + f.color }),
       h('div', {}, nameEl,
@@ -1529,6 +1543,7 @@ const Tools = {
     }
     const multi = e.originalEvent && (e.originalEvent.shiftKey || e.originalEvent.ctrlKey || e.originalEvent.metaKey);
     if (multi) select([f.id], { add: true, toggle: true }); else { if (f.segs.length > 1) UI.openSegs.add(f.id); select([f.id], { active: f.id }); pickSeg(f, si); }
+    revealInList(f.id);
   },
   onWptClick(f, wi) { if (!S.sel.has(f.id)) select([f.id], { active: f.id }); if (S.tool !== 'wpt') this.open('wpt'); this.state.edit = { fid: f.id, wi }; this.refresh(); },
   addWaypointAt(ll) {
@@ -2513,7 +2528,7 @@ const View3D = {
       this.map.addSource('tracks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       this.map.addLayer({ id: 'casing', type: 'line', source: 'tracks', filter: ['==', ['get', 'sel'], 1], layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': ['+', ['get', 'w'], 5], 'line-opacity': 0.9 } });
       this.map.addLayer({ id: 'lines', type: 'line', source: 'tracks', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['get', 'w'], 'line-opacity': 0.95 } });
-      this.map.on('click', 'lines', e => { const id = e.features[0] && e.features[0].properties.id; if (id) select([id], { active: id }); });
+      this.map.on('click', 'lines', e => { const id = e.features[0] && e.features[0].properties.id; if (id) { select([id], { active: id }); revealInList(id); } });
       this.map.on('mouseenter', 'lines', () => { this.map.getCanvas().style.cursor = 'pointer'; });
       this.map.on('mouseleave', 'lines', () => { this.map.getCanvas().style.cursor = ''; });
       this.refresh(); this.fit();

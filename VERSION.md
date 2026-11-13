@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 9.1** (13 Nov 2026): clicking a track on the map (2D or 3D) highlights it in the library — opens its folder, scrolls to it and flashes it; stronger highlight for the selected track.
 - **Version 9** (13 Nov 2026): phone layout — compact two-row header with full-width search, tools as a swipeable bottom toolbar, panels slide up from the bottom, library drawer closes when you tap the map, bigger touch targets, no zoom-in on text boxes. PC and iPad unchanged.
 - **Version 8.1** (12 Nov 2026): tool rail shows the name under each icon again.
 - **Version 8** (12 Nov 2026): 3D view with terrain (satellite or topo, height exaggeration, fly along the track); Export menu with GPX, KMZ and KML for Google Earth; fix: segments taken out one at a time are all named "Track – Segment N", including the last one left.
