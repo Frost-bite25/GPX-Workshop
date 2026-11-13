@@ -77,8 +77,8 @@ label { display: block; }
 .folder.edit { cursor: default; }
 @media (hover: hover) { .folder .mini { display: none; } .folder:hover .mini, .folder:focus-within .mini { display: inline-flex; } }
 .folder.sub { position: static; background: var(--panel); border-top-style: dashed; }
-.folder:not(.sub) .fname { font-size: 1.22rem; font-weight: 700; }
-.folder.sub .fname { font-size: .95rem; font-weight: 600; }
+.folder:not(.sub) .fname { font-size: 1.1rem; font-weight: 600; }
+.folder.sub .fname { font-size: .95rem; font-weight: 400; }
 .folder[draggable="true"] { -webkit-user-drag: element; }
 .segnote { display: grid; gap: 6px; margin: 8px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--panel)); font-size: .88rem; }
 .segnote span { color: var(--muted); }
@@ -338,7 +338,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 10.1, built 13 Nov 2026">v10.1</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 10.2, built 13 Nov 2026">v10.2</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -381,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 10.1 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 10.2 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -429,7 +429,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '10.1';
+const APP_VERSION = '10.2';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
