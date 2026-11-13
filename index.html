@@ -75,6 +75,17 @@ label { display: block; }
 .folder .fcount { margin-left: 8px; font-family: var(--body); font-size: .75rem; font-weight: 400; color: var(--muted); }
 .folder.dragover, .frow.dragover { outline: 2px dashed var(--accent); outline-offset: -2px; }
 .folder.edit { cursor: default; }
+@media (hover: hover) { .folder .mini { display: none; } .folder:hover .mini, .folder:focus-within .mini { display: inline-flex; } }
+.folder.sub { position: static; background: var(--panel); border-top-style: dashed; }
+.folder:not(.sub) .fname { font-size: 1.22rem; font-weight: 700; }
+.folder.sub .fname { font-size: .95rem; font-weight: 600; }
+.folder[draggable="true"] { -webkit-user-drag: element; }
+.segnote { display: grid; gap: 6px; margin: 8px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--panel)); font-size: .88rem; }
+.segnote span { color: var(--muted); }
+.segnote .row { display: flex; gap: 6px; flex-wrap: wrap; }
+.segsplit { display: flex; align-items: center; gap: 8px; padding: 4px 8px 6px 6px; font-size: .8rem; color: var(--muted); }
+.segsplit span { flex: 1; }
+.segsplit button { padding: 3px 9px; font-size: .8rem; }
 button.mini { padding: 3px 5px; border-color: transparent; background: transparent; color: var(--muted); }
 button.mini .ic { width: 15px; height: 15px; }
 input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
@@ -327,7 +338,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 9.1, built 13 Nov 2026">v9.1</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 10.1, built 13 Nov 2026">v10.1</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -370,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 9.1 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 10.1 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -418,7 +429,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '9.1';
+const APP_VERSION = '10.1';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -929,30 +940,72 @@ function updateButtons() {
   $('btnBackup').disabled = !S.files.length;
   $('bRename').disabled = n !== 1;
   const mv = $('moveTo'), fos = allFolders(); mv.textContent = ''; mv.disabled = !n || !fos.length;
-  mv.append(h('option', { value: '', text: !fos.length ? 'No folders yet' : n ? `Move ${n} to folder…` : 'Move to folder…' }), ...fos.map(x => h('option', { value: 'f:' + x, text: x })), h('option', { value: 'u:', text: 'Unfiled (no folder)' }));
+  mv.append(h('option', { value: '', text: !fos.length ? 'No folders yet' : n ? `Move ${n} to folder…` : 'Move to folder…' }), ...fos.map(x => h('option', { value: 'f:' + x, text: folderLabel(x) })), h('option', { value: 'u:', text: 'Unfiled (no folder)' }));
   $('btnTrash').lastChild.textContent = S.showTrash ? 'Back to library' : `Recently deleted (${S.trash.length})`;
   $('btnTrash').classList.toggle('on', S.showTrash);
 }
 
 // ---------- Library list ----------
 const UI = { renaming: null, newFolder: false, renFolder: null, openSegs: new Set() };
-function allFolders() { const s = new Set(S.set.folders || []); for (const f of S.files) if (f.folder) s.add(f.folder); return [...s].sort((a, b) => a.localeCompare(b)); }
+// Folders can sit inside folders: a track's folder is a path like "Baviaans/Ridge Loop".
+const fparent = p => (p && p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '');
+const fleaf = p => (p || '').slice((p || '').lastIndexOf('/') + 1);
+const joinP = (a, b) => (a ? a + '/' + b : b);
+const inFolder = (f, p) => f.folder === p || (f.folder || '').startsWith(p + '/');
+const folderLabel = p => p.split('/').join(' › ');
+const cleanLeaf = v => v.replace(/\//g, '-').trim();
+function allFolders() { const s = new Set(), add = p => { while (p) { s.add(p); p = fparent(p); } }; (S.set.folders || []).forEach(add); S.files.forEach(f => add(f.folder)); return [...s].sort((a, b) => a.localeCompare(b)); }
+function openFolderPath(p) { while (p) { S.set.collapsed[p] = false; p = fparent(p); } saveSettings(); }
 function moveToFolder(ids, folder) {
   const fs = S.files.filter(f => ids.includes(f.id) && (f.folder || '') !== folder); if (!fs.length) return;
-  op('Move to ' + (folder || 'Unfiled'), fs.map(f => f.id), () => fs.forEach(f => { f.folder = folder; }));
-  if (folder) { S.set.collapsed[folder] = false; saveSettings(); renderList(); }
-  toast(`Moved ${fs.length} track${fs.length > 1 ? 's' : ''} to ${folder || 'Unfiled'}.`, { label: 'Undo', fn: undo });
+  op('Move to ' + (folder ? fleaf(folder) : 'Unfiled'), fs.map(f => f.id), () => fs.forEach(f => { f.folder = folder; }));
+  if (folder) { openFolderPath(folder); renderList(); }
+  toast(`Moved ${fs.length} track${fs.length > 1 ? 's' : ''} to ${folder ? folderLabel(folder) : 'Unfiled'}.`, { label: 'Undo', fn: undo });
 }
+// Renames (or moves) a folder and everything inside it.
 function renameFolder(old, name) {
-  const fs = S.files.filter(f => f.folder === old);
-  S.set.folders = (S.set.folders || []).filter(x => x !== old && x !== name).concat([name]); S.set.collapsed[name] = S.set.collapsed[old]; delete S.set.collapsed[old]; cfgTouched();
-  if (fs.length) op('Rename folder', fs.map(f => f.id), () => fs.forEach(f => { f.folder = name; })); else refreshUI();
+  if (!name || name === old || name.startsWith(old + '/')) { refreshUI(); return; }
+  const re = p => (p === old ? name : p && p.startsWith(old + '/') ? name + p.slice(old.length) : p);
+  const fs = S.files.filter(f => inFolder(f, old));
+  S.set.folders = [...new Set((S.set.folders || []).map(re).concat([name]))];
+  const c = {}; for (const [k, v] of Object.entries(S.set.collapsed)) c[re(k)] = v; S.set.collapsed = c; openFolderPath(fparent(name)); cfgTouched();
+  if (fs.length) op('Rename folder', fs.map(f => f.id), () => fs.forEach(f => { f.folder = re(f.folder); })); else refreshUI();
 }
+// Removes a folder; what was in it moves up one level.
 function removeFolder(fo) {
-  const fs = S.files.filter(f => f.folder === fo);
-  S.set.folders = (S.set.folders || []).filter(x => x !== fo); delete S.set.collapsed[fo]; cfgTouched();
-  if (fs.length) { op('Remove folder ' + fo, fs.map(f => f.id), () => fs.forEach(f => { f.folder = ''; })); toast(`Removed the folder "${fo}". Its ${fs.length} track${fs.length > 1 ? 's are' : ' is'} now Unfiled.`, { label: 'Undo', fn: undo }); }
+  const up = fparent(fo), re = p => (p === fo ? up : p && p.startsWith(fo + '/') ? joinP(up, p.slice(fo.length + 1)) : p);
+  const fs = S.files.filter(f => inFolder(f, fo));
+  S.set.folders = [...new Set((S.set.folders || []).map(re).filter(Boolean))]; delete S.set.collapsed[fo]; cfgTouched();
+  if (fs.length) { op('Remove folder ' + fleaf(fo), fs.map(f => f.id), () => fs.forEach(f => { f.folder = re(f.folder); })); toast(`Removed the folder "${fleaf(fo)}". What was in it is now in ${up ? folderLabel(up) : 'Unfiled'}.`, { label: 'Undo', fn: undo }); }
   else refreshUI();
+}
+// ---------- Segments -> separate tracks in a folder (Garmin Connect only reads the first segment) ----------
+// In a folder named after the original file, show "Segment 2" instead of "Baviaans Loop – Segment 2" (the full name is kept for Garmin).
+function shortName(f) { const lf = fleaf(f.folder), pre = lf + ' – '; return lf && f.name.startsWith(pre) && f.name.length > pre.length ? f.name.slice(pre.length) : f.name; }
+const liveSegs = f => f.segs.filter(s => s.pts.length > 1).length;
+function segTrackNames(f) {
+  const own = s => s.name && s.name !== f.name, cnt = {}, seen = {};
+  f.segs.forEach(s => { if (own(s)) cnt[s.name] = (cnt[s.name] || 0) + 1; });
+  return f.segs.map((s, i) => { if (!own(s)) return `${f.name} – Segment ${i + 1}`; if (cnt[s.name] === 1) return s.name; seen[s.name] = (seen[s.name] || 0) + 1; return `${s.name} (${seen[s.name]})`; });
+}
+function splitParts(f) {
+  const fo = joinP(f.folder || '', cleanLeaf(f.name) || 'Track'), names = segTrackNames(f), out = [];
+  f.segs.forEach((s, i) => { if (s.pts.length < 2) return;
+    const nf = mkFile(names[i], [mkSeg(names[i], s.pts)]); nf.folder = fo; nf.color = PALETTE[(Math.max(0, PALETTE.indexOf(f.color)) + out.length) % 8]; nf.width = f.width; nf.opacity = f.opacity; nf.visible = f.visible; out.push(nf); });
+  if (out.length && f.wpts.length) out[0].wpts = f.wpts.map(w => ({ ...w }));
+  return out;
+}
+function splitToFolders(files) {
+  const multi = files.filter(f => liveSegs(f) > 1); if (!multi.length) { toast('Those tracks only have one segment.'); return []; }
+  const made = [];
+  op(`Split ${multi.length} track${multi.length > 1 ? 's' : ''} into folders`, multi.map(f => f.id), () => {
+    for (const f of multi) made.push(...splitParts(f));
+    S.files = S.files.filter(f => !multi.includes(f)); S.files.push(...made);
+  });
+  made.forEach(f => openFolderPath(f.folder));
+  select(made.map(f => f.id), { active: made[0].id });
+  toast(multi.length === 1 ? `"${multi[0].name}" is now ${made.length} tracks in its own folder.` : `Split ${multi.length} tracks into ${made.length} tracks, each set in its own folder.`, { label: 'Undo', fn: undo });
+  return made;
 }
 // A text box that replaces a label while you rename something. Enter or clicking away saves; Esc cancels.
 function inlineInput(value, placeholder, onDone) {
@@ -963,20 +1016,24 @@ function inlineInput(value, placeholder, onDone) {
   setTimeout(() => { i.focus(); i.select(); }, 0); return i;
 }
 function dropTarget(el, folder) {
-  el.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('text/gpxw')) { e.preventDefault(); el.classList.add('dragover'); } });
+  el.addEventListener('dragover', e => { const t = [...e.dataTransfer.types]; if (t.includes('text/gpxw') || t.includes('text/gpxw-folder')) { e.preventDefault(); el.classList.add('dragover'); } });
   el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-  el.addEventListener('drop', e => { el.classList.remove('dragover'); const d = e.dataTransfer.getData('text/gpxw'); if (!d) return; e.preventDefault(); e.stopPropagation(); moveToFolder(d.split(','), folder); });
+  el.addEventListener('drop', e => { el.classList.remove('dragover'); e.preventDefault(); e.stopPropagation();
+    const src = e.dataTransfer.getData('text/gpxw-folder');
+    if (src) { if (folder === src || folder.startsWith(src + '/')) return; const to = joinP(folder, fleaf(src)); if (to !== src) renameFolder(src, to); return; }
+    const d = e.dataTransfer.getData('text/gpxw'); if (d) moveToFolder(d.split(','), folder); });
 }
-function startRename(id) { UI.renaming = id; const f = fileById(id); if (f && f.folder) S.set.collapsed[f.folder] = false; $('filter').value = ''; renderList(); }
+function startRename(id) { UI.renaming = id; const f = fileById(id); if (f && f.folder) openFolderPath(f.folder); $('filter').value = ''; renderList(); }
 // Segment rows under a track: click to pick a segment (it lights up on the map and is the one Draw edits).
 function segRows(f) {
   const box = h('div', { class: 'segs', role: 'group', 'aria-label': 'Segments in ' + f.name });
+  box.append(h('div', { class: 'segsplit' }, h('span', { text: 'Garmin Connect only loads the first segment.' }),
+    h('button', { title: 'Make every segment its own track, kept together in a folder', onclick: e => { e.stopPropagation(); splitToFolders([f]); } }, icon('extract'), 'Split into folder')));
   f.segs.forEach((s, i) => {
     const on = f.id === S.active && S.seg === i, len = ptsLen(s.pts), label = segLabel(f, s, i);
     const row = h('div', { class: 'segrow' + (on ? ' on' : ''), title: 'Click to pick this segment. Double-click to zoom to it.' },
       h('span', { class: 'segmark', text: String(i + 1) }),
       h('div', {}, h('div', { class: 'nm', text: label }), h('div', { class: 'sub', text: `${fmtDist(len)} · ${s.pts.length.toLocaleString()} pts` })),
-      h('button', { class: 'mini', title: 'Make this segment its own track', 'aria-label': 'Make ' + label + ' its own track', onclick: e => { e.stopPropagation(); extractSeg(f, i); } }, icon('extract')),
       h('button', { class: 'mini', title: 'Delete this segment', 'aria-label': 'Delete ' + label, onclick: e => { e.stopPropagation(); op('Delete segment', [f.id], () => { f.segs.splice(i, 1); }); toast('Deleted ' + label + '.', { label: 'Undo', fn: undo }); } }, icon('trash')));
     row.addEventListener('click', e => { e.stopPropagation(); pickSeg(f, i); });
     row.addEventListener('dblclick', e => { e.stopPropagation(); const b = L.latLngBounds(s.pts.map(p => [p[0], p[1]])); if (b.isValid()) map.fitBounds(b.pad(0.1), { maxZoom: 17 }); });
@@ -989,7 +1046,7 @@ function revealInList(id) {
   const f = fileById(id); if (!f || S.showTrash) return;
   const q = $('filter').value.trim().toLowerCase();
   if (q && !f.name.toLowerCase().includes(q) && !(f.folder || '').toLowerCase().includes(q)) $('filter').value = '';
-  if (f.folder && S.set.collapsed[f.folder]) { S.set.collapsed[f.folder] = false; saveSettings(); }
+  if (f.folder) openFolderPath(f.folder);
   renderList();
   const row = $('list').querySelector(`.frow[data-id="${id}"]`); if (!row) return;
   row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -1016,7 +1073,9 @@ function renderList() {
   const list = $('list'); if (list.querySelector('input.inl:focus')) return;      // don't wipe a name while it is being typed
   const q = $('filter').value.trim().toLowerCase(); list.textContent = '';
   if (S.showTrash) { renderTrash(list, q); return; }
-  if (UI.newFolder) list.append(h('div', { class: 'folder edit' }, icon('folder'), inlineInput('', 'New folder name', v => { UI.newFolder = false; if (v && !allFolders().includes(v)) { S.set.folders = (S.set.folders || []).concat([v]); cfgTouched(); toast(`Folder "${v}" created. Select tracks and use "Move to folder", or drag them onto it.`); } refreshUI(); })));
+  if (UI.newFolder) { const par = typeof UI.newFolder === 'string' ? UI.newFolder : '';
+    list.append(h('div', { class: 'folder edit' }, icon('folder'), inlineInput('', par ? 'New folder in ' + fleaf(par) : 'New folder name', v => { UI.newFolder = false; v = v && cleanLeaf(v); const p = v && joinP(par, v);
+      if (p && !allFolders().includes(p)) { S.set.folders = (S.set.folders || []).concat([p]); openFolderPath(p); cfgTouched(); toast(`Folder "${v}" created. Select tracks and use "Move to folder", or drag them onto it.`); } refreshUI(); }))); }
   const folders = allFolders();
   if (!S.files.length && !folders.length) {
     if (!UI.newFolder) list.append(h('div', { class: 'empty' }, h('b', { text: 'No tracks yet' }),
@@ -1025,12 +1084,13 @@ function renderList() {
     return;
   }
   const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
-  const fileRow = f => {
+  const fileRow = (f, depth) => {
     const st = stats(f);
     const nameEl = UI.renaming === f.id
       ? inlineInput(f.name, 'Track name', v => { UI.renaming = null; if (v && v !== f.name) op('Rename', [f.id], () => { f.name = v; }); else renderList(); })
-      : h('div', { class: 'nm', text: f.name });
-    const row = h('div', { 'data-id': f.id, class: 'frow' + (f.folder ? ' infolder' : '') + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), draggable: UI.renaming !== f.id, title: 'Click to select. Double-click to zoom to it. Drag onto a folder to move it.' },
+      : h('div', { class: 'nm', text: shortName(f), title: f.name });
+    const ind = f.folder ? `padding-left:${22 + (depth || 0) * 16}px` : '';
+    const row = h('div', { 'data-id': f.id, style: ind, class: 'frow' + (f.folder ? ' infolder' : '') + (f.id === S.active ? ' active' : '') + (f.visible ? '' : ' hiddenfile'), draggable: UI.renaming !== f.id, title: 'Click to select. Double-click to zoom to it. Drag onto a folder to move it.' },
       h('input', { type: 'checkbox', checked: S.sel.has(f.id), 'aria-label': 'Select ' + f.name, onclick: e => { e.stopPropagation(); select([f.id], { add: true, toggle: true }); } }),
       h('span', { class: 'dot', style: 'background:' + f.color }),
       h('div', {}, nameEl,
@@ -1042,24 +1102,39 @@ function renderList() {
     row.addEventListener('dblclick', () => zoomTo([f]));
     row.addEventListener('dragstart', e => { const ids = S.sel.has(f.id) ? [...S.sel] : [f.id]; e.dataTransfer.setData('text/gpxw', ids.join(',')); e.dataTransfer.effectAllowed = 'move'; });
     if (f.segs.length < 2 || !UI.openSegs.has(f.id) || UI.renaming === f.id) return row;
-    return h('div', { class: 'fgroup' }, row, segRows(f));
+    const sr = segRows(f); if (f.folder) sr.style.paddingLeft = (46 + (depth || 0) * 16) + 'px';
+    return h('div', { class: 'fgroup' }, row, sr);
   };
-  const header = (fo, fs) => {
+  // Tracks with several segments: offer to split them (Garmin Connect only reads the first one)
+  const segFiles = S.files.filter(f => liveSegs(f) > 1 && !(S.set.keepSegIds || []).includes(f.id));
+  if (segFiles.length && !q) list.append(h('div', { class: 'segnote' },
+    h('b', { text: `${segFiles.length} track${segFiles.length > 1 ? 's have' : ' has'} several segments` }),
+    h('span', { text: 'Garmin Connect only loads the first segment. Split them into separate tracks, kept together in a folder.' }),
+    h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Split into folders', onclick: () => splitToFolders(segFiles) }),
+      h('button', { text: 'Keep as they are', onclick: () => { S.set.keepSegIds = [...new Set([...(S.set.keepSegIds || []), ...segFiles.map(f => f.id)])]; saveSettings(); renderList(); } }))));
+  const kids = p => folders.filter(x => fparent(x) === p);
+  const header = (fo, depth) => {
+    const fs = fo ? shown.filter(f => inFolder(f, fo)) : shown.filter(f => !f.folder);
+    if (q && !fs.length && !(fo && fo.toLowerCase().includes(q))) return;
     const shut = !!S.set.collapsed[fo] && !q, all = fs.length > 0 && fs.every(f => S.sel.has(f.id)), ids = fs.map(f => f.id);
-    const hd = h('div', { class: 'folder' + (shut ? ' shut' : ''), title: 'Click to open or close this folder' },
+    const hd = h('div', { class: 'folder' + (shut ? ' shut' : '') + (depth ? ' sub' : ''), style: depth ? `padding-left:${10 + depth * 16}px` : '', draggable: !!fo && UI.renFolder !== fo, title: 'Click to open or close this folder' + (fo ? '. Drag it onto another folder to move it there.' : '') },
       h('input', { type: 'checkbox', checked: all, disabled: !fs.length, title: 'Select every track in this folder', 'aria-label': 'Select every track in ' + (fo || 'Unfiled'), onclick: e => { e.stopPropagation(); if (all) select([...S.sel].filter(id => !ids.includes(id))); else select(ids, { add: true }); } }),
       UI.renFolder === fo && fo
-        ? inlineInput(fo, 'Folder name', v => { UI.renFolder = null; if (v && v !== fo) renameFolder(fo, v); else renderList(); })
-        : h('span', { class: 'fname' }, h('span', { class: 'chev', text: shut ? '▸' : '▾' }), fo || 'Unfiled', h('span', { class: 'fcount', text: fs.length + (fs.length === 1 ? ' track' : ' tracks') })),
-      fo ? h('button', { class: 'mini', title: 'Rename folder', 'aria-label': 'Rename folder ' + fo, onclick: e => { e.stopPropagation(); UI.renFolder = fo; renderList(); } }, icon('draw')) : null,
-      fo ? h('button', { class: 'mini', title: 'Remove this folder. Its tracks move to Unfiled.', 'aria-label': 'Remove folder ' + fo, onclick: e => { e.stopPropagation(); removeFolder(fo); } }, icon('trash')) : null);
+        ? inlineInput(fleaf(fo), 'Folder name', v => { UI.renFolder = null; v = v && cleanLeaf(v); if (v && v !== fleaf(fo)) renameFolder(fo, joinP(fparent(fo), v)); else renderList(); })
+        : h('span', { class: 'fname' }, h('span', { class: 'chev', text: shut ? '▸' : '▾' }), fo ? fleaf(fo) : 'Unfiled', h('span', { class: 'fcount', text: fs.length + (fs.length === 1 ? ' track' : ' tracks') })),
+      fo ? h('button', { class: 'mini', title: 'New folder inside this one', 'aria-label': 'New folder inside ' + fleaf(fo), onclick: e => { e.stopPropagation(); UI.newFolder = fo; openFolderPath(fo); $('list').scrollTop = 0; renderList(); } }, icon('folder')) : null,
+      fo ? h('button', { class: 'mini', title: 'Rename folder', 'aria-label': 'Rename folder ' + fleaf(fo), onclick: e => { e.stopPropagation(); UI.renFolder = fo; renderList(); } }, icon('draw')) : null,
+      fo ? h('button', { class: 'mini', title: 'Remove this folder. What is in it moves up a level.', 'aria-label': 'Remove folder ' + fleaf(fo), onclick: e => { e.stopPropagation(); removeFolder(fo); } }, icon('trash')) : null);
     hd.addEventListener('click', () => { S.set.collapsed[fo] = !S.set.collapsed[fo]; saveSettings(); renderList(); });
+    if (fo) hd.addEventListener('dragstart', e => { e.dataTransfer.setData('text/gpxw-folder', fo); e.dataTransfer.effectAllowed = 'move'; });
     dropTarget(hd, fo); list.append(hd);
-    if (!shut) fs.forEach(f => list.append(fileRow(f)));
+    if (shut) return;
+    if (fo) kids(fo).forEach(k => header(k, depth + 1));
+    fs.filter(f => (f.folder || '') === fo).forEach(f => list.append(fileRow(f, depth)));
   };
-  for (const fo of folders) { const fs = shown.filter(f => f.folder === fo); if (!q || fs.length) header(fo, fs); }
+  kids('').forEach(k => header(k, 0));
   const unfiled = shown.filter(f => !f.folder);
-  if (folders.length) { if (unfiled.length || !q) header('', unfiled); } else unfiled.forEach(f => list.append(fileRow(f)));
+  if (folders.length) { if (unfiled.length || !q) header('', 0); } else unfiled.forEach(f => list.append(fileRow(f, 0)));
 }
 function renderTrash(list, q) {
   const items = S.trash.filter(t => !q || t.file.name.toLowerCase().includes(q)).sort((a, b) => b.deletedAt - a.deletedAt);
@@ -1203,7 +1278,7 @@ function newRoute() {
   select([f.id], { active: f.id }); return f;
 }
 async function importFiles(fileList) {
-  const added = [], errors = []; busy('Importing…');
+  let added = []; const errors = []; busy('Importing…');
   for (const file of fileList) {
     try {
       if (/\.zip$/i.test(file.name)) { for (const e of await unzip(await file.arrayBuffer())) { try { added.push(parseGpx(e.text, e.name)); } catch (err) { errors.push(err.message); } } }
@@ -1211,16 +1286,18 @@ async function importFiles(fileList) {
     } catch (err) { errors.push(err.message || String(err)); }
   }
   busy('');
+  let splitN = 0;
+  if (S.set.splitSegs !== false) added = added.flatMap(f => { if (liveSegs(f) < 2) return [f]; splitN++; return splitParts(f); });
   if (added.length) {
     op(`Import ${added.length} file${added.length > 1 ? 's' : ''}`, [], () => { added.forEach((f, i) => { f.color = PALETTE[(S.files.length + i) % 8]; }); S.files.push(...added); });
-    select(added.map(f => f.id), { active: added[0].id }); zoomTo(added);
+    added.forEach(f => { if (f.folder) openFolderPath(f.folder); }); select(added.map(f => f.id), { active: added[0].id }); zoomTo(added);
   }
-  toast((added.length ? `Imported ${added.length} track file${added.length > 1 ? 's' : ''}. ` : '') + errors.join(' ') || 'Nothing to import.');
+  toast((added.length ? `Imported ${added.length} track${added.length > 1 ? 's' : ''}. ` + (splitN ? `${splitN} file${splitN > 1 ? 's' : ''} with several segments ${splitN > 1 ? 'were' : 'was'} split into separate tracks in ${splitN > 1 ? 'their own folders' : 'its own folder'}, so Garmin Connect reads all of it. ` : '') : '') + errors.join(' ') || 'Nothing to import.');
 }
 function exportFiles(files) {
   if (!files.length) return;
   if (files.length === 1) download(new Blob([toGpx(files[0])], { type: 'application/gpx+xml' }), safeName(files[0].name) + '.gpx');
-  else download(zipFiles(files.map(f => ({ name: (f.folder ? safeName(f.folder) + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-export-${new Date().toISOString().slice(0, 10)}.zip`);
+  else download(zipFiles(files.map(f => ({ name: (f.folder ? f.folder.split('/').map(safeName).join('/') + '/' : '') + safeName(f.name) + '.gpx', text: toGpx(f) }))), `gpx-export-${new Date().toISOString().slice(0, 10)}.zip`);
   toast(files.length === 1 ? 'Exported ' + files[0].name + '.gpx' : `Exported ${files.length} tracks as a zip.`);
 }
 function deleteFiles(files) {
@@ -1265,6 +1342,8 @@ function renderLayersPanel() {
   p.append(h('h3', { text: 'Appearance' }),
     h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'theme', checked: S.set.theme !== 'light', onchange: () => setTheme('dark') }), 'Black'),
     h('label', { class: 'chk' }, h('input', { type: 'radio', name: 'theme', checked: S.set.theme === 'light', onchange: () => setTheme('light') }), 'White'));
+  p.append(h('h3', { text: 'Importing' }),
+    h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.splitSegs !== false, onchange: e => { S.set.splitSegs = e.target.checked; saveSettings(); } }), 'Split GPX files with several segments into separate tracks, in a folder (Garmin Connect only loads the first segment)'));
   p.append(h('h3', { text: 'On the active track' }),
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.arrows, onchange: e => { S.set.arrows = e.target.checked; saveSettings(); renderDecor(); } }), 'Direction arrows'),
     h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: S.set.kmMarks, onchange: e => { S.set.kmMarks = e.target.checked; saveSettings(); renderDecor(); } }), 'Distance marks (km)'),
@@ -1556,11 +1635,7 @@ const Tools = {
     if (id === 'reverse') { op('Reverse', files.map(f => f.id), () => { for (const f of files) f.segs = f.segs.slice().reverse().map(s => mkSeg(s.name, reversedPts(s.pts))); }); toast('Direction reversed.'); }
     if (id === 'extract') {
       const multi = files.filter(f => f.segs.length > 1); if (!multi.length) { toast('Extract needs a track with more than one segment.'); return; }
-      const made = []; op('Extract segments', multi.map(f => f.id), () => {
-        for (const f of multi) { f.segs.forEach((s, i) => { const nm = `${f.name} – ${segLabel(f, s, i)}`, nf = mkFile(nm, [mkSeg(nm, s.pts)]); nf.folder = f.folder; nf.color = PALETTE[(S.files.length) % 8]; S.files.push(nf); made.push(nf); }); }
-        S.files = S.files.filter(f => !multi.includes(f));
-      });
-      select(made.map(f => f.id), { active: made[0].id }); toast(`Made ${made.length} separate tracks.`);
+      splitToFolders(multi);
     }
   },
   panels: {}
@@ -2458,7 +2533,7 @@ function toKml(files, docName) {
 }
 function exportEarth(files, kmz) {
   files = files.filter(f => f.segs.some(s => s.pts.length) || f.wpts.length); if (!files.length) return;
-  const name = files.length === 1 ? files[0].name : (files[0].folder && files.every(f => f.folder === files[0].folder) ? files[0].folder : 'GPX tracks');
+  const name = files.length === 1 ? files[0].name : (files[0].folder && files.every(f => f.folder === files[0].folder) ? fleaf(files[0].folder) : 'GPX tracks');
   const kml = toKml(files, name), base = safeName(name);
   if (kmz) download(zipFiles([{ name: 'doc.kml', text: kml }]), base + '.kmz');
   else download(new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' }), base + '.kml');
@@ -2600,7 +2675,7 @@ const View3D = {
 // ============================================================================
 async function boot() {
   document.documentElement.dataset.theme = S.set.theme === 'light' ? 'light' : 'dark';
-  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!S.set.keys) S.set.keys = {};
+  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!Array.isArray(S.set.keepSegIds)) S.set.keepSegIds = []; if (!S.set.keys) S.set.keys = {};
   Sync.load(); if (!Sync.on() && !GUEST) Lock.pending();
   if (GUEST) { document.documentElement.classList.add('guest'); $('guestBadge').hidden = false; }
   initMap(); Tools.init(); initChart();

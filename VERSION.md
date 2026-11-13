@@ -2,6 +2,8 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 10.1** (13 Nov 2026): main (top-level) folder names larger and bolder so they stand out from sub-folders.
+- **Version 10** (13 Nov 2026): Garmin-friendly segments — GPX files with several segments are split into separate tracks kept together in a folder named after the file (Garmin Connect only loads the first segment); folders inside folders (drag a folder onto another, new folder inside, rename and remove move contents up a level); one-tap "Split into folders" for tracks already in the library; setting under Maps → Importing to keep segments instead.
 - **Version 9.1** (13 Nov 2026): clicking a track on the map (2D or 3D) highlights it in the library — opens its folder, scrolls to it and flashes it; stronger highlight for the selected track.
 - **Version 9** (13 Nov 2026): phone layout — compact two-row header with full-width search, tools as a swipeable bottom toolbar, panels slide up from the bottom, library drawer closes when you tap the map, bigger touch targets, no zoom-in on text boxes. PC and iPad unchanged.
 - **Version 8.1** (12 Nov 2026): tool rail shows the name under each icon again.
