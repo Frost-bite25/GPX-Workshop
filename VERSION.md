@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 11** (13 Nov 2026): Send to Garmin Connect (Export menu) — on a phone or iPad the full GPX goes to the share sheet for the Garmin Connect app; on a computer it downloads and opens Garmin Connect Courses for Import; tracks with several segments are flagged with a Split first button.
 - **Version 10.2** (13 Nov 2026): folder text toned down — main folders slightly larger and semi-bold, sub-folders regular weight.
 - **Version 10.1** (13 Nov 2026): main (top-level) folder names larger and bolder so they stand out from sub-folders.
 - **Version 10** (13 Nov 2026): Garmin-friendly segments — GPX files with several segments are split into separate tracks kept together in a folder named after the file (Garmin Connect only loads the first segment); folders inside folders (drag a folder onto another, new folder inside, rename and remove move contents up a level); one-tap "Split into folders" for tracks already in the library; setting under Maps → Importing to keep segments instead.

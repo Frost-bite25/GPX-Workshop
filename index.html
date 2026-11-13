@@ -130,6 +130,15 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 #rail .sep { height: 8px; flex: none; }
 .float { position: absolute; z-index: 900; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.28); max-height: calc(100% - 16px); overflow-y: auto; }
 #panel { right: 8px; top: 8px; width: 300px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 10px; }
+#garminp { right: 8px; top: 8px; width: 360px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; z-index: 950; }
+.gsteps { color: var(--muted); font-size: .88rem; margin: 0; }
+.grow { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
+.grow .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.grow .gtxt { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.grow .gtxt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grow .gtxt span { font-size: .8rem; color: var(--muted); }
+.grow .gtxt .warn { color: #ffb020; }
+.grow button { flex: none; }
 #sharep { right: 8px; top: 8px; width: 340px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; z-index: 950; }
 .newlink { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--accent); border-radius: 8px; }
 .sharerow { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--line); }
@@ -315,11 +324,12 @@ html.guest #btnSync { border-color: #ffd400; }
   #map .leaflet-control-zoom { display: none; }   /* pinch to zoom instead */
   #map .leaflet-control-attribution { font-size: 9px; max-width: 70vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #profTab { bottom: 60px; left: 8px; transform: none; }
-  #toast { bottom: 96px; } #status { bottom: 92px; right: 8px; }
+  #toast { bottom: 96px; }
+  #mapwrap:has(#panel:not([hidden]), #layers:not([hidden]), #syncp:not([hidden]), #sharep:not([hidden]), #garminp:not([hidden])) #toast { bottom: auto; top: 10px; } #status { bottom: 92px; right: 8px; }
   /* Panels slide up from the bottom, full width */
-  #panel, #layers, #syncp, #sharep { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; border-radius: 14px 14px 0 0; border-bottom: 0; }
-  #panel { max-height: 48%; } #layers, #syncp, #sharep { max-height: 78%; }
-  #panel::before, #layers::before, #syncp::before, #sharep::before, #ctl3d::before { content: ""; justify-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin-bottom: 2px; }
+  #panel, #layers, #syncp, #sharep, #garminp { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; border-radius: 14px 14px 0 0; border-bottom: 0; }
+  #panel { max-height: 48%; } #layers, #syncp, #sharep, #garminp { max-height: 78%; }
+  #panel::before, #layers::before, #syncp::before, #sharep::before, #garminp::before, #ctl3d::before { content: ""; justify-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin-bottom: 2px; }
   #expmenu { left: 8px !important; right: 8px; width: auto; }
   #ctl3d { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; max-height: 46%; border-radius: 14px 14px 0 0; border-bottom: 0; }
   /* Profile: smaller numbers and chart, clear of the iPhone home bar */
@@ -338,7 +348,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 10.2, built 13 Nov 2026">v10.2</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11, built 13 Nov 2026">v11</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -381,7 +391,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 10.2 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 11 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -400,6 +410,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <section id="syncp" class="float" hidden></section>
     <section id="sharep" class="float" hidden></section>
     <div id="expmenu" class="float" hidden></div>
+    <section id="garminp" class="float" hidden></section>
     <div id="view3d" hidden><div id="map3d"></div><section id="ctl3d" class="float"></section></div>
     <button id="sideTab" class="edgetab" title="Show or hide the library" aria-label="Show or hide the library"></button>
     <button id="profTab" class="edgetab" title="Show or hide the elevation profile" aria-label="Show or hide the elevation profile"></button>
@@ -429,7 +440,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '10.2';
+const APP_VERSION = '11';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -716,6 +727,7 @@ const ICONS = {
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
   lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
+  send: '<path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>',
   share: '<path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/>',
   guest: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   cube: '<path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5zM3.5 7.25L12 12l8.5-4.75M12 12v9.5"/>',
@@ -928,7 +940,7 @@ function touched(ids, keepMod) {
   const f = activeFile(); if (f && S.seg >= f.segs.length) S.seg = Math.max(0, f.segs.length - 1);
   refreshUI(); if (keepMod !== 'vis') Sync.poke();
 }
-function refreshUI() { renderList(); renderProfile(); renderDecor(); updateButtons(); Tools.refresh(); if (!$('sharep').hidden) Shares.panel(); if (typeof View3D !== 'undefined' && View3D.isOpen) View3D.refresh(); }
+function refreshUI() { renderList(); renderProfile(); renderDecor(); updateButtons(); Tools.refresh(); if (!$('sharep').hidden) Shares.panel(); if (typeof View3D !== 'undefined' && View3D.isOpen) View3D.refresh(); if (typeof Garmin !== 'undefined') Garmin.panel(); }
 function updateButtons() {
   const n = S.sel.size;
   $('btnUndo').disabled = !S.undo.length; $('btnRedo').disabled = !S.redo.length;
@@ -2545,12 +2557,57 @@ function showExportMenu() {
   const m = $('expmenu'), files = selFiles(); if (!m.hidden) { m.hidden = true; return; }
   m.textContent = '';
   const item = (label, sub, fn) => m.append(h('button', { onclick: () => { m.hidden = true; fn(); } }, h('b', { text: label }), h('span', { text: sub })));
+  item('Send to Garmin Connect', 'Phone or iPad: straight into the Garmin Connect app', () => Garmin.open());
   item('GPX', files.length > 1 ? 'One zip with a GPX file per track' : 'For Garmin, apps and other editors', () => exportFiles(files));
   item('KMZ for Google Earth', 'Tracks, colours and waypoints in one file', () => exportEarth(files, true));
   item('KML', 'Plain KML, for apps that don’t take KMZ', () => exportEarth(files, false));
   const r = $('btnExport').getBoundingClientRect(), w = $('mapwrap').getBoundingClientRect();
   m.style.left = clamp(r.left - w.left, 8, w.width - 260) + 'px'; m.style.top = '8px'; m.hidden = false;
 }
+
+// ---------- Send to Garmin Connect ----------
+// Garmin has no public upload for courses, so on a phone or iPad the GPX goes to the share sheet, where you pick Garmin Connect.
+// On a computer the GPX downloads and Garmin Connect's Courses page opens, ready for Import.
+const Garmin = {
+  sent: new Set(),
+  shareFile(f) {
+    if (!navigator.share || !navigator.canShare || typeof File === 'undefined') return null;
+    for (const type of ['application/gpx+xml', 'application/octet-stream']) {
+      try { const fl = new File([toGpx(f)], safeName(f.name) + '.gpx', { type }); if (navigator.canShare({ files: [fl] })) return fl; } catch { }
+    }
+    return null;
+  },
+  canShare() { return !!this.shareFile(mkFile('test', [mkSeg('test', [[0, 0], [0, 0.001]])])); },
+  async send(f) {
+    const fl = this.shareFile(f);
+    if (fl) {
+      try { await navigator.share({ files: [fl], title: f.name }); this.sent.add(f.id); this.panel(); toast(`Sent "${f.name}". In Garmin Connect, save the course, then send it to your device.`); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    download(new Blob([toGpx(f)], { type: 'application/gpx+xml' }), safeName(f.name) + '.gpx');
+    window.open('https://connect.garmin.com/modern/courses', '_blank', 'noopener');
+    this.sent.add(f.id); this.panel(); toast(`Downloaded "${f.name}.gpx". In Garmin Connect Courses, choose Import and pick that file.`);
+  },
+  open() { const p = $('garminp'); ['sharep', 'layers', 'syncp'].forEach(id => { $(id).hidden = true; }); p.hidden = false; this.panel(); },
+  panel() {
+    const p = $('garminp'); if (p.hidden) return; p.textContent = '';
+    const files = selFiles().filter(f => f.segs.some(s => s.pts.length > 1)), phone = this.canShare();
+    p.append(h('h2', {}, h('span', { class: 'ttl' }, icon('send'), 'Send to Garmin Connect'), h('button', { text: 'Close', onclick: () => { p.hidden = true; } })));
+    p.append(h('p', { class: 'gsteps', text: phone
+      ? 'Tap Send, then choose Garmin Connect in the share sheet (tap More if it isn’t listed). Save the course in Garmin Connect, then send it to your Edge.'
+      : 'Send downloads the GPX and opens Garmin Connect Courses in a new tab. There, choose Import, pick the file, save the course and send it to your device. On a phone or iPad, Send goes straight to the Garmin Connect app.' }));
+    if (!files.length) { p.append(h('p', { text: 'Select one or more tracks in the library first.' })); return; }
+    for (const f of files) {
+      const st = stats(f), n = liveSegs(f), done = this.sent.has(f.id);
+      p.append(h('div', { class: 'grow' },
+        h('i', { class: 'dot', style: `background:${f.color}` }),
+        h('div', { class: 'gtxt' }, h('b', { text: f.name }), h('span', { text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts · nothing removed` }),
+          n > 1 ? h('span', { class: 'warn', text: `${n} segments: Garmin Connect only loads the first one.` }) : null),
+        n > 1 ? h('button', { title: 'Make every segment its own track, kept together in a folder', onclick: () => splitToFolders([f]) }, 'Split first')
+          : h('button', { class: done ? '' : 'pri', onclick: () => this.send(f) }, done ? 'Sent ✓' : 'Send')));
+    }
+  }
+};
 
 // ---------- 3D view (MapLibre GL with terrain) ----------
 const BASES_3D = [
@@ -2750,7 +2807,7 @@ async function boot() {
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') { if (!typing) { e.preventDefault(); undo(); } }
     else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!typing) { e.preventDefault(); redo(); } }
     else if (e.key === 'F2' && !typing && S.sel.size === 1) { e.preventDefault(); startRename([...S.sel][0]); }
-    else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; $('sharep').hidden = true; $('expmenu').hidden = true; if (View3D.isOpen) View3D.close(); if (S.tool) Tools.close(); }
+    else if (e.key === 'Escape') { hideCtx(); $('layers').hidden = true; $('syncp').hidden = true; $('sharep').hidden = true; $('expmenu').hidden = true; $('garminp').hidden = true; if (View3D.isOpen) View3D.close(); if (S.tool) Tools.close(); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !typing && S.sel.size && !S.tool) { e.preventDefault(); deleteFiles(selFiles()); }
   });
   window.addEventListener('resize', () => map.invalidateSize());
