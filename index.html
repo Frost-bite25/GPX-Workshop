@@ -131,7 +131,7 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 .float { position: absolute; z-index: 900; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.28); max-height: calc(100% - 16px); overflow-y: auto; }
 #panel { right: 8px; top: 8px; width: 300px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 10px; }
 #garminp { right: 8px; top: 8px; width: 360px; max-width: calc(100% - 16px); padding: 12px; display: grid; gap: 8px; z-index: 950; }
-.gsteps { color: var(--muted); font-size: .88rem; margin: 0; }
+.gsteps { color: var(--muted); font-size: .88rem; margin: 0; padding-left: 20px; display: grid; gap: 3px; }
 .grow { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
 .grow .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 .grow .gtxt { flex: 1; min-width: 0; display: grid; gap: 1px; }
@@ -348,7 +348,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11, built 13 Nov 2026">v11</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11.1, built 13 Nov 2026">v11.1</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -391,7 +391,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 11 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 11.1 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -440,7 +440,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '11';
+const APP_VERSION = '11.1';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -2294,6 +2294,28 @@ function gpxViewerMain(D) {
     D.files.forEach(f => { const b = document.createElement('button'); b.textContent = f.name; b.onclick = () => { menu.hidden = true; save(f.file, f.gpx); }; menu.append(b); });
     dl.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; }; document.addEventListener('click', () => { menu.hidden = true; });
   }
+  // ---- Send to Garmin Connect (phones: save the file, then open it in Garmin Connect; computers: download + Garmin Connect Courses)
+  const gc = $('gc'), gcp = $('gcp');
+  const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), AND = /Android/i.test(navigator.userAgent);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const shareFile = f => { if (!navigator.share || !navigator.canShare) return null; for (const type of ['application/gpx+xml', 'application/octet-stream']) { try { const fl = new File([f.gpx], f.file, { type }); if (navigator.canShare({ files: [fl] })) return fl; } catch (e) { } } return null; };
+  if (D.allowDownload === false) gc.hidden = true;
+  else {
+    const steps = IOS ? ['Tap Save file, then Download.', 'Tap the ⬇ button in Safari’s address bar (or open the Files app → Downloads) and tap the file.', 'Tap Share and choose Connect or “Copy to Connect” (swipe the app row to More if it isn’t there).', 'In Garmin Connect, choose the course type, Save, then Send to Device.']
+      : AND ? ['Tap Save file.', 'Open the file from the download notification, or Files → Downloads.', 'Choose Garmin Connect to open it.', 'Save the course, then Send to Device.']
+      : ['Send downloads the GPX and opens Garmin Connect Courses.', 'There, choose Import and pick the file.', 'Save the course, then Send to Device.'];
+    const hd = el('div', 'gchd'); hd.append(el('b', '', 'Send to Garmin Connect')); const x = el('button', '', 'Close'); x.onclick = () => { gcp.hidden = true; }; hd.append(x); gcp.append(hd);
+    const ol = el('ol'); steps.forEach(t => ol.append(el('li', '', t))); gcp.append(ol);
+    D.files.forEach(f => {
+      const row = el('div', 'gcrow'), nm = el('span', 'gcnm', f.name), dot = el('i', 'dot'); dot.style.background = f.color; row.append(dot, nm);
+      if (IOS || AND) {
+        const sv = el('button', 'pri', 'Save file'); sv.onclick = () => save(f.file, f.gpx); row.append(sv);
+        if (shareFile(f)) { const sh = el('button', '', 'Share…'); sh.onclick = async () => { try { await navigator.share({ files: [shareFile(f)], title: f.name }); } catch (e) { } }; row.append(sh); }
+      } else { const sd = el('button', 'pri', 'Send'); sd.onclick = () => { save(f.file, f.gpx); window.open('https://connect.garmin.com/modern/courses', '_blank', 'noopener'); sd.textContent = 'Sent ✓'; sd.className = ''; }; row.append(sd); }
+      gcp.append(row);
+    });
+    gc.onclick = e => { e.stopPropagation(); gcp.hidden = !gcp.hidden; };
+  }
 
   // ---- elevation profile
   const cv = $('chart'); let hover = -1, dot = null;
@@ -2343,6 +2365,14 @@ button { cursor: pointer; font-weight: 600; } #dl:not([hidden]) { background: va
 label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; } input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
 #dlmenu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 1000; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px; display: grid; gap: 2px; min-width: 200px; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
 #dlmenu button { border: 0; text-align: left; font-weight: 400; background: transparent; }
+#gc { border-color: var(--accent); color: var(--accent); }
+#gcp { position: absolute; right: 10px; top: 10px; z-index: 1001; width: 360px; max-width: calc(100% - 20px); max-height: calc(100% - 20px); overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
+.gchd { display: flex; align-items: center; gap: 8px; } .gchd b { flex: 1; font-size: 1.05rem; }
+#gcp ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: .9rem; display: grid; gap: 3px; }
+.gcrow { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
+.gcrow .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; } .gcnm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gcrow .pri { background: var(--accent); color: #14091a; border-color: var(--accent); }
+@media (max-width: 640px) { #gcp { position: fixed; left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; max-height: 85vh; border-radius: 14px 14px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); } }
 main { position: relative; } #map { position: absolute; inset: 0; background: var(--bg); }
 #list { position: absolute; left: 10px; top: 10px; z-index: 800; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px; max-height: calc(100% - 20px); overflow-y: auto; width: min(280px, calc(100% - 20px)); box-shadow: 0 4px 16px rgba(0,0,0,.4); }
 .row { display: grid; grid-template-columns: auto 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; }
@@ -2375,8 +2405,8 @@ function viewerData(files, opts) {
 function viewerBody(title, note) {
   return `<header><h1>${xmlEsc(title)}</h1>
   <div class="ctl"><select id="base" aria-label="Base map"></select><label class="chk"><input type="checkbox" id="cont"> Contours</label>
-  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div></div></header>
-<main><div id="map"></div><div id="list" aria-label="Tracks"></div></main>
+  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div><button id="gc" type="button">Send to Garmin</button></div></header>
+<main><div id="map"></div><div id="list" aria-label="Tracks"></div><section id="gcp" hidden></section></main>
 <footer><div id="stats"></div><div id="prof"><canvas id="chart" aria-label="Elevation profile"></canvas><div id="noele" hidden>This track has no elevation data.</div></div>
 <div class="made">${xmlEsc(note)}</div></footer>`;
 }
@@ -2568,6 +2598,12 @@ function showExportMenu() {
 // ---------- Send to Garmin Connect ----------
 // Garmin has no public upload for courses, so on a phone or iPad the GPX goes to the share sheet, where you pick Garmin Connect.
 // On a computer the GPX downloads and Garmin Connect's Courses page opens, ready for Import.
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), IS_ANDROID = /Android/i.test(navigator.userAgent);
+const GARMIN_STEPS = {
+  ios: ['Tap Save file, then Download.', 'Tap the ⬇ button in Safari’s address bar (or open the Files app → Downloads) and tap the file.', 'Tap Share and choose Connect or “Copy to Connect” (swipe the app row to More if it isn’t there).', 'In Garmin Connect, choose the course type, Save, then Send to Device.'],
+  android: ['Tap Save file.', 'Open the file from the download notification, or Files → Downloads.', 'Choose Garmin Connect to open it.', 'Save the course, then Send to Device.'],
+  pc: ['Send downloads the GPX and opens Garmin Connect Courses in a new tab.', 'There, choose Import and pick the file.', 'Save the course, then Send to Device.']
+};
 const Garmin = {
   sent: new Set(),
   shareFile(f) {
@@ -2577,13 +2613,10 @@ const Garmin = {
     }
     return null;
   },
-  canShare() { return !!this.shareFile(mkFile('test', [mkSeg('test', [[0, 0], [0, 0.001]])])); },
-  async send(f) {
-    const fl = this.shareFile(f);
-    if (fl) {
-      try { await navigator.share({ files: [fl], title: f.name }); this.sent.add(f.id); this.panel(); toast(`Sent "${f.name}". In Garmin Connect, save the course, then send it to your device.`); return; }
-      catch (e) { if (e && e.name === 'AbortError') return; }
-    }
+  mobile() { return IS_IOS || IS_ANDROID; },
+  save(f) { download(new Blob([toGpx(f)], { type: 'application/gpx+xml' }), safeName(f.name) + '.gpx'); this.sent.add(f.id); this.panel(); toast(IS_IOS ? `Saved "${f.name}.gpx". Open it from Safari’s ⬇ downloads, tap Share, then Connect.` : `Saved "${f.name}.gpx". Open it and choose Garmin Connect.`); },
+  async share(f) { const fl = this.shareFile(f); if (!fl) return this.save(f); try { await navigator.share({ files: [fl], title: f.name }); } catch { } },
+  send(f) {   // computer
     download(new Blob([toGpx(f)], { type: 'application/gpx+xml' }), safeName(f.name) + '.gpx');
     window.open('https://connect.garmin.com/modern/courses', '_blank', 'noopener');
     this.sent.add(f.id); this.panel(); toast(`Downloaded "${f.name}.gpx". In Garmin Connect Courses, choose Import and pick that file.`);
@@ -2591,20 +2624,20 @@ const Garmin = {
   open() { const p = $('garminp'); ['sharep', 'layers', 'syncp'].forEach(id => { $(id).hidden = true; }); p.hidden = false; this.panel(); },
   panel() {
     const p = $('garminp'); if (p.hidden) return; p.textContent = '';
-    const files = selFiles().filter(f => f.segs.some(s => s.pts.length > 1)), phone = this.canShare();
+    const files = selFiles().filter(f => f.segs.some(s => s.pts.length > 1)), mob = this.mobile();
     p.append(h('h2', {}, h('span', { class: 'ttl' }, icon('send'), 'Send to Garmin Connect'), h('button', { text: 'Close', onclick: () => { p.hidden = true; } })));
-    p.append(h('p', { class: 'gsteps', text: phone
-      ? 'Tap Send, then choose Garmin Connect in the share sheet (tap More if it isn’t listed). Save the course in Garmin Connect, then send it to your Edge.'
-      : 'Send downloads the GPX and opens Garmin Connect Courses in a new tab. There, choose Import, pick the file, save the course and send it to your device. On a phone or iPad, Send goes straight to the Garmin Connect app.' }));
+    p.append(h('ol', { class: 'gsteps' }, ...GARMIN_STEPS[IS_IOS ? 'ios' : IS_ANDROID ? 'android' : 'pc'].map(t => h('li', { text: t }))));
     if (!files.length) { p.append(h('p', { text: 'Select one or more tracks in the library first.' })); return; }
     for (const f of files) {
       const st = stats(f), n = liveSegs(f), done = this.sent.has(f.id);
+      const btns = n > 1 ? [h('button', { title: 'Make every segment its own track, kept together in a folder', onclick: () => splitToFolders([f]) }, 'Split first')]
+        : mob ? [h('button', { class: done ? '' : 'pri', onclick: () => this.save(f) }, done ? 'Saved ✓' : 'Save file'), this.shareFile(f) ? h('button', { title: 'Open the share sheet (Garmin Connect may not be listed on every phone)', onclick: () => this.share(f) }, 'Share…') : null]
+        : [h('button', { class: done ? '' : 'pri', onclick: () => this.send(f) }, done ? 'Sent ✓' : 'Send')];
       p.append(h('div', { class: 'grow' },
         h('i', { class: 'dot', style: `background:${f.color}` }),
         h('div', { class: 'gtxt' }, h('b', { text: f.name }), h('span', { text: `${fmtDist(st.total)} · ${st.n.toLocaleString()} pts · nothing removed` }),
           n > 1 ? h('span', { class: 'warn', text: `${n} segments: Garmin Connect only loads the first one.` }) : null),
-        n > 1 ? h('button', { title: 'Make every segment its own track, kept together in a folder', onclick: () => splitToFolders([f]) }, 'Split first')
-          : h('button', { class: done ? '' : 'pri', onclick: () => this.send(f) }, done ? 'Sent ✓' : 'Send')));
+        ...btns.filter(Boolean)));
     }
   }
 };
