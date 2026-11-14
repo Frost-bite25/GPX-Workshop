@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 11.2** (13 Nov 2026): shared links decluttered on phones — one-row header, map type and contours behind a Map button, track list folds into a small button showing the active track, compact stats and chart, short footer note, no zoom buttons. Computer view unchanged.
 - **Version 11.1** (13 Nov 2026): Send to Garmin on phones now saves the GPX file with step-by-step help to open it in Garmin Connect (the share sheet doesn't list Garmin Connect on every phone); shared links get a Send to Garmin button too (when downloads are allowed).
 - **Version 11** (13 Nov 2026): Send to Garmin Connect (Export menu) — on a phone or iPad the full GPX goes to the share sheet for the Garmin Connect app; on a computer it downloads and opens Garmin Connect Courses for Import; tracks with several segments are flagged with a Split first button.
 - **Version 10.2** (13 Nov 2026): folder text toned down — main folders slightly larger and semi-bold, sub-folders regular weight.

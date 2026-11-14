@@ -348,7 +348,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11.1, built 13 Nov 2026">v11.1</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11.2, built 13 Nov 2026">v11.2</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -391,7 +391,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 11.1 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 11.2 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -440,7 +440,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '11.1';
+const APP_VERSION = '11.2';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -2240,6 +2240,12 @@ function gpxViewerMain(D) {
   const sel = $('base'); BASES.forEach(b => sel.append(new Option(b.name, b.id))); sel.onchange = () => setBase(sel.value); setBase('sat');
   $('cont').onchange = e => { if (contours) { contours.remove(); contours = null; } if (e.target.checked) contours = L.tileLayer(OTM, { pane: 'blend', maxNativeZoom: 17, maxZoom: 20, opacity: 0.7 }).addTo(map); };
 
+  const mapbtn = $('mapbtn'), mappop = $('mappop'), ctl = document.querySelector('.ctl'), contLbl = $('cont').closest('label'), PHONE = matchMedia('(max-width: 640px)');
+  const placeCtl = () => { if (PHONE.matches) mappop.append(sel, contLbl); else { ctl.prepend(sel, contLbl); ctl.insertBefore(contLbl, sel.nextSibling); mappop.hidden = true; } };
+  placeCtl(); PHONE.addEventListener ? PHONE.addEventListener('change', placeCtl) : PHONE.addListener(placeCtl);
+  mapbtn.onclick = e => { e.stopPropagation(); mappop.hidden = !mappop.hidden; }; mappop.onclick = e => e.stopPropagation();
+  document.addEventListener('click', () => { mappop.hidden = true; mainEl.classList.remove('listopen'); });
+  $('list').addEventListener('click', e => e.stopPropagation());
   const groups = [], bounds = L.latLngBounds([]); let active = 0;
   D.files.forEach((f, fi) => {
     const g = L.layerGroup();
@@ -2264,14 +2270,16 @@ function gpxViewerMain(D) {
   }
   map.on('moveend', drawArrows);
 
-  // ---- track list (only when there is more than one)
-  const list = $('list');
+  // ---- track list (only when there is more than one). On phones it folds into a small button showing the active track.
+  const list = $('list'), trk = $('trk'), mainEl = document.querySelector('main');
+  var chip = () => { if (D.files.length < 2) return; const f = D.files[active]; trk.innerHTML = `<span class="dot" style="background:${esc(f.color)}"></span><span class="nm">${esc(f.name)}</span><span class="n">${active + 1}/${D.files.length} ▾</span>`; };
+  if (D.files.length > 1) { trk.hidden = false; trk.onclick = e => { e.stopPropagation(); mainEl.classList.toggle('listopen'); }; }
   if (D.files.length > 1) {
     D.files.forEach((f, fi) => {
       const row = document.createElement('label'); row.className = 'row';
       row.innerHTML = `<input type="checkbox" checked aria-label="Show ${esc(f.name)}"><span class="dot" style="background:${esc(f.color)}"></span><span class="nm">${esc(f.name)}</span><span class="km">${fmt(f.st.total)}</span>`;
       row.querySelector('input').onchange = e => { if (e.target.checked) groups[fi].addTo(map); else groups[fi].remove(); drawArrows(); };
-      row.querySelector('.nm').onclick = ev => { ev.preventDefault(); setActive(fi, true); };
+      row.querySelector('.nm').onclick = ev => { ev.preventDefault(); mainEl.classList.remove('listopen'); setActive(fi, true); };
       list.append(row);
     });
   } else list.hidden = true;
@@ -2288,9 +2296,9 @@ function gpxViewerMain(D) {
   function save(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/gpx+xml' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 3000); }
   const dl = $('dl');
   if (D.allowDownload === false) dl.hidden = true;
-  else if (D.files.length === 1) { dl.textContent = 'Download GPX'; dl.onclick = () => save(D.files[0].file, D.files[0].gpx); }
+  else if (D.files.length === 1) { dl.innerHTML = '<span class="long">Download </span>GPX'; dl.onclick = () => save(D.files[0].file, D.files[0].gpx); }
   else {
-    dl.textContent = 'Download GPX ▾'; const menu = $('dlmenu');
+    dl.innerHTML = '<span class="long">Download </span>GPX ▾'; const menu = $('dlmenu');
     D.files.forEach(f => { const b = document.createElement('button'); b.textContent = f.name; b.onclick = () => { menu.hidden = true; save(f.file, f.gpx); }; menu.append(b); });
     dl.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; }; document.addEventListener('click', () => { menu.hidden = true; });
   }
@@ -2349,7 +2357,7 @@ function gpxViewerMain(D) {
   cv.addEventListener('click', e => { const p = D.files[active].st.pts[pick(e)]; if (p) map.panTo([p[0], p[1]]); });
   new ResizeObserver(drawChart).observe($('prof'));
 
-  function setActive(i, zoom) { active = i; hover = -1; renderStats(); drawChart(); drawArrows(); if (zoom) { const b = L.latLngBounds(D.files[i].st.pts.map(p => [p[0], p[1]])); if (b.isValid()) map.fitBounds(b.pad(0.08)); } }
+  function setActive(i, zoom) { active = i; hover = -1; chip(); renderStats(); drawChart(); drawArrows(); if (zoom) { const b = L.latLngBounds(D.files[i].st.pts.map(p => [p[0], p[1]])); if (b.isValid()) map.fitBounds(b.pad(0.08)); } }
   setActive(0);
 }
 
@@ -2382,7 +2390,21 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 .st { white-space: nowrap; } .st span { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 5px; } .st b { font-size: 1.1rem; } .ttl { font-weight: 600; white-space: nowrap; }
 #prof { position: relative; height: 130px; } #chart { width: 100%; height: 100%; display: block; touch-action: none; }
 #noele { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
-.made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); }
+.made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); } .made .short, #trk, #mapbtn, #mappop { display: none; }
+@media (max-width: 640px) {
+  header { flex-wrap: nowrap; gap: 8px; padding: 6px max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left)); }
+  h1 { font-size: 1.05rem; flex: 1 1 0 !important; min-width: 0; } .ctl { flex-wrap: nowrap; gap: 6px; flex: none; width: auto !important; margin-left: auto; } .ctl button { padding: 7px 11px; } .long { display: none; }
+  #trk { display: flex; position: absolute; left: 10px; top: 10px; z-index: 850; align-items: center; gap: 7px; max-width: calc(100% - 84px); background: var(--panel); border-radius: 18px; padding: 6px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  #trk[hidden] { display: none; } #trk .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; } #trk .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; } #trk .n { color: var(--muted); font-weight: 400; flex: none; font-size: .85rem; }
+  #list { display: none; top: 54px; right: 10px; max-height: calc(100% - 64px); } main.listopen #list { display: block; }
+  #mapbtn { display: block; position: absolute; right: 10px; top: 10px; z-index: 850; background: var(--panel); border-radius: 18px; padding: 6px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  #mappop:not([hidden]) { display: grid; gap: 10px; position: absolute; right: 10px; top: 54px; z-index: 900; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+  #mappop select { font-size: 16px; }
+  .leaflet-control-zoom { display: none; } .leaflet-control-attribution { font-size: 9px; max-width: 72vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #stats { flex-wrap: wrap; gap: 2px 14px; padding: 6px 12px 2px; } #stats .ttl { display: none; } .st b { font-size: 1rem; } .st span { font-size: .62rem; }
+  #prof { height: 92px; }
+  .made { padding-bottom: max(6px, env(safe-area-inset-bottom)); } .made .long { display: none; } .made .short { display: inline; }
+}
 .wpt { transform: translate(-50%, -100%); display: inline-flex; flex-direction: column; align-items: center; white-space: nowrap; }
 .wpt i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .wpt::after { content: ""; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 2px #000; }
@@ -2402,13 +2424,13 @@ function viewerData(files, opts) {
     wpts: f.wpts.map(w => ({ lat: +w.lat.toFixed(6), lon: +w.lon.toFixed(6), name: w.name || '', desc: w.desc || '' })),
     file: safeName(f.name) + '.gpx', gpx: opts.allowDownload === false ? '' : toGpx(f) })) };
 }
-function viewerBody(title, note) {
+function viewerBody(title, note, short) {
   return `<header><h1>${xmlEsc(title)}</h1>
   <div class="ctl"><select id="base" aria-label="Base map"></select><label class="chk"><input type="checkbox" id="cont"> Contours</label>
-  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div><button id="gc" type="button">Send to Garmin</button></div></header>
-<main><div id="map"></div><div id="list" aria-label="Tracks"></div><section id="gcp" hidden></section></main>
+  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div><button id="gc" type="button"><span class="long">Send to </span>Garmin</button></div></header>
+<main><div id="map"></div><button id="trk" type="button" hidden></button><div id="list" aria-label="Tracks"></div><button id="mapbtn" type="button" aria-label="Map type and contours">Map</button><div id="mappop" hidden></div><section id="gcp" hidden></section></main>
 <footer><div id="stats"></div><div id="prof"><canvas id="chart" aria-label="Elevation profile"></canvas><div id="noele" hidden>This track has no elevation data.</div></div>
-<div class="made">${xmlEsc(note)}</div></footer>`;
+<div class="made"><span class="long">${xmlEsc(note)}</span><span class="short">${xmlEsc(short || note)}</span></div></footer>`;
 }
 const fmtDay = ms => new Date(ms).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
 function viewerNote(d) { return 'Shared from GPX Workshop on ' + fmtDay(Date.parse(d.made) || Date.now()) + (d.expires ? '. This link works until ' + fmtDay(d.expires) : '') + '. Needs an internet connection for the map.'; }
@@ -2538,7 +2560,7 @@ async function openSharedView(id) {
     data = JSON.parse(f.truncated ? await (await fetch(f.raw_url)).text() : f.content);
   } catch { gone("Couldn't load the shared track", 'Check your internet connection and reload the page.'); return; }
   if (data.expires && Date.now() > data.expires) { gone('This link has expired', 'It was shared until ' + fmtDay(data.expires) + '. Ask for a new link.'); return; }
-  document.title = data.title; document.body.innerHTML = viewerBody(data.title, viewerNote(data));
+  document.title = data.title; document.body.innerHTML = viewerBody(data.title, viewerNote(data), data.expires ? 'Link works until ' + fmtDay(data.expires) : 'Shared from GPX Workshop');
   gpxViewerMain(data);
 }
 
