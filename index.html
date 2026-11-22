@@ -115,6 +115,25 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 .frow.trow .dot { margin-top: 5px; }
 .frow.trow .sub { white-space: normal; }
 #side .ft button { font-size: .82rem; padding: 4px 8px; flex: 1; }
+/* Library text: compact and calm (v13) */
+#side { font-size: 13.5px; }
+#filter { font-size: 13.5px; }
+#side .hd .row button { font-size: 12.5px; padding: 3px 7px; }
+.frow { padding: 4px 10px; gap: 7px; }
+.frow .nm { font-weight: 400; font-size: 13.5px; }
+.frow.active .nm { font-weight: 600; }
+.frow .sub { font-size: 11px; line-height: 1.25; }
+.frow .dot { width: 9px; height: 9px; }
+.folder { padding: 5px 10px; }
+.folder:not(.sub) .fname { font-size: 14px; font-weight: 600; letter-spacing: 0; }
+.folder.sub .fname { font-size: 13.5px; font-weight: 400; letter-spacing: 0; }
+.folder .fcount { font-size: 11px; }
+#side .ft { font-size: 11.5px; } #side .ft button { font-size: 12.5px; }
+/* On a computer, a track's buttons show when you point at it (always shown for the selected track, and Show on a hidden track) */
+@media (hover: hover) {
+  .frow:not(.trow) > button { visibility: hidden; }
+  .frow:hover > button, .frow:focus-within > button, .frow.active > button, .frow.hiddenfile > button.eye { visibility: visible; }
+}
 
 /* Map */
 #mapwrap { grid-area: map; position: relative; min-height: 0; min-width: 0; }
@@ -348,7 +367,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 12, built 13 Nov 2026">v12</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 13, built 22 Nov 2026">v13</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -391,7 +410,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 12 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 13 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -440,7 +459,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '12';
+const APP_VERSION = '13';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -966,12 +985,12 @@ const joinP = (a, b) => (a ? a + '/' + b : b);
 const inFolder = (f, p) => f.folder === p || (f.folder || '').startsWith(p + '/');
 const folderLabel = p => p.split('/').join(' › ');
 const cleanLeaf = v => v.replace(/\//g, '-').trim();
-function allFolders() { const s = new Set(), add = p => { while (p) { s.add(p); p = fparent(p); } }; (S.set.folders || []).forEach(add); S.files.forEach(f => add(f.folder)); return [...s].sort((a, b) => a.localeCompare(b)); }
+const NAT = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+function allFolders() { const s = new Set(), add = p => { while (p) { s.add(p); p = fparent(p); } }; (S.set.folders || []).forEach(add); S.files.forEach(f => add(f.folder)); return [...s].sort((a, b) => NAT.compare(a, b)); }
 function openFolderPath(p) { while (p) { S.set.collapsed[p] = false; p = fparent(p); } saveSettings(); }
 function moveToFolder(ids, folder) {
   const fs = S.files.filter(f => ids.includes(f.id) && (f.folder || '') !== folder); if (!fs.length) return;
   op('Move to ' + (folder ? fleaf(folder) : 'Unfiled'), fs.map(f => f.id), () => fs.forEach(f => { f.folder = folder; }));
-  if (folder) { openFolderPath(folder); renderList(); }
   toast(`Moved ${fs.length} track${fs.length > 1 ? 's' : ''} to ${folder ? folderLabel(folder) : 'Unfiled'}.`, { label: 'Undo', fn: undo });
 }
 // Renames (or moves) a folder and everything inside it.
@@ -1014,7 +1033,6 @@ function splitToFolders(files) {
     for (const f of multi) made.push(...splitParts(f));
     S.files = S.files.filter(f => !multi.includes(f)); S.files.push(...made);
   });
-  made.forEach(f => openFolderPath(f.folder));
   select(made.map(f => f.id), { active: made[0].id });
   toast(multi.length === 1 ? `"${multi[0].name}" is now ${made.length} tracks in its own folder.` : `Split ${multi.length} tracks into ${made.length} tracks, each set in its own folder.`, { label: 'Undo', fn: undo });
   return made;
@@ -1095,7 +1113,7 @@ function renderList() {
       h('span', { text: 'Everything you add is saved here automatically.' })));
     return;
   }
-  const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+  const shown = S.files.filter(f => !q || f.name.toLowerCase().includes(q) || (f.folder || '').toLowerCase().includes(q)).sort((a, b) => NAT.compare(shortName(a), shortName(b)) || NAT.compare(a.name, b.name));
   const fileRow = (f, depth) => {
     const st = stats(f);
     const nameEl = UI.renaming === f.id
@@ -1124,11 +1142,11 @@ function renderList() {
     h('span', { text: 'Garmin Connect only loads the first segment. Split them into separate tracks, kept together in a folder.' }),
     h('div', { class: 'row' }, h('button', { class: 'pri', text: 'Split into folders', onclick: () => splitToFolders(segFiles) }),
       h('button', { text: 'Keep as they are', onclick: () => { S.set.keepSegIds = [...new Set([...(S.set.keepSegIds || []), ...segFiles.map(f => f.id)])]; saveSettings(); renderList(); } }))));
-  const kids = p => folders.filter(x => fparent(x) === p);
+  const kids = p => folders.filter(x => fparent(x) === p).sort((a, b) => NAT.compare(fleaf(a), fleaf(b)));
   const header = (fo, depth) => {
     const fs = fo ? shown.filter(f => inFolder(f, fo)) : shown.filter(f => !f.folder);
     if (q && !fs.length && !(fo && fo.toLowerCase().includes(q))) return;
-    const shut = !!S.set.collapsed[fo] && !q, all = fs.length > 0 && fs.every(f => S.sel.has(f.id)), ids = fs.map(f => f.id);
+    const shut = S.set.collapsed[fo] !== false && !q, all = fs.length > 0 && fs.every(f => S.sel.has(f.id)), ids = fs.map(f => f.id);
     const hd = h('div', { class: 'folder' + (shut ? ' shut' : '') + (depth ? ' sub' : ''), style: depth ? `padding-left:${10 + depth * 16}px` : '', draggable: !!fo && UI.renFolder !== fo, title: 'Click to open or close this folder' + (fo ? '. Drag it onto another folder to move it there.' : '') },
       h('input', { type: 'checkbox', checked: all, disabled: !fs.length, title: 'Select every track in this folder', 'aria-label': 'Select every track in ' + (fo || 'Unfiled'), onclick: e => { e.stopPropagation(); if (all) select([...S.sel].filter(id => !ids.includes(id))); else select(ids, { add: true }); } }),
       UI.renFolder === fo && fo
@@ -1137,16 +1155,16 @@ function renderList() {
       fo ? h('button', { class: 'mini', title: 'New folder inside this one', 'aria-label': 'New folder inside ' + fleaf(fo), onclick: e => { e.stopPropagation(); UI.newFolder = fo; openFolderPath(fo); $('list').scrollTop = 0; renderList(); } }, icon('folder')) : null,
       fo ? h('button', { class: 'mini', title: 'Rename folder', 'aria-label': 'Rename folder ' + fleaf(fo), onclick: e => { e.stopPropagation(); UI.renFolder = fo; renderList(); } }, icon('draw')) : null,
       fo ? h('button', { class: 'mini', title: 'Remove this folder. What is in it moves up a level.', 'aria-label': 'Remove folder ' + fleaf(fo), onclick: e => { e.stopPropagation(); removeFolder(fo); } }, icon('trash')) : null);
-    hd.addEventListener('click', () => { S.set.collapsed[fo] = !S.set.collapsed[fo]; saveSettings(); renderList(); });
+    hd.addEventListener('click', () => { S.set.collapsed[fo] = !shut; saveSettings(); renderList(); });
     if (fo) hd.addEventListener('dragstart', e => { e.dataTransfer.setData('text/gpxw-folder', fo); e.dataTransfer.effectAllowed = 'move'; });
     dropTarget(hd, fo); list.append(hd);
     if (shut) return;
     if (fo) kids(fo).forEach(k => header(k, depth + 1));
     fs.filter(f => (f.folder || '') === fo).forEach(f => list.append(fileRow(f, depth)));
   };
-  kids('').forEach(k => header(k, 0));
   const unfiled = shown.filter(f => !f.folder);
   if (folders.length) { if (unfiled.length || !q) header('', 0); } else unfiled.forEach(f => list.append(fileRow(f, 0)));
+  kids('').forEach(k => header(k, 0));
 }
 function renderTrash(list, q) {
   const items = S.trash.filter(t => !q || t.file.name.toLowerCase().includes(q)).sort((a, b) => b.deletedAt - a.deletedAt);
@@ -1302,7 +1320,7 @@ async function importFiles(fileList) {
   if (S.set.splitSegs !== false) added = added.flatMap(f => { if (liveSegs(f) < 2) return [f]; splitN++; return splitParts(f); });
   if (added.length) {
     op(`Import ${added.length} file${added.length > 1 ? 's' : ''}`, [], () => { added.forEach((f, i) => { f.color = PALETTE[(S.files.length + i) % 8]; }); S.files.push(...added); });
-    added.forEach(f => { if (f.folder) openFolderPath(f.folder); }); select(added.map(f => f.id), { active: added[0].id }); zoomTo(added);
+    select(added.map(f => f.id), { active: added[0].id }); zoomTo(added);
   }
   toast((added.length ? `Imported ${added.length} track${added.length > 1 ? 's' : ''}. ` + (splitN ? `${splitN} file${splitN > 1 ? 's' : ''} with several segments ${splitN > 1 ? 'were' : 'was'} split into separate tracks in ${splitN > 1 ? 'their own folders' : 'its own folder'}, so Garmin Connect reads all of it. ` : '') : '') + errors.join(' ') || 'Nothing to import.');
 }
@@ -2285,12 +2303,18 @@ function gpxViewerMain(D) {
   } else list.hidden = true;
 
   // ---- stats + downloads
+  // Elevation graph can be hidden; the stats stay. The sharer picks the starting state, the viewer's choice is remembered.
+  const GKEY = 'gpxw-graph-' + (D.__id || 'page');
+  let showGraph = D.graph !== false; try { const v = localStorage.getItem(GKEY); if (v !== null) showGraph = v === '1'; } catch { }
+  function applyGraph() { document.body.classList.toggle('nograph', !showGraph); renderStats(); setTimeout(() => { map.invalidateSize(); if (showGraph) drawChart(); }, 0); }
   function renderStats() {
     const f = D.files[active], st = f.st, box = $('stats'); box.textContent = '';
     const item = (k, v) => { const s = document.createElement('span'); s.className = 'st'; s.innerHTML = `<span>${k}</span><b>${v}</b>`; box.append(s); };
     if (D.files.length > 1) { const t = document.createElement('span'); t.className = 'ttl'; t.textContent = f.name; box.append(t); }
     item('Distance', fmt(st.total)); if (st.hasEle) { item('Climb', Math.round(st.asc) + ' m'); item('Descent', Math.round(st.desc) + ' m'); item('High', Math.round(st.max) + ' m'); item('Low', Math.round(st.min) + ' m'); }
     if (f.wpts.length) item('Waypoints', f.wpts.length);
+    const gb = document.createElement('button'); gb.type = 'button'; gb.id = 'gbtn'; gb.textContent = showGraph ? 'Hide graph' : 'Show graph'; gb.title = showGraph ? 'Hide the elevation graph' : 'Show the elevation graph';
+    gb.onclick = () => { showGraph = !showGraph; try { localStorage.setItem(GKEY, showGraph ? '1' : '0'); } catch { } applyGraph(); }; box.append(gb);
     [...list.children].forEach((r, i) => r.classList.toggle('on', i === active));
   }
   function save(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/gpx+xml' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 3000); }
@@ -2464,7 +2488,7 @@ function gpxViewerMain(D) {
   new ResizeObserver(drawChart).observe($('prof'));
 
   function setActive(i, zoom) { active = i; hover = -1; chip(); renderStats(); drawChart(); drawArrows(); if (zoom) { const b = L.latLngBounds(D.files[i].st.pts.map(p => [p[0], p[1]])); if (b.isValid()) map.fitBounds(b.pad(0.08)); } }
-  setActive(0);
+  setActive(0); applyGraph();
 }
 
 const VIEWER_CSS = `:root { --bg: #0a0b0a; --panel: #141614; --ink: #eceeea; --muted: #98a19a; --line: #2b312c; --accent: #c86bff; color-scheme: dark; }
@@ -2495,6 +2519,8 @@ main { position: relative; } #map { position: absolute; inset: 0; background: va
 footer { background: var(--panel); border-top: 1px solid var(--line); }
 #stats { display: flex; gap: 16px; padding: 6px max(12px, env(safe-area-inset-left)); overflow-x: auto; align-items: baseline; font-variant-numeric: tabular-nums; }
 .st { white-space: nowrap; } .st span { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 5px; } .st b { font-size: 1.1rem; } .ttl { font-weight: 600; white-space: nowrap; }
+body.nograph #prof { display: none; }
+#gbtn { margin-left: auto; align-self: center; flex: none; padding: 3px 10px; font-size: .78rem; border-radius: 12px; }
 #prof { position: relative; height: 130px; } #chart { width: 100%; height: 100%; display: block; touch-action: none; }
 #noele { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
 .made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); } .made .short, #trk, #mapbtn, #mappop { display: none; }
@@ -2533,7 +2559,7 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 function viewerTitle(files) { return files.length === 1 ? files[0].name : (files[0].folder && files.every(f => f.folder === files[0].folder) ? files[0].folder : files.length + ' tracks'); }
 function viewerData(files, opts) {
   opts = opts || {};
-  return { title: viewerTitle(files), made: new Date().toISOString().slice(0, 10), expires: opts.expires || null, allowDownload: opts.allowDownload !== false, files: files.map(f => ({
+  return { title: viewerTitle(files), made: new Date().toISOString().slice(0, 10), expires: opts.expires || null, allowDownload: opts.allowDownload !== false, graph: opts.graph !== false, files: files.map(f => ({
     name: f.name, color: /^#[0-9a-f]{6}$/i.test(f.color) ? f.color : '#ff2d55', width: f.width || 4,
     segs: f.segs.filter(s => s.pts.length).map(s => s.pts.map(p => [+p[0].toFixed(6), +p[1].toFixed(6), p[2] == null ? null : +p[2].toFixed(1)])),
     wpts: f.wpts.map(w => ({ lat: +w.lat.toFixed(6), lon: +w.lon.toFixed(6), name: w.name || '', desc: w.desc || '' })),
@@ -2593,8 +2619,8 @@ const Shares = {
     if (status) return 'GitHub returned an error (' + status + '). Try again shortly.';
     return 'No connection to GitHub. Check your internet connection and try again.';
   },
-  async create(files, days, allowDownload) {
-    const expires = days ? Date.now() + days * 864e5 : null, data = viewerData(files, { expires, allowDownload });
+  async create(files, days, allowDownload, graph) {
+    const expires = days ? Date.now() + days * 864e5 : null, data = viewerData(files, { expires, allowDownload, graph });
     let r; try { r = await fetch('https://api.github.com/gists', { method: 'POST', headers: this.headers(), body: JSON.stringify({ description: 'GPX Workshop shared link: ' + data.title, public: false, files: { [SHARE_FILE]: { content: JSON.stringify(data) } } }) }); }
     catch { throw new Error(this.explain(0)); }
     if (!r.ok) throw new Error(this.explain(r.status));
@@ -2617,7 +2643,7 @@ const Shares = {
     if (navigator.share) { try { await navigator.share({ title: rec.title, text: rec.title + ' (GPX track)', url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
     try { await navigator.clipboard.writeText(url); toast('Link copied. Paste it into WhatsApp or an email.'); } catch { toast(url); }
   },
-  last: null, opts: { days: 30, download: true },
+  last: null, opts: { days: 30, download: true, graph: true },
   panel() {
     const p = $('sharep'); if (p.querySelector('input:focus, select:focus')) return;
     p.textContent = ''; const files = selFiles().filter(f => f.segs.some(s => s.pts.length) || f.wpts.length);
@@ -2629,11 +2655,12 @@ const Shares = {
       const out = h('p', { class: 'bad' });
       const make = h('button', { class: 'pri', text: 'Create link', disabled: !Sync.on(), onclick: async () => {
         make.disabled = true; out.className = ''; out.textContent = 'Creating link…';
-        try { this.last = await this.create(files, this.opts.days, this.opts.download); this.panel(); this.send(this.last); }
+        try { this.last = await this.create(files, this.opts.days, this.opts.download, this.opts.graph); this.panel(); this.send(this.last); }
         catch (e) { out.className = 'bad'; out.textContent = e.message; make.disabled = false; }
       } });
       p.append(...[fld('Link stays live for', days),
         h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.opts.download, onchange: e => { this.opts.download = e.target.checked; } }), 'Allow people to download the GPX'),
+        h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.opts.graph, onchange: e => { this.opts.graph = e.target.checked; } }), 'Show the elevation graph (people can still open it)'),
         Sync.on() ? null : h('p', { text: GUEST ? 'Share links need a login. As a guest you can use Save as file.' : 'Share links need Cloud sync. Sign in under Cloud sync first.' }), out,
         h('div', { class: 'row' }, make, h('button', { text: 'Save as file', title: 'Save a web page file instead of a link', onclick: () => saveSharePage(files) }))].filter(Boolean));
     }
@@ -2905,7 +2932,7 @@ const View3D = {
 // ============================================================================
 async function boot() {
   document.documentElement.dataset.theme = S.set.theme === 'light' ? 'light' : 'dark';
-  if (!Array.isArray(S.set.folders)) S.set.folders = []; if (!S.set.collapsed) S.set.collapsed = {}; if (!Array.isArray(S.set.keepSegIds)) S.set.keepSegIds = []; if (!S.set.keys) S.set.keys = {};
+  if (!Array.isArray(S.set.folders)) S.set.folders = []; S.set.collapsed = {};   // every folder starts closed if (!Array.isArray(S.set.keepSegIds)) S.set.keepSegIds = []; if (!S.set.keys) S.set.keys = {};
   Sync.load(); if (!Sync.on() && !GUEST) Lock.pending();
   if (GUEST) { document.documentElement.classList.add('guest'); $('guestBadge').hidden = false; }
   initMap(); Tools.init(); initChart();

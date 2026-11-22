@@ -2,6 +2,8 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 13** (22 Nov 2026): calmer, compact library text; on a computer a track's buttons show when you point at it; folders and tracks always A–Z (Day 2 before Day 10) with Unfiled at the top; every folder starts closed and only opens when you open it.
+- **Version 12.1** (22 Nov 2026): shared links can hide the elevation graph (Hide/Show graph button next to the stats, remembered per link); new share option to start links with the graph hidden.
 - **Version 12** (22 Nov 2026): shared links can be saved for offline — the page, the track and the satellite or Esri topo map along the route are kept on the phone, so the link opens with no signal. Needs the new sw.js file next to index.html.
 - **Version 11.2** (13 Nov 2026): shared links decluttered on phones — one-row header, map type and contours behind a Map button, track list folds into a small button showing the active track, compact stats and chart, short footer note, no zoom buttons. Computer view unchanged.
 - **Version 11.1** (13 Nov 2026): Send to Garmin on phones now saves the GPX file with step-by-step help to open it in Garmin Connect (the share sheet doesn't list Garmin Connect on every phone); shared links get a Send to Garmin button too (when downloads are allowed).
