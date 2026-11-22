@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.4** (22 Nov 2026): installed app on iPad/iPhone: always fills the whole screen (no black strip at the bottom); status bar takes the header colour so iOS's top blur blends in; with no track selected the profile is one line on every screen size.
 - **Version 14.3** (22 Nov 2026): waypoint labels no longer pile up — labels that would overlap shrink to small pins (name on hover or tap) and come back as you zoom in; the selected track's labels win.
 - **Version 14.2** (22 Nov 2026): installed iPhone app: header runs behind the status bar and the buttons sit below iOS 26's blur band, so the top bar is sharp. Re-add the app to the home screen once to pick this up.
 - **Version 14.1** (22 Nov 2026): phones: with no track selected, the profile shrinks to one line instead of leaving an empty graph area; the hint text wraps.

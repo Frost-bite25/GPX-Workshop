@@ -7,18 +7,57 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0a0b0a",
-  "theme_color": "#0a0b0a",
+  "background_color": "#141614",
+  "theme_color": "#141614",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "share_target": {
     "action": "./?share-target",
     "method": "POST",
     "enctype": "multipart/form-data",
-    "params": { "title": "title", "text": "text", "files": [ { "name": "gpx", "accept": [".gpx", ".zip", "application/gpx+xml", "application/zip", "application/xml", "text/xml", "application/octet-stream"] } ] }
+    "params": {
+      "title": "title",
+      "text": "text",
+      "files": [
+        {
+          "name": "gpx",
+          "accept": [
+            ".gpx",
+            ".zip",
+            "application/gpx+xml",
+            "application/zip",
+            "application/xml",
+            "text/xml",
+            "application/octet-stream"
+          ]
+        }
+      ]
+    }
   },
-  "file_handlers": [ { "action": "./", "accept": { "application/gpx+xml": [".gpx"] } } ]
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "application/gpx+xml": [
+          ".gpx"
+        ]
+      }
+    }
+  ]
 }
