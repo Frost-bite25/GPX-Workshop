@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.2** (22 Nov 2026): installed iPhone app: header runs behind the status bar and the buttons sit below iOS 26's blur band, so the top bar is sharp. Re-add the app to the home screen once to pick this up.
 - **Version 14.1** (22 Nov 2026): phones: with no track selected, the profile shrinks to one line instead of leaving an empty graph area; the hint text wraps.
 - **Version 14** (22 Nov 2026): installable app — home-screen icon, full screen, opens with no signal (app and lock screen kept on the device); Install button under Maps; Android: share GPX files from other apps straight into GPX Workshop. Fix: a start-up line switched off in 13 is back on.
 - **Version 13** (22 Nov 2026): calmer, compact library text; on a computer a track's buttons show when you point at it; folders and tracks always A–Z (Day 2 before Day 10) with Unfiled at the top; every folder starts closed and only opens when you open it.
