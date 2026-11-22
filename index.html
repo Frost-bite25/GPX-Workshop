@@ -309,6 +309,9 @@ html.guest #btnSync { border-color: #ffd400; }
 .wpt { transform: translate(-50%, -100%); display: inline-flex; flex-direction: column; align-items: center; white-space: nowrap; }
 .wpt i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px var(--body); box-shadow: 0 1px 4px rgba(0,0,0,.5); max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
 .wpt::after { content: ""; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 2px #000; }
+.wpt.pin i { display: none; }
+.wpt.pin::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 2px solid #1a1f1c; box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.wpt.pin::after { height: 4px; }
 .kmk { transform: translate(-50%, -50%); background: #fff; color: #1a1f1c; border: 1.5px solid #1a1f1c; border-radius: 99px; padding: 0 5px; font: 600 10px/14px var(--body); white-space: nowrap; display: inline-block; }
 .kmk.range { background: #ffd400; border-color: #1a1f1c; font-size: 11px; line-height: 16px; }
 .arw { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #fff; filter: drop-shadow(0 0 1.5px #000); transform-origin: 50% 50%; }
@@ -378,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.2, built 22 Nov 2026">v14.2</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.3, built 22 Nov 2026">v14.3</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -421,7 +424,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.2 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.3 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -470,7 +473,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.2';
+const APP_VERSION = '14.3';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -839,6 +842,7 @@ function initMap() {
   setBase(S.set.base);
   for (const o of OVERLAYS) if (S.set.overlays[o.id]) setOverlay(o.id, true);
   for (const c of customLayers('overlay')) if (S.set.overlays[c.id]) setCustomOverlay(c.id, true);
+  map.on('zoomend moveend', declutterSoon);
   map.on('moveend', () => { const c = map.getCenter(); S.set.view = { lat: c.lat, lng: c.lng, z: map.getZoom() }; saveSettings(); renderDecor(); Tools.onMove(); });
   map.on('mousemove', e => { $('status').textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}  z${map.getZoom()}`; });
   map.on('click', e => { hideCtx(); Tools.onMapClick(e); });
@@ -897,8 +901,9 @@ function renderFile(f) {
     line.on('mousemove', e => { if (f.id === S.active) hoverFromMap(f, si, e.latlng); });
     rt.lines.push(line);
   });
+  if (f.wpts.length) declutterSoon();
   f.wpts.forEach((w, wi) => {
-    const m = L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt"><i>${xmlEsc(w.name || 'Waypoint')}</i></span>` }), draggable: S.tool === 'wpt' && sel, bubblingMouseEvents: false }).addTo(rt.group);
+    const m = L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt${f.id === S.active ? ' act' : ''}" title="${xmlEsc(w.name || 'Waypoint')}"><i>${xmlEsc(w.name || 'Waypoint')}</i></span>` }), draggable: S.tool === 'wpt' && sel, bubblingMouseEvents: false }).addTo(rt.group);
     m.on('click', () => Tools.onWptClick(f, wi));
     m.on('dragend', () => { const p = m.getLatLng(); op('Move waypoint', [f.id], () => { f.wpts[wi].lat = p.lat; f.wpts[wi].lon = p.lng; }); });
   });
@@ -1092,6 +1097,21 @@ function revealInList(id) {
   const row = $('list').querySelector(`.frow[data-id="${id}"]`); if (!row) return;
   row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+}
+// Waypoint labels that would overlap shrink to a small pin (name on hover/tap); zooming in brings them back.
+// The selected track's labels win, then the rest in screen order.
+let declutterQueued = false;
+function declutterSoon() { if (declutterQueued) return; declutterQueued = true; requestAnimationFrame(() => { declutterQueued = false; declutterWpts(); }); }
+function declutterWpts() {
+  const els = [...document.querySelectorAll('#map .wpt')]; if (!els.length) return;
+  els.forEach(e => e.classList.remove('pin'));
+  const boxes = els.map(e => ({ e, r: e.querySelector('i').getBoundingClientRect(), act: e.classList.contains('act') }))
+    .sort((a, b) => (b.act - a.act) || (a.r.top - b.r.top) || (a.r.left - b.r.left));
+  const kept = [], pad = 3;
+  for (const b of boxes) {
+    const hit = kept.some(k => b.r.left < k.right + pad && b.r.right > k.left - pad && b.r.top < k.bottom + pad && b.r.bottom > k.top - pad);
+    if (hit) b.e.classList.add('pin'); else kept.push(b.r);
+  }
 }
 function pickSeg(f, i) {
   if (S.active !== f.id || !S.sel.has(f.id)) select([f.id], { active: f.id });
@@ -2285,7 +2305,7 @@ function gpxViewerMain(D) {
       L.polyline(ll, { color: '#ffffff', weight: f.width + 4, opacity: 0.8, interactive: false }).addTo(g);
       L.polyline(ll, { color: f.color, weight: f.width, opacity: 0.95 }).on('click', () => setActive(fi)).addTo(g); });
     f.wpts.forEach(w => { bounds.extend([w.lat, w.lon]);
-      L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt"><i>${esc(w.name || 'Waypoint')}</i></span>` }) })
+      L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<span class="wpt" title="${esc(w.name || 'Waypoint')}"><i>${esc(w.name || 'Waypoint')}</i></span>` }) })
         .bindPopup(`<b>${esc(w.name || 'Waypoint')}</b>${w.desc ? '<br>' + esc(w.desc) : ''}<br><small>${w.lat.toFixed(5)}, ${w.lon.toFixed(5)}</small>`).addTo(g); });
     const ends = f.st.pts; if (ends.length) { L.circleMarker([ends[0][0], ends[0][1]], { radius: 6, color: '#fff', weight: 2, fillColor: '#34c759', fillOpacity: 1, interactive: false }).addTo(g); const z = ends[ends.length - 1]; L.circleMarker([z[0], z[1]], { radius: 6, color: '#fff', weight: 2, fillColor: '#ff2d55', fillOpacity: 1, interactive: false }).addTo(g); }
     g.addTo(map); groups.push(g);
@@ -2301,6 +2321,11 @@ function gpxViewerMain(D) {
       L.marker([c[0], c[1]], { interactive: false, icon: L.divIcon({ className: '', iconSize: [12, 11], iconAnchor: [6, 5], html: `<div class="arw" style="transform:rotate(${bearing(a, c).toFixed(0)}deg)"></div>` }) }).addTo(arrows); }
   }
   map.on('moveend', drawArrows);
+  // Waypoint labels that would overlap shrink to small pins; zooming in brings them back.
+  const declutter = () => { const kept = [], els = [...document.querySelectorAll('#map .wpt')]; els.forEach(e => e.classList.remove('pin'));
+    els.map(e => ({ e, r: e.querySelector('i').getBoundingClientRect() })).sort((a, b) => (a.r.top - b.r.top) || (a.r.left - b.r.left)).forEach(b => {
+      if (kept.some(k => b.r.left < k.right + 3 && b.r.right > k.left - 3 && b.r.top < k.bottom + 3 && b.r.bottom > k.top - 3)) b.e.classList.add('pin'); else kept.push(b.r); }); };
+  map.on('zoomend moveend', () => requestAnimationFrame(declutter)); setTimeout(declutter, 300);
 
   // ---- track list (only when there is more than one). On phones it folds into a small button showing the active track.
   const list = $('list'), trk = $('trk'), mainEl = document.querySelector('main');
@@ -2563,6 +2588,7 @@ body.nograph #prof { display: none; }
 .wpt { transform: translate(-50%, -100%); display: inline-flex; flex-direction: column; align-items: center; white-space: nowrap; }
 .wpt i { font-style: normal; background: #1a1f1c; color: #fff; border: 2px solid #fff; border-radius: 6px; padding: 0 5px; font: 600 11px/16px system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .wpt::after { content: ""; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 2px #000; }
+.wpt.pin i { display: none; } .wpt.pin::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 2px solid #1a1f1c; box-shadow: 0 1px 3px rgba(0,0,0,.5); } .wpt.pin::after { height: 4px; }
 .arw { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #fff; filter: drop-shadow(0 0 1.5px #000); }
 .leaflet-bar a, .leaflet-bar a:hover { background: var(--panel); color: var(--ink); border-bottom-color: var(--line); }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--ink); }
