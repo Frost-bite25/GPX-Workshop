@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.10** (22 Nov 2026): installed app on iPad: fills to the bottom edge — works around iOS reporting the window shorter than the screen by the status-bar height.
 - **Version 14.9** (22 Nov 2026): duplicates — Show them lists every repeated track with each copy's folder, which copy is kept (choose another with Keep this), tap a copy to see it on the map, and remove copies per track or all at once.
 - **Version 14.8** (22 Nov 2026): installed app: undo 14.5's extra top gap and over-tall layout (bottom was cut off on iPad).
 - **Version 14.7** (22 Nov 2026): duplicate clean-up — the library spots tracks that are in it more than once with exactly the same points and offers Remove duplicates (keeps one of each, extras go to Recently deleted). Restore no longer makes a second copy of a track that is already back in the library.
