@@ -120,8 +120,7 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 /* Installed app (iPhone/iPad): the header colour runs up behind the status bar and the buttons start below it,
    so iOS's blur band under the status bar sits over plain header colour, not over the buttons. */
 @media (display-mode: standalone) {
-  #top { padding-top: calc(env(safe-area-inset-top, 0px) + 38px) !important; position: sticky; top: 0; z-index: 1200; }   /* clear of iOS 26's top blur band */
-  #app { min-height: 100lvh; }   /* iOS can report a shorter viewport than the window: never stop short of the bottom */
+  #top { padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important; position: sticky; top: 0; z-index: 1200; }
   html, body { background: var(--panel); }
   #lock { padding-top: env(safe-area-inset-top, 0px); }
 }
@@ -381,7 +380,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.7, built 22 Nov 2026">v14.7</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.8, built 22 Nov 2026">v14.8</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -424,7 +423,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.7 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.8 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -473,7 +472,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.7';
+const APP_VERSION = '14.8';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
