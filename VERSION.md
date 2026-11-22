@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14** (22 Nov 2026): installable app — home-screen icon, full screen, opens with no signal (app and lock screen kept on the device); Install button under Maps; Android: share GPX files from other apps straight into GPX Workshop. Fix: a start-up line switched off in 13 is back on.
 - **Version 13** (22 Nov 2026): calmer, compact library text; on a computer a track's buttons show when you point at it; folders and tracks always A–Z (Day 2 before Day 10) with Unfiled at the top; every folder starts closed and only opens when you open it.
 - **Version 12.1** (22 Nov 2026): shared links can hide the elevation graph (Hide/Show graph button next to the stats, remembered per link); new share option to start links with the graph hidden.
 - **Version 12** (22 Nov 2026): shared links can be saved for offline — the page, the track and the satellite or Esri topo map along the route are kept on the phone, so the link opens with no signal. Needs the new sw.js file next to index.html.
