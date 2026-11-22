@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.11** (22 Nov 2026): undo 14.10's stretch — on iPad the strip below is outside the area iOS lets the app draw in, and stretching cut off the bottom buttons.
 - **Version 14.10** (22 Nov 2026): installed app on iPad: fills to the bottom edge — works around iOS reporting the window shorter than the screen by the status-bar height.
 - **Version 14.9** (22 Nov 2026): duplicates — Show them lists every repeated track with each copy's folder, which copy is kept (choose another with Keep this), tap a copy to see it on the map, and remove copies per track or all at once.
 - **Version 14.8** (22 Nov 2026): installed app: undo 14.5's extra top gap and over-tall layout (bottom was cut off on iPad).
