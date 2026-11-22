@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.6** (22 Nov 2026): SYNC FIX — a device closed during its first download could wrongly delete tracks from GitHub (and other devices then moved them to Recently deleted). Sync now waits until each track is saved on the device, only deletes from GitHub what is in that device's Recently deleted, only moves a track to Recently deleted when GitHub's Recently deleted shows it, and never acts on an incomplete listing. New: Restore deleted today.
 - **Version 14.5** (22 Nov 2026): installed app: header buttons moved fully below iOS 26's top blur; app stretches to the bottom even when iOS reports a short viewport; screen measurements under Maps → App for diagnosing.
 - **Version 14.4** (22 Nov 2026): installed app on iPad/iPhone: always fills the whole screen (no black strip at the bottom); status bar takes the header colour so iOS's top blur blends in; with no track selected the profile is one line on every screen size.
 - **Version 14.3** (22 Nov 2026): waypoint labels no longer pile up — labels that would overlap shrink to small pins (name on hover or tap) and come back as you zoom in; the selected track's labels win.

@@ -381,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.5, built 22 Nov 2026">v14.5</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.6, built 22 Nov 2026">v14.6</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -424,7 +424,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.5 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.6 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -473,7 +473,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.5';
+const APP_VERSION = '14.6';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -699,7 +699,11 @@ const DB = {
     });
   },
   all(store) { return new Promise(res => { if (!DB.db) return res([]); const r = DB.db.transaction(store || 'files').objectStore(store || 'files').getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); }); },
-  put(f, store) { if (!DB.db) return; try { DB.db.transaction(store || 'files', 'readwrite').objectStore(store || 'files').put(f); } catch (e) { console.warn(e); } },
+  // Returns a promise that settles once the write is really on the device (sync waits for it).
+  put(f, store) {
+    if (!DB.db) return Promise.resolve(false);
+    return new Promise(res => { try { const tx = DB.db.transaction(store || 'files', 'readwrite'); tx.objectStore(store || 'files').put(f); tx.oncomplete = () => res(true); tx.onerror = tx.onabort = () => res(false); } catch (e) { console.warn(e); res(false); } });
+  },
   del(id, store) { if (!DB.db) return; try { DB.db.transaction(store || 'files', 'readwrite').objectStore(store || 'files').delete(id); } catch (e) { console.warn(e); } }
 };
 
@@ -709,7 +713,7 @@ const TRASH_DAYS = 90;
 const Trash = {
   add(f) {
     if (!f || (!f.wpts.length && !f.segs.some(sg => sg.pts.length))) return;
-    const rec = { id: f.id, file: f, deletedAt: Date.now() };
+    const rec = { id: f.id, file: f, deletedAt: Date.now() }; if (arguments[1]) rec.bySync = true;
     S.trash = S.trash.filter(t => t.id !== f.id); S.trash.push(rec); DB.put(rec, 'trash'); Sync.poke();
   },
   remove(id) { if (!S.trash.some(t => t.id === id)) return; S.trash = S.trash.filter(t => t.id !== id); DB.del(id, 'trash'); Sync.poke(); },
@@ -1203,6 +1207,8 @@ function renderTrash(list, q) {
     h('span', { text: `Tracks stay here for ${TRASH_DAYS} days, then they are removed for good.` }),
     S.trash.length ? h('div', { class: 'row' },
       h('button', { text: 'Restore all', onclick: () => { Trash.restore(S.trash.map(t => t.id)); S.showTrash = false; refreshUI(); } }),
+      (() => { const day = new Date(); day.setHours(0, 0, 0, 0); const today = S.trash.filter(t => t.deletedAt >= day.getTime()).map(t => t.id);
+        return today.length && today.length < S.trash.length ? h('button', { text: `Restore deleted today (${today.length})`, onclick: () => { Trash.restore(today); if (!S.trash.length) S.showTrash = false; refreshUI(); } }) : null; })(),
       confirmBtn('Empty', () => { for (const t of S.trash.slice()) Trash.remove(t.id); refreshUI(); })) : null));
   if (!items.length) { list.append(h('div', { class: 'empty' }, S.trash.length ? 'No deleted tracks match the filter.' : 'Nothing here. Tracks you delete will show up in this list.')); return; }
   for (const t of items) {
@@ -1954,18 +1960,20 @@ const Sync = {
     const out = { tracks: {}, trash: {}, cfg: null }; let t;
     try { t = await this.api('GET', '/git/trees/' + encodeURIComponent(this.branch) + '?recursive=1'); }
     catch (e) { if (e.status === 409 || e.status === 404) return out; throw e; }   // empty repository
+    if (t.truncated) { const e = new Error('GitHub listing incomplete'); e.status = 0; throw e; }   // never treat a partial list as deletions
     for (const n of t.tree || []) { if (n.type !== 'blob') continue; if (n.path === 'config/settings.json') out.cfg = n.sha; const m = n.path.match(/^(tracks|trash)\/([\w-]+)\.json$/); if (m) out[m[1]][m[2]] = n.sha; }
     return out;
   },
 
   // Put a downloaded track into the library without marking it as changed here.
-  adopt(g, visible) {
+  async adopt(g, visible) {
     g.visible = visible; const i = S.files.findIndex(f => f.id === g.id);
     if (i >= 0) S.files[i] = g; else S.files.push(g);
-    rtOf(g.id).stats = null; renderFile(g); DB.put(g);
+    rtOf(g.id).stats = null; renderFile(g);
+    if (DB.db && !(await DB.put(g))) throw new Error('Could not save the track on this device');   // record it as synced only once it is really saved
   },
   // A track was deleted on another device: move the local copy to Recently deleted.
-  dropLocal(f) { Trash.add(cloneFile(f)); S.files = S.files.filter(x => x.id !== f.id); touched([f.id], 'vis'); },
+  dropLocal(f) { Trash.add(cloneFile(f), true); S.files = S.files.filter(x => x.id !== f.id); touched([f.id], 'vis'); },
 
   poke() { if (!this.on() || this.internal) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(false), 15000); this.ui(); },
 
@@ -1985,14 +1993,14 @@ const Sync = {
           if (lc && !rc) { st.files[f.id] = { sha: await this.put(tp(f.id), this.ser(f), r, 'Update ' + f.name), mod: f.modified }; n.up++; }
           else {
             const g = await this.get(tp(f.id));
-            if (!lc || this.same(g, f)) { if (lc) g.modified = f.modified; else n.down++; this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; }
+            if (!lc || this.same(g, f)) { if (lc) g.modified = f.modified; else n.down++; await this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; }
             else {   // changed here and on another device: keep both
               const copy = cloneFile(f); copy.id = uid(); copy.name = f.name + ' (conflict copy)'; copy.modified = Date.now();
               st.files[copy.id] = { sha: await this.put(tp(copy.id), this.ser(copy), null, 'Add ' + copy.name), mod: copy.modified };
-              this.adopt(copy, f.visible); this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; n.conflict++;
+              await this.adopt(copy, f.visible); await this.adopt(g, f.visible); st.files[f.id] = { sha: r, mod: g.modified }; n.conflict++;
             }
           }
-        } else if (s && s.mod === f.modified) { delete st.files[f.id]; this.dropLocal(f); n.gone++; }       // deleted on another device
+        } else if (s && s.mod === f.modified && R.trash[f.id]) { delete st.files[f.id]; this.dropLocal(f); n.gone++; }   // deleted on another device (it is in GitHub's Recently deleted)
         else {                                                                                                // new here, or edited here after a delete elsewhere
           st.files[f.id] = { sha: await this.put(tp(f.id), this.ser(f), null, 'Add ' + f.name), mod: f.modified }; n.up++;
         }
@@ -2001,8 +2009,8 @@ const Sync = {
       // ---- tracks that are in the repository but not on this device
       for (const id of Object.keys(R.tracks)) {
         if (fileById(id)) continue; const s = st.files[id];
-        if (s && s.sha === R.tracks[id]) { await this.del(tp(id), R.tracks[id], 'Delete track'); delete st.files[id]; }   // deleted here
-        else { const g = await this.get(tp(id)); this.msg = 'Downloading ' + g.name + '…'; this.ui(); Trash.remove(id); this.adopt(g, true); st.files[id] = { sha: R.tracks[id], mod: g.modified }; n.down++; }
+        if (s && s.sha === R.tracks[id] && S.trash.some(t => t.id === id)) { await this.del(tp(id), R.tracks[id], 'Delete track'); delete st.files[id]; }   // deleted here (it is in this device's Recently deleted)
+        else { const g = await this.get(tp(id)); this.msg = 'Downloading ' + g.name + '…'; this.ui(); Trash.remove(id); await this.adopt(g, true); st.files[id] = { sha: R.tracks[id], mod: g.modified }; n.down++; }
         this.saveState();
       }
       for (const id of Object.keys(st.files)) if (!fileById(id) && !R.tracks[id]) delete st.files[id];
@@ -2017,7 +2025,7 @@ const Sync = {
       for (const id of Object.keys(R.trash)) {
         if (S.trash.some(t => t.id === id)) continue;
         if (fileById(id) || st.trash[id]) { await this.del(xp(id), R.trash[id], 'Remove from deleted'); delete st.trash[id]; }  // restored, or removed for good here
-        else { const rec = await this.get(xp(id)); rec.file.visible = true; S.trash.push(rec); DB.put(rec, 'trash'); st.trash[id] = R.trash[id]; }
+        else { const rec = await this.get(xp(id)); rec.file.visible = true; S.trash.push(rec); await DB.put(rec, 'trash'); st.trash[id] = R.trash[id]; }
       }
       for (const id of Object.keys(st.trash)) if (!S.trash.some(t => t.id === id)) delete st.trash[id];
       // ---- Settings that follow you: map keys, your own map layers, folders
