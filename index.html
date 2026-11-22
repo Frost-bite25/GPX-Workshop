@@ -120,11 +120,12 @@ input.inl { padding: 3px 6px; font-size: .92rem; flex: 1 1 auto; }
 /* Installed app (iPhone/iPad): the header colour runs up behind the status bar and the buttons start below it,
    so iOS's blur band under the status bar sits over plain header colour, not over the buttons. */
 @media (display-mode: standalone) {
-  #top { padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important; position: sticky; top: 0; z-index: 1200; }
+  #top { padding-top: calc(env(safe-area-inset-top, 0px) + 38px) !important; position: sticky; top: 0; z-index: 1200; }   /* clear of iOS 26's top blur band */
+  #app { min-height: 100lvh; }   /* iOS can report a shorter viewport than the window: never stop short of the bottom */
   html, body { background: var(--panel); }
   #lock { padding-top: env(safe-area-inset-top, 0px); }
 }
-#layers .note { font-size: .82rem; color: var(--muted); margin: 2px 0 6px; }
+#layers .note { font-size: .82rem; color: var(--muted); margin: 2px 0 6px; } #layers .note.mono { font-family: var(--mono); font-size: .7rem; }
 /* Library text: compact and calm (v13) */
 #side { font-size: 13.5px; }
 #filter { font-size: 13.5px; }
@@ -380,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.4, built 22 Nov 2026">v14.4</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.5, built 22 Nov 2026">v14.5</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -423,7 +424,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.4 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.5 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -472,7 +473,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.4';
+const APP_VERSION = '14.5';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -2999,6 +3000,11 @@ const App = {
     else if (this.prompt) row.push(h('button', { onclick: () => this.install() }, icon('import'), 'Install GPX Workshop as an app'));
     else if (this.ios()) row.push(h('p', { class: 'note', text: 'To install: open this site in Safari, tap Share, then Add to Home Screen.' }));
     else row.push(h('p', { class: 'note', text: 'To install: use your browser menu → Install app (or Add to Home screen).' }));
+    // Screen measurements, to diagnose layout problems on a device
+    const pr = document.createElement('div'); pr.style.cssText = 'position:fixed;visibility:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)'; document.body.append(pr);
+    const cs = getComputedStyle(pr), ins = `${parseFloat(cs.paddingTop)}/${parseFloat(cs.paddingBottom)}`; pr.remove();
+    const vv = window.visualViewport, app = $('app').getBoundingClientRect();
+    row.push(h('p', { class: 'note mono', text: `Screen ${screen.width}×${screen.height} · window ${innerWidth}×${innerHeight} · visual ${vv ? Math.round(vv.width) + '×' + Math.round(vv.height) : '-'} · app ${Math.round(app.width)}×${Math.round(app.height)} · safe ${ins} · ${this.standalone() ? 'app' : 'browser'}` }));
     return row;
   }
 };
