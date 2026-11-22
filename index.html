@@ -381,7 +381,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.6, built 22 Nov 2026">v14.6</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.7, built 22 Nov 2026">v14.7</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -424,7 +424,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.6 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.7 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -473,7 +473,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.6';
+const APP_VERSION = '14.7';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -718,8 +718,12 @@ const Trash = {
   },
   remove(id) { if (!S.trash.some(t => t.id === id)) return; S.trash = S.trash.filter(t => t.id !== id); DB.del(id, 'trash'); Sync.poke(); },
   restore(ids) {
-    const recs = S.trash.filter(t => ids.includes(t.id)); if (!recs.length) return;
+    let recs = S.trash.filter(t => ids.includes(t.id)); if (!recs.length) return;
     for (const r of recs) this.remove(r.id);
+    // Already back in the library (e.g. sync put it back)? Don't make a second copy.
+    const sameTrack = (a, b) => JSON.stringify([a.segs.map(s => s.pts), a.wpts]) === JSON.stringify([b.segs.map(s => s.pts), b.wpts]);
+    recs = recs.filter(r => { const have = fileById(r.file.id); return !(have && sameTrack(have, r.file)); });
+    if (!recs.length) { toast('Those tracks are already in your library.'); refreshUI(); return; }
     op(`Restore ${recs.length} track${recs.length > 1 ? 's' : ''}`, [], () => { for (const r of recs) { if (fileById(r.file.id)) r.file.id = uid(); r.file.visible = true; S.files.push(r.file); } }, { trashOnUndo: true });
     select(recs.map(r => r.file.id), { active: recs[0].file.id }); zoomTo(recs.map(r => r.file));
   },
@@ -1121,6 +1125,30 @@ function pickSeg(f, i) {
   if (S.active !== f.id || !S.sel.has(f.id)) select([f.id], { active: f.id });
   S.seg = i; renderFile(f); renderList(); if (S.tool) Tools.refresh();
 }
+// ---------- Duplicates: tracks with exactly the same points (and waypoints) ----------
+const SIG = new Map();   // id -> { mod, sig }: fingerprint only recomputed when a track changes
+function trackSig(f) {
+  const c = SIG.get(f.id); if (c && c.mod === f.modified && c.n === f.segs.length) return c.sig;
+  let h = 2166136261 >>> 0; const mix = v => { const s = String(v); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } };
+  for (const s of f.segs) { mix('|'); for (const p of s.pts) { mix(p[0].toFixed(6)); mix(p[1].toFixed(6)); } }
+  for (const w of f.wpts) { mix('w'); mix(w.lat.toFixed(6)); mix(w.lon.toFixed(6)); mix(w.name || ''); }
+  const sig = f.segs.reduce((a, s) => a + s.pts.length, 0) + ':' + f.wpts.length + ':' + h.toString(36);
+  SIG.set(f.id, { mod: f.modified, n: f.segs.length, sig }); return sig;
+}
+// Groups of identical tracks; the first in each group is the one to keep (not a conflict copy, in a folder, tidiest name).
+function findDuplicates() {
+  const by = new Map();
+  for (const f of S.files) { if (!f.segs.some(s => s.pts.length) && !f.wpts.length) continue; const k = trackSig(f); if (!by.has(k)) by.set(k, []); by.get(k).push(f); }
+  const score = f => (/\(conflict copy\)/i.test(f.name) ? 4 : 0) + (f.folder ? 0 : 2) + (/\(\d+\)$/.test(f.name) ? 1 : 0);
+  return [...by.values()].filter(g => g.length > 1).map(g => g.sort((a, b) => score(a) - score(b) || a.name.length - b.name.length || (a.modified || 0) - (b.modified || 0)));
+}
+function removeDuplicates() {
+  const groups = findDuplicates(), extra = groups.flatMap(g => g.slice(1)); if (!extra.length) return;
+  const ids = extra.map(f => f.id);
+  op(`Remove ${ids.length} duplicate${ids.length > 1 ? 's' : ''}`, ids, () => { S.files = S.files.filter(f => !ids.includes(f.id)); });
+  toast(`Removed ${ids.length} duplicate track${ids.length > 1 ? 's' : ''} (kept one of each). They are in Recently deleted if you need them.`, { label: 'Undo', fn: undo });
+}
+
 // Segment numbers are fixed the first time one is taken out, so names stay "Segment 1, 2, 3" however many are removed.
 function segLabel(f, s, i) { return s.name && s.name !== f.name ? s.name : 'Segment ' + (i + 1); }
 function freezeSegNames(f) { f.segs.forEach((s, k) => { s.name = segLabel(f, s, k); }); }
@@ -1171,6 +1199,11 @@ function renderList() {
     return h('div', { class: 'fgroup' }, row, sr);
   };
   // Tracks with several segments: offer to split them (Garmin Connect only reads the first one)
+  const dups = q ? [] : findDuplicates(), dupN = dups.reduce((a, g) => a + g.length - 1, 0);
+  if (dupN) list.append(h('div', { class: 'segnote' },
+    h('b', { text: `${dupN} duplicate track${dupN > 1 ? 's' : ''} found` }),
+    h('span', { text: `${dups.length} track${dups.length > 1 ? 's are' : ' is'} in the library more than once with exactly the same points, e.g. "${dups[0][0].name}". Remove keeps one of each; the extras go to Recently deleted.` }),
+    h('div', { class: 'row' }, h('button', { class: 'pri', text: `Remove ${dupN} duplicate${dupN > 1 ? 's' : ''}`, onclick: removeDuplicates }))));
   const segFiles = S.files.filter(f => liveSegs(f) > 1 && !(S.set.keepSegIds || []).includes(f.id));
   if (segFiles.length && !q) list.append(h('div', { class: 'segnote' },
     h('b', { text: `${segFiles.length} track${segFiles.length > 1 ? 's have' : ' has'} several segments` }),
