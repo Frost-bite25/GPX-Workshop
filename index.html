@@ -348,7 +348,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 11.2, built 13 Nov 2026">v11.2</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 12, built 13 Nov 2026">v12</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -391,7 +391,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 11.2 · 13 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 12 · 13 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -440,7 +440,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '11.2';
+const APP_VERSION = '12';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -2235,8 +2235,8 @@ function gpxViewerMain(D) {
   const map = L.map('map', { zoomControl: false, preferCanvas: true, renderer: L.canvas({ padding: 0.3, tolerance: 8 }), maxZoom: 20 });
   L.control.zoom({ position: 'bottomright' }).addTo(map); L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
   map.createPane('blend').style.zIndex = 250; map.getPane('blend').style.mixBlendMode = 'multiply';
-  let baseLayer = null, contours = null;
-  const setBase = id => { const b = BASES.find(x => x.id === id) || BASES[0]; if (baseLayer) baseLayer.remove(); baseLayer = L.tileLayer(b.url, { maxNativeZoom: b.max, maxZoom: 20, attribution: b.attr }).addTo(map); baseLayer.bringToBack(); };
+  let baseLayer = null, contours = null, offCap = null;
+  const setBase = id => { const b = BASES.find(x => x.id === id) || BASES[0]; if (baseLayer) baseLayer.remove(); baseLayer = L.tileLayer(b.url, { maxNativeZoom: offCap && offCap.bases.includes(b.id) ? Math.min(b.max, offCap.maxZ) : b.max, maxZoom: 20, attribution: b.attr }).addTo(map); baseLayer.bringToBack(); };
   const sel = $('base'); BASES.forEach(b => sel.append(new Option(b.name, b.id))); sel.onchange = () => setBase(sel.value); setBase('sat');
   $('cont').onchange = e => { if (contours) { contours.remove(); contours = null; } if (e.target.checked) contours = L.tileLayer(OTM, { pane: 'blend', maxNativeZoom: 17, maxZoom: 20, opacity: 0.7 }).addTo(map); };
 
@@ -2324,6 +2324,112 @@ function gpxViewerMain(D) {
     });
     gc.onclick = e => { e.stopPropagation(); gcp.hidden = !gcp.hidden; };
   }
+  // ---- Save for offline: keeps this page, the track and the map along the route on the phone
+  const off = $('off'), offp = $('offp'), offbadge = $('offbadge');
+  if (D.__id && 'serviceWorker' in navigator && window.caches) {
+    const ID = D.__id, TILES = 'gpxw-tiles-' + ID, DATA = 'gpxw-share-' + ID, SHELL = 'gpxw-shell', META = './__gpxw-offline-meta';
+    const OFF_BASES = { sat: { name: 'Satellite', url: ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}', kb: 24 }, esritopo: { name: 'Topo (Esri)', url: ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', kb: 14 } };
+    const LEVELS = [{ z: 14, name: 'Normal' }, { z: 15, name: 'High' }, { z: 16, name: 'Very high' }];
+    const swReady = navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).catch(() => null);
+    off.hidden = false;
+    let meta = null, job = null, choice = { bases: ['sat'], z: 15 };
+    const fmtMB = b => (b / 1048576 < 10 ? (b / 1048576).toFixed(1) : Math.round(b / 1048576)) + ' MB';
+    // Tiles covering the route with about 1.2 km either side, plus an overview of the whole area.
+    function tileList(maxZ) {
+      const out = new Set(), pts = [];
+      D.files.forEach(f => { f.st.pts.forEach(p => pts.push([p[0], p[1]])); f.wpts.forEach(w => pts.push([w.lat, w.lon])); });
+      for (let z = 6; z <= maxZ; z++) {
+        const n = 2 ** z, centres = new Set();
+        for (const [lat, lon] of pts) { const r = lat * Math.PI / 180; centres.add(Math.floor((lon + 180) / 360 * n) + ',' + Math.floor((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n)); }
+        const lat0 = pts.length ? pts[0][0] : 0, tileM = 40075016 * Math.cos(lat0 * Math.PI / 180) / n, rad = z < 11 ? 1 : Math.max(1, Math.ceil(1200 / tileM));
+        for (const c of centres) { const [x, y] = c.split(',').map(Number);
+          for (let dx = -rad; dx <= rad; dx++) for (let dy = -rad; dy <= rad; dy++) { const tx = x + dx, ty = y + dy; if (tx >= 0 && ty >= 0 && tx < n && ty < n) out.add(z + '/' + tx + '/' + ty); } }
+      }
+      return [...out];
+    }
+    const urlFor = (b, t) => { const [z, x, y] = t.split('/'); return OFF_BASES[b].url.replace('{z}', z).replace('{x}', x).replace('{y}', y); };
+    const estimate = () => { const n = tileList(choice.z).length; return { n: n * choice.bases.length, mb: choice.bases.reduce((a, b) => a + n * OFF_BASES[b].kb * 1024, 0) }; };
+    async function loadMeta() { try { const c = await caches.open(TILES); const r = await c.match(META); meta = r ? await r.json() : null; } catch { meta = null; } return meta; }
+    function applyMeta() {
+      offCap = meta && !navigator.onLine ? { bases: meta.bases, maxZ: meta.maxZ } : null;
+      if (offCap && !meta.bases.includes(sel.value)) sel.value = meta.bases[0];
+      setBase(sel.value); off.classList.toggle('saved', !!meta); off.textContent = meta ? 'Offline ✓' : 'Offline';
+      offbadge.hidden = !(D.__offline || (!navigator.onLine && meta));
+    }
+    async function save() {
+      const reg = await swReady;
+      if (!reg) { job = { err: 'Offline saving isn’t set up on this website yet (the sw.js file is missing next to index.html).' }; render(); return; }
+      job = { done: 0, total: 0, bytes: 0, failed: 0, stop: false }; render();
+      try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch { }
+      try {
+        // 1. the page itself, the map library and the fonts
+        const shell = await caches.open(SHELL), here = new URL('./', location.href).href;
+        await shell.put(here, await fetch(here, { cache: 'reload' }));
+        const assets = new Set([...document.querySelectorAll('script[src], link[rel=stylesheet]')].map(e => e.src || e.href));
+        try { performance.getEntriesByType('resource').forEach(e => { if (/\.(js|css)(\?|$)|fonts\.googleapis\.com\/css/.test(e.name)) assets.add(e.name); }); } catch { }
+        for (const u of assets) {
+          if (/sw\.js$/.test(u) || (!/^https:\/\/(cdnjs\.cloudflare\.com|fonts\.googleapis\.com)\//.test(u) && !u.startsWith(location.origin))) continue;
+          try { const r = await fetch(u, { mode: 'cors' }); if (r.ok) { await shell.put(u, r.clone()); if (/fonts\.googleapis/.test(u)) { const css = await r.text(); for (const m of css.matchAll(/url\((https:[^)]+)\)/g)) { try { const f = await fetch(m[1], { mode: 'cors' }); if (f.ok) await shell.put(m[1], f); } catch { } } } } } catch { }
+        }
+        // 2. the shared track
+        const { __id, __src, __offline, ...keep } = D;
+        await (await caches.open(DATA)).put('./__gpxw-share-data', new Response(JSON.stringify(keep), { headers: { 'Content-Type': 'application/json' } }));
+        // 3. the map along the route
+        const tiles = await caches.open(TILES), list = [];
+        for (const b of choice.bases) for (const t of tileList(choice.z)) list.push(urlFor(b, t));
+        job.total = list.length; render();
+        let i = 0;
+        const worker = async () => { while (i < list.length && !job.stop) { const u = list[i++];
+          try { if (!(await tiles.match(u))) { const r = await fetch(u, { mode: 'cors' }); if (!r.ok) throw 0; const blob = await r.clone().blob(); await tiles.put(u, r); job.bytes += blob.size; } }
+          catch (e) { if (e && e.name === 'QuotaExceededError') { job.stop = true; job.err = 'The phone ran out of space for this website. Try a lower detail level.'; } else job.failed++; }
+          job.done++; if (job.done % 10 === 0 || job.done === list.length) render(); } };
+        await Promise.all(Array.from({ length: 6 }, worker));
+        if (job.stop && !job.err) { job = null; render(); return; }
+        const bytes = (meta ? meta.bytes : 0) + job.bytes;
+        meta = { bases: [...new Set([...(meta ? meta.bases : []), ...choice.bases])], maxZ: Math.max(meta ? meta.maxZ : 0, choice.z), tiles: list.length - job.failed, bytes, at: Date.now() };
+        await tiles.put(META, new Response(JSON.stringify(meta), { headers: { 'Content-Type': 'application/json' } }));
+        job.finished = true;
+      } catch (e) { job.err = 'Saving stopped: ' + ((e && e.message) || 'unknown error') + '. Check the signal and try again.'; }
+      applyMeta(); render();
+    }
+    async function remove() { await caches.delete(TILES); await caches.delete(DATA); meta = null; job = null; applyMeta(); render(); }
+    const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+    function render() {
+      offp.textContent = '';
+      const hd = el('div', 'gchd'); hd.append(el('b', '', 'Save for offline')); const x = el('button', '', 'Close'); x.onclick = () => { offp.hidden = true; }; hd.append(x); offp.append(hd);
+      const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (job && !job.finished && !job.err) {
+        offp.append(el('p', 'offmsg', job.total ? `Saving the map: ${job.done.toLocaleString()} of ${job.total.toLocaleString()} pieces (${fmtMB(job.bytes)})` : 'Saving the page and track…'));
+        const bar = el('div', 'offbar'), fill = el('i'); fill.style.width = (job.total ? 100 * job.done / job.total : 3) + '%'; bar.append(fill); offp.append(bar);
+        offp.append(el('p', 'offnote', 'Keep this page open until it finishes.'));
+        const c = el('button', '', 'Cancel'); c.onclick = () => { job.stop = true; }; offp.append(c); return;
+      }
+      if (job && job.err) offp.append(el('p', 'offerr', job.err));
+      if (meta) {
+        offp.append(el('p', 'offok', `Saved on this device ✓`));
+        offp.append(el('p', 'offmsg', `${meta.bases.map(b => OFF_BASES[b].name).join(' + ')} along the route, ${LEVELS.find(l => l.z === meta.maxZ)?.name.toLowerCase() || 'zoom ' + meta.maxZ} detail · ${fmtMB(meta.bytes)} · saved ${new Date(meta.at).toLocaleDateString([], { day: 'numeric', month: 'short' })}` + (job && job.failed ? ` · ${job.failed} map pieces couldn’t be fetched` : '')));
+        offp.append(el('p', 'offnote', 'This link now opens without signal. The map is sharp within about a kilometre of the track and blurrier further away.'));
+      } else offp.append(el('p', 'offmsg', 'Do this while you still have signal. The page, the track and the map along the route are kept on this device, so the link opens with no signal at all.'));
+      if (!navigator.onLine) { offp.append(el('p', 'offnote', 'No signal right now. Saving needs internet.')); }
+      else {
+        const mapRow = el('div', 'offrow'); mapRow.append(el('span', 'offlbl', 'Map'));
+        for (const [id, b] of Object.entries(OFF_BASES)) { const l = el('label', 'chk'), cb = el('input'); cb.type = 'checkbox'; cb.checked = choice.bases.includes(id);
+          cb.onchange = () => { choice.bases = Object.keys(OFF_BASES).filter(k => k === id ? cb.checked : choice.bases.includes(k)); if (!choice.bases.length) choice.bases = [id]; render(); }; l.append(cb, ' ' + b.name); mapRow.append(l); }
+        offp.append(mapRow);
+        const detRow = el('div', 'offrow'); detRow.append(el('span', 'offlbl', 'Detail'));
+        const ds = el('select'); LEVELS.forEach(l => ds.append(new Option(l.name, l.z))); ds.value = choice.z; ds.onchange = () => { choice.z = +ds.value; render(); }; detRow.append(ds); offp.append(detRow);
+        const est = estimate(); offp.append(el('p', 'offnote', `About ${fmtMB(est.mb)} (${est.n.toLocaleString()} map pieces).` + (est.mb > 150 * 1048576 ? ' That’s a lot — try a lower detail level.' : '')));
+        const go = el('button', 'pri', meta ? 'Save again / add more' : 'Save for offline'); go.onclick = save; offp.append(go);
+      }
+      if (meta) { const rm = el('button', '', 'Remove from this device'); rm.onclick = remove; offp.append(rm); }
+      offp.append(el('p', 'offnote', IOS ? 'Tip: on iPhone, tap Share → Add to Home Screen and open it from there. Safari can clear saved website data that isn’t used for a few weeks.' : 'Tip: add this page to your home screen so it’s easy to open with no signal.'));
+    }
+    off.onclick = e => { e.stopPropagation(); gcp.hidden = true; offp.hidden = !offp.hidden; if (!offp.hidden) render(); };
+    offp.onclick = e => e.stopPropagation();
+    gc.addEventListener('click', () => { offp.hidden = true; });
+    addEventListener('online', applyMeta); addEventListener('offline', applyMeta);
+    loadMeta().then(applyMeta);
+  } else if (D.__offline) offbadge.hidden = false;
 
   // ---- elevation profile
   const cv = $('chart'); let hover = -1, dot = null;
@@ -2380,6 +2486,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: .9re
 .gcrow { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
 .gcrow .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; } .gcnm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gcrow .pri { background: var(--accent); color: #14091a; border-color: var(--accent); }
+@media (max-width: 640px) { #offp { position: fixed; left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; max-height: 85vh; border-radius: 14px 14px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); } }
 @media (max-width: 640px) { #gcp { position: fixed; left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; max-height: 85vh; border-radius: 14px 14px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); } }
 main { position: relative; } #map { position: absolute; inset: 0; background: var(--bg); }
 #list { position: absolute; left: 10px; top: 10px; z-index: 800; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px; max-height: calc(100% - 20px); overflow-y: auto; width: min(280px, calc(100% - 20px)); box-shadow: 0 4px 16px rgba(0,0,0,.4); }
@@ -2391,6 +2498,14 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 #prof { position: relative; height: 130px; } #chart { width: 100%; height: 100%; display: block; touch-action: none; }
 #noele { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
 .made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); } .made .short, #trk, #mapbtn, #mappop { display: none; }
+#off.saved { border-color: #2fbf71; color: #2fbf71; }
+#offp { position: absolute; right: 10px; top: 10px; z-index: 1001; width: 360px; max-width: calc(100% - 20px); max-height: calc(100% - 20px); overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
+#offp[hidden] { display: none; } #offp p { margin: 0; } .offmsg { font-size: .9rem; } .offnote { font-size: .8rem; color: var(--muted); } .offok { color: #2fbf71; font-weight: 700; } .offerr { color: #ff6b6b; font-size: .88rem; }
+.offrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; } .offlbl { width: 48px; color: var(--muted); font-size: .85rem; }
+.offbar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; } .offbar i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+#offp .pri { background: var(--accent); color: #14091a; border-color: var(--accent); }
+#offbadge { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 800; background: #2fbf71; color: #08200f; font-weight: 700; font-size: .8rem; padding: 4px 12px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.4); pointer-events: none; }
+#offbadge[hidden] { display: none; }
 @media (max-width: 640px) {
   header { flex-wrap: nowrap; gap: 8px; padding: 6px max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left)); }
   h1 { font-size: 1.05rem; flex: 1 1 0 !important; min-width: 0; } .ctl { flex-wrap: nowrap; gap: 6px; flex: none; width: auto !important; margin-left: auto; } .ctl button { padding: 7px 11px; } .long { display: none; }
@@ -2427,8 +2542,8 @@ function viewerData(files, opts) {
 function viewerBody(title, note, short) {
   return `<header><h1>${xmlEsc(title)}</h1>
   <div class="ctl"><select id="base" aria-label="Base map"></select><label class="chk"><input type="checkbox" id="cont"> Contours</label>
-  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div><button id="gc" type="button"><span class="long">Send to </span>Garmin</button></div></header>
-<main><div id="map"></div><button id="trk" type="button" hidden></button><div id="list" aria-label="Tracks"></div><button id="mapbtn" type="button" aria-label="Map type and contours">Map</button><div id="mappop" hidden></div><section id="gcp" hidden></section></main>
+  <button id="dl" type="button">Download GPX</button><div id="dlmenu" hidden></div><button id="gc" type="button"><span class="long">Send to </span>Garmin</button><button id="off" type="button" hidden>Offline</button></div></header>
+<main><div id="map"></div><button id="trk" type="button" hidden></button><div id="list" aria-label="Tracks"></div><button id="mapbtn" type="button" aria-label="Map type and contours">Map</button><div id="mappop" hidden></div><section id="gcp" hidden></section><section id="offp" hidden></section><div id="offbadge" hidden>Offline copy</div></main>
 <footer><div id="stats"></div><div id="prof"><canvas id="chart" aria-label="Elevation profile"></canvas><div id="noele" hidden>This track has no elevation data.</div></div>
 <div class="made"><span class="long">${xmlEsc(note)}</span><span class="short">${xmlEsc(short || note)}</span></div></footer>`;
 }
@@ -2550,18 +2665,21 @@ async function openSharedView(id) {
   const gone = (head, text) => { document.body.innerHTML = ''; document.body.append(h('div', { id: 'gone', style: 'grid-row: 1 / -1' }, h('div', {}, h('b', { text: head }), text))); };
   if (!/^[0-9a-f]{20,40}$/i.test(id)) { gone('This link is not valid', 'Check that the whole link was copied.'); return; }
   document.body.innerHTML = ''; document.body.append(h('div', { id: 'gone', style: 'grid-row: 1 / -1' }, h('div', {}, h('b', { text: 'Opening shared track…' }))));
-  let data;
+  let data, saved = null;
+  try { if (window.caches && await caches.has('gpxw-share-' + id)) { const r = await (await caches.open('gpxw-share-' + id)).match('./__gpxw-share-data'); if (r) saved = await r.json(); } } catch { }
+  const useSaved = () => { data = saved; data.__offline = true; };
   try {
-    const r = await fetch('https://api.github.com/gists/' + id, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-    if (r.status === 404) { gone('This link has been removed', 'The person who shared it has stopped sharing.'); return; }
-    if (r.status === 403 || r.status === 429) { gone('Too many views right now', 'GitHub limits how often a network can open shared links. Try again in an hour.'); return; }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const ctl = new AbortController(), t = saved ? setTimeout(() => ctl.abort(), 6000) : 0;
+    const r = await fetch('https://api.github.com/gists/' + id, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store', signal: ctl.signal }); clearTimeout(t);
+    if (r.status === 404) { try { await caches.delete('gpxw-share-' + id); await caches.delete('gpxw-tiles-' + id); } catch { } gone('This link has been removed', 'The person who shared it has stopped sharing.'); return; }
+    if ((r.status === 403 || r.status === 429) && saved) useSaved(); else if (r.status === 403 || r.status === 429) { gone('Too many views right now', 'GitHub limits how often a network can open shared links. Try again in an hour.'); return; }
+    if (!data) { if (!r.ok) throw new Error('HTTP ' + r.status);
     const g = await r.json(), f = g.files && g.files[SHARE_FILE]; if (!f) { gone('This link is not a GPX Workshop share', ''); return; }
-    data = JSON.parse(f.truncated ? await (await fetch(f.raw_url)).text() : f.content);
-  } catch { gone("Couldn't load the shared track", 'Check your internet connection and reload the page.'); return; }
+    data = JSON.parse(f.truncated ? await (await fetch(f.raw_url)).text() : f.content); }
+  } catch { if (saved) useSaved(); else { gone("Couldn't load the shared track", 'Check your internet connection and reload the page.'); return; } }
   if (data.expires && Date.now() > data.expires) { gone('This link has expired', 'It was shared until ' + fmtDay(data.expires) + '. Ask for a new link.'); return; }
   document.title = data.title; document.body.innerHTML = viewerBody(data.title, viewerNote(data), data.expires ? 'Link works until ' + fmtDay(data.expires) : 'Shared from GPX Workshop');
-  gpxViewerMain(data);
+  data.__id = id; gpxViewerMain(data);
 }
 
 // ============================================================================
