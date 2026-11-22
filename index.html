@@ -360,6 +360,8 @@ html.guest #btnSync { border-color: #ffd400; }
   #stats .st b { font-size: 1rem; }
   #stats .ttl { max-width: 120px; }
   #chartwrap { height: 82px; }
+  #prof.empty #chartwrap { display: none; }   /* nothing selected: one line, the map gets the room */
+  #stats .st.hint { white-space: normal; font-size: .85rem; color: var(--muted); }
 }
 @media (max-width: 370px) { #top, #top .grp { gap: 4px; } #top button { min-width: 34px; height: 36px; padding: 0 6px; } #search input { height: 36px; } }
 @media (max-height: 500px) and (pointer: coarse) { #chartwrap { display: none; } #profTab { display: none; } #panel { max-height: 70%; } #rail button { min-height: 42px; } }
@@ -370,7 +372,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14, built 22 Nov 2026">v14</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.1, built 22 Nov 2026">v14.1</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -413,7 +415,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.1 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -462,7 +464,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14';
+const APP_VERSION = '14.1';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -1204,7 +1206,8 @@ function renderProfile() {
     if (ele) box.append(item('Climb', Math.round(asc) + ' m'), item('Descent', Math.round(desc) + ' m'), item('High', Math.round(hi) + ' m'), item('Low', Math.round(lo) + ' m'));
     box.append(item('Points', n.toLocaleString()));
   }
-  if (!f) { if (!sel.length) box.append(h('span', { class: 'st', text: 'Select a track to see its distance, climb and elevation profile.' })); drawChart(null); msg.hidden = true; return; }
+  $('prof').classList.toggle('empty', !f);
+  if (!f) { if (!sel.length) box.append(h('span', { class: 'st hint', text: 'Select a track to see its distance, climb and elevation profile.' })); drawChart(null); msg.hidden = true; return; }
   const st = stats(f);
   if (sel.length <= 1) {
     box.append(h('span', { class: 'ttl', text: f.name }), item('Distance', fmtDist(st.total)));
@@ -1281,6 +1284,7 @@ function initChart() {
   cv.addEventListener('pointerleave', () => setHover(-1));
   cv.addEventListener('click', e => { const k = pick(e), f = activeFile(); if (k < 0 || !f) return; const st = stats(f), p = f.segs[st.segOf[k]].pts[st.idxOf[k]]; map.panTo([p[0], p[1]]); });
   new ResizeObserver(() => { if (S.set.profOpen) drawChart(cv._st); }).observe($('chartwrap'));
+  new ResizeObserver(() => map.invalidateSize()).observe($('map'));   // keep the map filling its space when the profile grows or shrinks
 }
 
 // ---------- Messages ----------
