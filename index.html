@@ -85,6 +85,17 @@ label { display: block; }
 .segnote { display: grid; gap: 6px; margin: 8px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--panel)); font-size: .88rem; }
 .segnote span { color: var(--muted); }
 .segnote .row { display: flex; gap: 6px; flex-wrap: wrap; }
+.duplist { display: grid; gap: 8px; max-height: 50vh; overflow-y: auto; overflow-x: hidden; margin-top: 2px; min-width: 0; }
+.segnote { min-width: 0; }
+.dupgrp { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--panel); display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
+.duphd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; } .duphd b { flex: 1 1 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .segnote .duphd span { flex: 1; color: var(--muted); font-size: .75rem; white-space: nowrap; }
+.duphd button, .duprow .mini { padding: 2px 8px; font-size: .75rem; }
+.duprow { display: flex; align-items: center; gap: 7px; min-width: 0; } .duprow .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.dupnm { flex: 1 1 auto; min-width: 0; border: 0 !important; background: none !important; padding: 3px 0 !important; text-align: left; display: flex !important; flex-direction: column; align-items: flex-start !important; justify-content: flex-start !important; gap: 0; font-weight: 400; }
+.dupnm span, .dupnm small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); } .dupnm small { color: var(--muted); }
+.duprow .mini { flex: none; border: 1px solid var(--line) !important; }
+.dupnm span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dupnm small { color: var(--muted); font-size: .72rem; }
+.duprow.keep .dupnm span { font-weight: 600; } .segnote .keeptag { flex: none; font-size: .72rem; color: #2fbf71; font-weight: 700; padding: 0 6px; }
 .segsplit { display: flex; align-items: center; gap: 8px; padding: 4px 8px 6px 6px; font-size: .8rem; color: var(--muted); }
 .segsplit span { flex: 1; }
 .segsplit button { padding: 3px 9px; font-size: .8rem; }
@@ -380,7 +391,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.8, built 22 Nov 2026">v14.8</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.9, built 22 Nov 2026">v14.9</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -423,7 +434,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.8 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.9 · 22 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -472,7 +483,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.8';
+const APP_VERSION = '14.9';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -1000,7 +1011,7 @@ function updateButtons() {
 }
 
 // ---------- Library list ----------
-const UI = { renaming: null, newFolder: false, renFolder: null, openSegs: new Set() };
+const UI = { renaming: null, newFolder: false, renFolder: null, openSegs: new Set(), showDups: false, keepDup: {} };
 // Folders can sit inside folders: a track's folder is a path like "Baviaans/Ridge Loop".
 const fparent = p => (p && p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '');
 const fleaf = p => (p || '').slice((p || '').lastIndexOf('/') + 1);
@@ -1139,10 +1150,14 @@ function findDuplicates() {
   const by = new Map();
   for (const f of S.files) { if (!f.segs.some(s => s.pts.length) && !f.wpts.length) continue; const k = trackSig(f); if (!by.has(k)) by.set(k, []); by.get(k).push(f); }
   const score = f => (/\(conflict copy\)/i.test(f.name) ? 4 : 0) + (f.folder ? 0 : 2) + (/\(\d+\)$/.test(f.name) ? 1 : 0);
-  return [...by.values()].filter(g => g.length > 1).map(g => g.sort((a, b) => score(a) - score(b) || a.name.length - b.name.length || (a.modified || 0) - (b.modified || 0)));
+  return [...by.entries()].filter(([, g]) => g.length > 1).map(([k, g]) => {
+    g.sort((a, b) => score(a) - score(b) || a.name.length - b.name.length || (a.modified || 0) - (b.modified || 0));
+    const pick = g.findIndex(f => f.id === UI.keepDup[k]); if (pick > 0) g.unshift(g.splice(pick, 1)[0]);   // the copy you chose to keep goes first
+    g.sig = k; return g;
+  });
 }
-function removeDuplicates() {
-  const groups = findDuplicates(), extra = groups.flatMap(g => g.slice(1)); if (!extra.length) return;
+function removeDuplicates(only) {
+  const groups = findDuplicates().filter(g => !only || g.sig === only), extra = groups.flatMap(g => g.slice(1)); if (!extra.length) return;
   const ids = extra.map(f => f.id);
   op(`Remove ${ids.length} duplicate${ids.length > 1 ? 's' : ''}`, ids, () => { S.files = S.files.filter(f => !ids.includes(f.id)); });
   toast(`Removed ${ids.length} duplicate track${ids.length > 1 ? 's' : ''} (kept one of each). They are in Recently deleted if you need them.`, { label: 'Undo', fn: undo });
@@ -1202,7 +1217,16 @@ function renderList() {
   if (dupN) list.append(h('div', { class: 'segnote' },
     h('b', { text: `${dupN} duplicate track${dupN > 1 ? 's' : ''} found` }),
     h('span', { text: `${dups.length} track${dups.length > 1 ? 's are' : ' is'} in the library more than once with exactly the same points, e.g. "${dups[0][0].name}". Remove keeps one of each; the extras go to Recently deleted.` }),
-    h('div', { class: 'row' }, h('button', { class: 'pri', text: `Remove ${dupN} duplicate${dupN > 1 ? 's' : ''}`, onclick: removeDuplicates }))));
+    h('div', { class: 'row' }, h('button', { class: 'pri', text: `Remove ${dupN} duplicate${dupN > 1 ? 's' : ''}`, onclick: () => removeDuplicates() }),
+      h('button', { text: UI.showDups ? 'Hide list' : 'Show them', 'aria-expanded': UI.showDups, onclick: () => { UI.showDups = !UI.showDups; renderList(); } })),
+    UI.showDups ? h('div', { class: 'duplist' }, ...dups.map(g => h('div', { class: 'dupgrp' },
+      h('div', { class: 'duphd' }, h('b', { text: g[0].name }), h('span', { text: `${g.length} copies · ${fmtDist(stats(g[0]).total)}` }),
+        h('button', { text: 'Remove copies', title: 'Keep the first one listed and move the others to Recently deleted', onclick: () => removeDuplicates(g.sig) })),
+      ...g.map((f, k) => h('div', { class: 'duprow' + (k ? '' : ' keep') },
+        h('i', { class: 'dot', style: 'background:' + f.color }),
+        h('button', { class: 'dupnm', title: 'Show this copy on the map', onclick: () => { select([f.id], { active: f.id }); zoomTo([f]); revealInList(f.id); } },
+          h('span', { text: f.name }), h('small', { text: f.folder ? folderLabel(f.folder) : 'Unfiled' })),
+        k ? h('button', { class: 'mini', text: 'Keep this', title: 'Keep this copy instead', onclick: () => { UI.keepDup[g.sig] = f.id; renderList(); } }) : h('span', { class: 'keeptag', text: 'Kept' })))))) : null));
   const segFiles = S.files.filter(f => liveSegs(f) > 1 && !(S.set.keepSegIds || []).includes(f.id));
   if (segFiles.length && !q) list.append(h('div', { class: 'segnote' },
     h('b', { text: `${segFiles.length} track${segFiles.length > 1 ? 's have' : ' has'} several segments` }),
