@@ -2,6 +2,7 @@
 
 Bump `VERSION` in build.py with every change to the core app, and add a line here.
 
+- **Version 14.13** (26 Nov 2026): shared links get a My location button — blue dot with accuracy ring that keeps updating, and how far you are from the nearest track; works without signal.
 - **Version 14.12** (22 Nov 2026): installed iPad app: header buttons start below iOS's top blur, so they are sharp (iPhone unchanged).
 - **Version 14.11** (22 Nov 2026): undo 14.10's stretch — on iPad the strip below is outside the area iOS lets the app draw in, and stretching cut off the bottom buttons.
 - **Version 14.10** (22 Nov 2026): installed app on iPad: fills to the bottom edge — works around iOS reporting the window shorter than the screen by the status-bar height.

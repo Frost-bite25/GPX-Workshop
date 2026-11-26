@@ -395,7 +395,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <div id="app">
   <header id="top">
     <button id="sideToggle" title="Show or hide the track library">Library</button>
-    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.12, built 22 Nov 2026">v14.12</small></h1>
+    <h1>GPX <span>Workshop</span> <small id="ver" title="Version 14.13, built 26 Nov 2026">v14.13</small></h1>
     <button id="guestBadge" class="guestbadge" title="You are using the app as a guest" hidden>Guest</button>
     <div class="grp">
       <button id="btnNew" title="Start a new empty route">New</button>
@@ -438,7 +438,7 @@ html.guest #btnSync { border-color: #ffd400; }
     <div id="list"></div>
     <div class="ft">
       <span id="storeNote">Tracks are saved in this browser on this device.</span>
-      <span id="verNote">GPX Workshop version 14.12 · 22 Nov 2026</span>
+      <span id="verNote">GPX Workshop version 14.13 · 26 Nov 2026</span>
       <button id="btnSync" title="Keep your tracks in a private GitHub repository">Cloud sync</button>
       <button id="btnTrash" title="Tracks you deleted in the last 90 days">Recently deleted</button>
       <div class="row">
@@ -487,7 +487,7 @@ html.guest #btnSync { border-color: #ffd400; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 'use strict';
-const APP_VERSION = '14.12';
+const APP_VERSION = '14.13';
 // ============================================================================
 // GPX Workshop — core: helpers, state, geometry, GPX read/write, storage, zip
 // A point is [lat, lon, ele|null, timeMs|null].
@@ -2393,6 +2393,37 @@ function gpxViewerMain(D) {
   const declutter = () => { const kept = [], els = [...document.querySelectorAll('#map .wpt')]; els.forEach(e => e.classList.remove('pin'));
     els.map(e => ({ e, r: e.querySelector('i').getBoundingClientRect() })).sort((a, b) => (a.r.top - b.r.top) || (a.r.left - b.r.left)).forEach(b => {
       if (kept.some(k => b.r.left < k.right + 3 && b.r.right > k.left - 3 && b.r.top < k.bottom + 3 && b.r.bottom > k.top - 3)) b.e.classList.add('pin'); else kept.push(b.r); }); };
+  // ---- My location: blue dot + accuracy ring, keeps updating; works without signal (GPS). Shows how far you are from the nearest track.
+  const LOC_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>';
+  let me = null, meRing = null, watch = null, follow = false, lastFix = null;
+  const locBtn = L.DomUtil.create('a', 'locbtn'), locMsg = document.createElement('div'); locMsg.id = 'locmsg'; locMsg.hidden = true; document.querySelector('main').append(locMsg);
+  locBtn.href = '#'; locBtn.innerHTML = LOC_SVG; locBtn.title = 'Show my location'; locBtn.setAttribute('role', 'button'); locBtn.setAttribute('aria-label', 'Show my location');
+  const LocCtl = L.Control.extend({ options: { position: 'bottomright' }, onAdd() { const box = L.DomUtil.create('div', 'leaflet-bar locctl'); box.append(locBtn); L.DomEvent.disableClickPropagation(box); return box; } });
+  new LocCtl().addTo(map);
+  const say = (t, err) => { locMsg.textContent = t; locMsg.className = err ? 'err' : ''; locMsg.hidden = !t; };
+  const metres = (a, b, c, d) => { const R = 6371000, r = Math.PI / 180, x = Math.sin((c - a) * r / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin((d - b) * r / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+  const fmtD = m => m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(m < 10000 ? 1 : 0) + ' km';
+  function nearest(lat, lon) { let best = Infinity, name = ''; D.files.forEach(f => { for (const p of f.st.pts) { const d = metres(lat, lon, p[0], p[1]); if (d < best) { best = d; name = f.name; } } }); return { d: best, name }; }
+  function onFix(pos) {
+    const ll = [pos.coords.latitude, pos.coords.longitude], acc = pos.coords.accuracy || 0; lastFix = ll;
+    if (!me) { me = L.marker(ll, { interactive: false, keyboard: false, zIndexOffset: 1000, icon: L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<span class="medot"></span>' }) }).addTo(map); meRing = L.circle(ll, { radius: acc, weight: 1, color: '#3b8cff', fillColor: '#3b8cff', fillOpacity: .12, interactive: false }).addTo(map); }
+    else { me.setLatLng(ll); meRing.setLatLng(ll).setRadius(acc); }
+    if (follow) { map.setView(ll, Math.max(map.getZoom(), 15)); follow = false; }
+    const n = nearest(ll[0], ll[1]);
+    say(n.d < 30 ? `You're on ${n.name}` : `You're ${fmtD(n.d)} from ${n.name}`);
+    locBtn.classList.add('on');
+  }
+  function onErr(e) {
+    locBtn.classList.remove('on'); follow = false;
+    say(e.code === 1 ? 'Location is switched off for this page. Allow it in your browser or phone settings.' : 'Can’t find your location right now. Try again in the open.', true);
+    if (e.code === 1 && watch !== null) { navigator.geolocation.clearWatch(watch); watch = null; }
+  }
+  locBtn.onclick = e => {
+    e.preventDefault();
+    if (!navigator.geolocation) { say('This browser can’t share your location.', true); return; }
+    follow = true; if (lastFix) { map.setView(lastFix, Math.max(map.getZoom(), 15)); follow = false; }
+    if (watch === null) { say('Finding your location…'); watch = navigator.geolocation.watchPosition(onFix, onErr, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 }); }
+  };
   map.on('zoomend moveend', () => requestAnimationFrame(declutter)); setTimeout(declutter, 300);
 
   // ---- track list (only when there is more than one). On phones it folds into a small button showing the active track.
@@ -2631,6 +2662,11 @@ body.nograph #prof { display: none; }
 #prof { position: relative; height: 130px; } #chart { width: 100%; height: 100%; display: block; touch-action: none; }
 #noele { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
 .made { padding: 0 12px 6px; font-size: .72rem; color: var(--muted); } .made .short, #trk, #mapbtn, #mappop { display: none; }
+.locctl .locbtn { width: 34px; height: 34px; display: grid !important; place-items: center; color: var(--ink); background: var(--panel); }
+.locctl .locbtn.on { color: #3b8cff; }
+.medot { display: block; width: 16px; height: 16px; margin: 3px; border-radius: 50%; background: #3b8cff; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,140,255,.35), 0 1px 4px rgba(0,0,0,.5); }
+#locmsg { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); z-index: 820; background: var(--panel); color: var(--ink); font-size: .85rem; font-weight: 600; padding: 6px 12px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.45); max-width: calc(100% - 120px); text-align: center; }
+#locmsg[hidden] { display: none; } #locmsg.err { color: #ff8a8a; }
 #off.saved { border-color: #2fbf71; color: #2fbf71; }
 #offp { position: absolute; right: 10px; top: 10px; z-index: 1001; width: 360px; max-width: calc(100% - 20px); max-height: calc(100% - 20px); overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
 #offp[hidden] { display: none; } #offp p { margin: 0; } .offmsg { font-size: .9rem; } .offnote { font-size: .8rem; color: var(--muted); } .offok { color: #2fbf71; font-weight: 700; } .offerr { color: #ff6b6b; font-size: .88rem; }
